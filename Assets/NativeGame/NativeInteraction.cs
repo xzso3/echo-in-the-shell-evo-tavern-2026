@@ -8,10 +8,11 @@ namespace Echo.NativeGame
         public NativeMap map;
         public bool isExit;
         public float radius = 1.65f;
+        public string promptOverride;
         public SpriteRenderer indicator;
         public bool Used { get; private set; }
         public event Action<NativeInteraction> Confirmed;
-        public string Prompt => isExit ? map.ExitOpen ? "E  /  LEAVE THE SECTOR" : "EXIT LOCKED  /  RECONNECT THE CYAN TERMINAL" : "E  /  RECONNECT TERMINAL";
+        public string Prompt => !string.IsNullOrEmpty(promptOverride) ? promptOverride : isExit ? map.ExitOpen ? "E  /  LEAVE THE SECTOR" : "EXIT LOCKED  /  RECONNECT THE CYAN TERMINAL" : "E  /  RECONNECT TERMINAL";
         public bool CanReach(NativePlayer player) => player && Vector2.Distance(player.transform.position, transform.position) <= radius && !NativeObstacle.Blocked(player.transform.position, transform.position);
         public void Use(NativePlayer player)
         {

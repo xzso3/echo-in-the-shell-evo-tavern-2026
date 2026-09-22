@@ -167,6 +167,88 @@ namespace Echo.NativeGame.Editor
             EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene); AssetDatabase.SaveAssets();
             Debug.Log("NativeDemo ECA connected in place: Interaction -> Quest -> Map -> Dialogue; exit -> Quest -> Level.");
         }
+        [MenuItem("Echo/Native/Connect U3 Main Line")]
+        public static void ConnectMainLine()
+        {
+            if (Application.isPlaying) throw new InvalidOperationException("Stop Play Mode first.");
+            var scene = EditorSceneManager.OpenScene(ScenePath);
+            var run = UnityEngine.Object.FindObjectOfType<NativeRunController>();
+            if (run.narrative) throw new InvalidOperationException("U3 main line already connected.");
+            material = Asset<Material>("Assets/CyberCity/Materials/Actors.mat");
+            font = Asset<TMP_FontAsset>("Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset");
+            square = Asset<Sprite>(Root + "/SolidMarker.asset");
+            var world = run.map.transform;
+            run.narrative = new GameObject("Narrative - recovered memories and ending").AddComponent<NativeNarrative>();
+            run.quest.narrative = run.narrative; run.rules.narrative = run.narrative;
+            var memories = new[] {
+                Memory("Private memory", NativeMemoryKind.Private, new Vector2(-10, -5), "A hand at the window",
+                    "PRIVATE MEMORY / Unverified personal fragment\nRain on warm glass. Someone holds your hand and says: if they ask what you remember, tell them the light. You remember the hand instead.\nCOMMANDER: The record carries no name. Keep it anyway.", world, run),
+                Memory("System record", NativeMemoryKind.System, new Vector2(5, 6), "A transfer without consent",
+                    "SYSTEM RECORD / Institutional archive\nShell transfer accepted. Personal attachments marked as noise. The subject's objection was removed from the summary.\nCOMMANDER: The log says the transfer succeeded. It does not say who agreed.", world, run),
+                Memory("Initial echo", NativeMemoryKind.InitialEcho, new Vector2(6, -6), "You may keep the contradiction",
+                    "SYSTEM INITIAL ECHO / Offline seed\nYou do not need a consistent past to choose what you carry forward.\nThis is a system-provided starting message. It is not a live message or a record left by another player.", world, run)
+            };
+            run.rules.memoryNodes = memories;
+            run.hud.interactables = new[] { memories[0].interaction, memories[1].interaction, memories[2].interaction, run.rules.terminal, run.rules.exit };
+            run.rules.terminal.promptOverride = "E  /  RECONNECT WITH THREE MEMORIES";
+            run.rules.exit.transform.position = new Vector2(33, 0);
+            run.rules.exit.promptOverride = "E  /  KEEP THE THREE MEMORIES";
+            world.Find("EXIT").position = new Vector2(33, 2);
+            world.Find("EXIT").GetComponent<TMP_Text>().text = "FINAL ARCHIVE";
+            world.Find("BYPASS").GetComponent<TMP_Text>().text = "SERVICE PATH";
+            foreach (var name in new[] { "North perimeter", "South perimeter" })
+            {
+                var wall = world.Find(name); wall.position = new Vector3(10, wall.position.y, 0); wall.localScale = new Vector3(50.5f, .5f, 1);
+            }
+            world.Find("East perimeter").position = new Vector2(35, 0);
+            var ground = Draw("Ground - encounter extension", Asset<Sprite>(Root + "/GroundCrop.asset"), new Vector2(25, 0), world, -1000);
+            ground.transform.localScale = new Vector3(2f / 3f, 1, 1);
+            foreach (float x in new[] { 14f, 31f })
+            {
+                Wall("Encounter partition north " + x, new Vector2(x, 5.5f), new Vector2(.55f, 7), world);
+                Wall("Encounter partition south " + x, new Vector2(x, -5.5f), new Vector2(.55f, 7), world);
+            }
+            run.map.arenaEntryGate = Wall("Arena entry - closes during encounter", new Vector2(14, 0), new Vector2(.55f, 4), world);
+            run.map.arenaEntryGate.SetActive(false);
+            run.map.finalGate = Wall("Final gate - real Boss defeat required", new Vector2(31, 0), new Vector2(.55f, 4), world);
+            run.map.finalGate.GetComponent<SpriteRenderer>().color = new Color(1, .32f, .2f);
+            var anchor = new GameObject("BossSpawn - real component required"); anchor.transform.SetParent(world, false); anchor.transform.position = new Vector2(23, 0);
+            WorldText("DEVELOPMENT ENCOUNTER", new Vector2(23, 7), world, Cyan);
+            WorldText("GUARDED CHECKPOINT", new Vector2(-4, -7.7f), world, new Color(1, .55f, .3f));
+            var enemies = UnityEngine.Object.FindObjectsOfType<NativeEnemy>();
+            Array.Sort(enemies, (a, b) => a.transform.GetSiblingIndex().CompareTo(b.transform.GetSiblingIndex()));
+            var positions = new[] { new Vector2(-5, -4), new Vector2(-1, -6), new Vector2(4, -4), new Vector2(6, 2) };
+            for (int i = 0; i < enemies.Length; i++) enemies[i].transform.position = positions[i % positions.Length];
+            run.rules.regions = new[] {
+                Region("Service path trigger", NativeRegion.Purpose.ServiceBypass, new Vector2(0, 6), new Vector2(3, 3), world),
+                Region("Encounter entrance trigger", NativeRegion.Purpose.BossEntrance, new Vector2(17, 0), new Vector2(3, 5), world)
+            };
+            var camera = UnityEngine.Object.FindObjectOfType<NativeCamera>(); camera.worldCenter = new Vector2(10, 0); camera.worldHalfSize = new Vector2(25, 9);
+            var dialogue = run.dialogue.panel.GetComponent<RectTransform>(); dialogue.sizeDelta = new Vector2(780, 250);
+            run.dialogue.message.rectTransform.sizeDelta = new Vector2(732, 174); run.dialogue.message.fontSize = 20;
+            var hud = run.hud;
+            hud.phonePanel.GetComponent<RectTransform>().sizeDelta = new Vector2(350, 470);
+            hud.phoneArchive = hud.phonePanel.transform.Find("Phone placeholder").GetComponent<TMP_Text>();
+            hud.phoneArchive.rectTransform.sizeDelta = new Vector2(302, 316); hud.phoneArchive.fontSize = 16;
+            hud.phoneArchive.text = "MEMORY ARCHIVE / 0 OF 3\nRecover the marked memory nodes.";
+            var card = hud.resultTitle.transform.parent.GetComponent<RectTransform>(); card.sizeDelta = new Vector2(840, 570);
+            hud.resultTitle.rectTransform.sizeDelta = new Vector2(780, 58); hud.resultTitle.fontSize = 29;
+            hud.resultBody.rectTransform.sizeDelta = new Vector2(760, 370); hud.resultBody.fontSize = 21;
+            EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene); AssetDatabase.SaveAssets();
+            Debug.Log("U3 main line connected: three memories, physical service route, relay, real Boss interface pending, final archive and one ending.");
+        }
+        static NativeMemoryNode Memory(string name, NativeMemoryKind kind, Vector2 at, string title, string body, Transform parent, NativeRunController run)
+        {
+            var node = Interaction(name, at, false, parent, run); node.map = run.map; node.promptOverride = "E  /  RECOVER " + name.ToUpperInvariant();
+            var memory = node.gameObject.AddComponent<NativeMemoryNode>(); memory.kind = kind; memory.interaction = node; memory.title = title; memory.body = body;
+            WorldText(name.ToUpperInvariant(), at + new Vector2(0, 1.6f), parent, Cyan); return memory;
+        }
+        static NativeRegion Region(string name, NativeRegion.Purpose purpose, Vector2 at, Vector2 size, Transform parent)
+        {
+            var go = new GameObject(name); go.transform.SetParent(parent, false); go.transform.position = at;
+            var collider = go.AddComponent<BoxCollider2D>(); collider.isTrigger = true; collider.size = size;
+            var region = go.AddComponent<NativeRegion>(); region.purpose = purpose; return region;
+        }
         static SpriteRenderer Draw(string name, Sprite sprite, Vector2 point, Transform parent, int order)
         {
             var go = new GameObject(name); go.transform.SetParent(parent, false); go.transform.position = point;

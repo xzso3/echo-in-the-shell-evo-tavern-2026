@@ -10,6 +10,7 @@ namespace Echo.NativeGame
         public NativeInteraction[] interactables;
         public TMP_Text healthLabel, fireLabel, objectiveLabel, promptLabel, counterLabel, resultTitle, resultBody;
         public GameObject phonePanel, resultPanel;
+        public TMP_Text phoneArchive;
         public UnityEngine.UI.Button restartButton, phoneCloseButton;
         void Awake()
         {
@@ -33,14 +34,15 @@ namespace Echo.NativeGame
                 nearby = NativeInteraction.FindNearest(interactables, player);
                 // An E that opens a dialogue cannot also close that newly created session.
                 if (Input.GetKeyDown(KeyCode.E))
-                { if (dialogue.IsOpen) dialogue.Close(); else if (nearby) nearby.Use(player); }
+                { if (dialogue.IsOpen) dialogue.Close(); else if (level.rules.CanInteractBossCore(player)) level.rules.InteractBossCore(player); else if (nearby) nearby.Use(player); }
             }
             healthLabel.text = "SHELL  " + Mathf.CeilToInt(player.Health) + " / " + player.maxHealth;
             fireLabel.text = combat.AutoFire ? "AUTO FIRE  /  SPACE TO HOLD" : "HOLD FIRE  /  SPACE TO RESUME";
             fireLabel.color = combat.AutoFire ? new Color(.3f, 1, .85f) : new Color(1, .78f, .35f);
             objectiveLabel.text = level.quest.ObjectiveText;
+            if (phoneArchive && phonePanel.activeSelf && level.narrative) phoneArchive.text = level.narrative.MemorySummary();
             counterLabel.text = string.Format("{0:00}:{1:00}   /   HOSTILES DISABLED  {2}", (int)level.Elapsed / 60, (int)level.Elapsed % 60, combat.Kills);
-            promptLabel.text = dialogue.IsOpen ? "E  /  ACKNOWLEDGE TRANSMISSION" : nearby ? nearby.Prompt : level.Running ? "WASD  MOVE     SPACE  FIRE / HOLD     E  INTERACT     TAB  PHONE" : "";
+            promptLabel.text = dialogue.IsOpen ? "E  /  ACKNOWLEDGE TRANSMISSION" : level.rules.CanInteractBossCore(player) ? "E  /  ACT ON THE EXPOSED CORE" : nearby ? nearby.Prompt : level.Running ? "WASD  MOVE     SPACE  FIRE / HOLD     E  INTERACT     TAB  PHONE" : "";
         }
         public void ShowResult(string title, string body)
         { phonePanel.SetActive(false); resultTitle.text = title; resultBody.text = body; resultPanel.SetActive(true); ClearSelection(); }

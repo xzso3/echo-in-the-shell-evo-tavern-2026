@@ -15,6 +15,7 @@ namespace Echo.NativeGame
         public NativeDialogue dialogue;
         public NativeEcaRules rules;
         public NativeHud hud;
+        public NativeNarrative narrative;
         public RunPhase Phase { get; private set; }
         public float Elapsed { get; private set; }
         public bool Running => Phase == RunPhase.Playing && player && player.Alive;
@@ -29,9 +30,9 @@ namespace Echo.NativeGame
         void Update() { if (Running) Elapsed += Time.deltaTime; }
         public bool Complete()
         {
-            if (!Running || !quest.Completed) return false;
+            if (!Running || !quest.Completed || !narrative || !narrative.EndingCommitted) return false;
             Phase = RunPhase.Completed; player.MoveInput = Vector2.zero; dialogue.Close();
-            hud.ShowResult("CONNECTION ESTABLISHED", "Terminal reconnected. Exit reached.\n\nFirst playable checkpoint complete.\nFull story, memories and Boss encounter follow in the next milestone.");
+            hud.ShowResult(narrative.EndingTitle, narrative.EndingText);
             return true;
         }
         public void PlayerDied()
