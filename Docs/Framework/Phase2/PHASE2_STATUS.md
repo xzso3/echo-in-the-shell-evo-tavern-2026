@@ -27,4 +27,4 @@
 
 ## 检查边界与恢复点
 
-P2-01 证据见 `Assets/NativeGame/README.md`、`/private/tmp/native-npc-connect.log`、`/private/tmp/native-npc-smoke.log`；临时探针已移除。P2-02 只核对集成后的文件和引用，没有把原工作区的运行结果冒称为 de32 重测。A2—A6 的完整人工操作、A8 Windows 路线，以及 Boss/结局全流程仍待用户试玩；P2 整体尚未完成。P2-03/P2-04 从最新集成 SHA 并以分离的文件边界续派。08:00 停止新增功能，11:00 收束，未完成项转后续阶段。
+P2-01 证据见 `Assets/NativeGame/README.md`、`/private/tmp/native-npc-connect.log`、`/private/tmp/native-npc-smoke.log`；临时探针已移除。P2-02 只核对集成后的文件和引用，没有把原工作区的运行结果冒称为 de32 重测。A2—A6 的完整人工操作、A8 Windows 路线，以及 Boss/结局全流程仍待用户试玩；P2 整体尚未完成。取得路线文档集成 SHA 与旧工作区收束报告后，从共同基线派发 P2-03 地图、P2-04 战斗、P2-05 道具、P2-06 音频等文件边界分离的任务；INT 保持集成槽，并发总数不超过 5。开发期只做必要编译/启动/当前阻断检查，08:00 停止新增功能，11:00 收束，未完成项转后续阶段。
