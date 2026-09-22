@@ -18,7 +18,7 @@ namespace Echo.NativeGame.Editor
             var scene = EditorSceneManager.OpenScene(NativeDemoBuilder.ScenePath);
             var run = UnityEngine.Object.FindObjectOfType<NativeRunController>();
             if (run.hud.phone) throw new InvalidOperationException("Local features already connected.");
-            font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset");
+            font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/NativeGame/Fonts/FusionPixel/FusionPixel12 Bitmap.asset");
             var ui = run.hud.transform;
             UnityEngine.Object.DestroyImmediate(run.hud.phonePanel);
             var sequence = ui.gameObject.AddComponent<NativeEndingSequence>(); sequence.level = run; run.endingSequence = sequence;
@@ -37,7 +37,7 @@ namespace Echo.NativeGame.Editor
             var phone = ui.gameObject.AddComponent<NativePhone>(); phone.level = run; run.hud.phone = phone;
             phone.heading = Text("Phone title", panel.transform, new Vector2(0,1), new Vector2(18,-14), new Vector2(504,30), 23); phone.heading.color = Cyan;
             phone.tabs = new Button[3];
-            for (int i=0;i<3;i++) phone.tabs[i] = Button(((NativePhone.Page)i).ToString().ToUpperInvariant(), panel.transform, new Vector2(18+i*170,-54), new Vector2(164,34), true);
+            for (int i=0;i<3;i++) phone.tabs[i] = Button(NativePhone.PageLabel((NativePhone.Page)i), panel.transform, new Vector2(18+i*170,-54), new Vector2(164,34), true);
             var viewport = Box("Scrollable page", panel.transform, new Vector2(0,1), new Vector2(18,-104), new Vector2(504,190), new Color(0,0,0,.12f));
             viewport.gameObject.AddComponent<RectMask2D>();
             phone.body = Text("Page content", viewport.transform, new Vector2(0,1), Vector2.zero, new Vector2(492,190), 16);
@@ -45,14 +45,14 @@ namespace Echo.NativeGame.Editor
             phone.scroll = viewport.gameObject.AddComponent<ScrollRect>(); phone.scroll.viewport = viewport.rectTransform; phone.scroll.content = phone.body.rectTransform;
             phone.scroll.horizontal = false; phone.scroll.vertical = true; phone.scroll.movementType = ScrollRect.MovementType.Clamped; phone.scroll.scrollSensitivity = 24;
             phone.actions = new Button[8];
-            for (int i=0;i<8;i++) phone.actions[i] = Button("ACTION " + i, panel.transform, new Vector2(18+(i%2)*254,58+(3-i/2)*36), new Vector2(248,32));
-            run.hud.phoneCloseButton = Button("CLOSE / TAB", panel.transform, new Vector2(18,14), new Vector2(248,32));
-            phone.restart = Button("RESTART RUN", panel.transform, new Vector2(272,14), new Vector2(248,32));
+            for (int i=0;i<8;i++) phone.actions[i] = Button("操作 " + i, panel.transform, new Vector2(18+(i%2)*254,58+(3-i/2)*36), new Vector2(248,32));
+            run.hud.phoneCloseButton = Button("关闭 / Tab", panel.transform, new Vector2(18,14), new Vector2(248,32));
+            phone.restart = Button("重新开始", panel.transform, new Vector2(272,14), new Vector2(248,32));
             run.hud.phoneArchive = null;
             panel.gameObject.SetActive(false);
-            run.rules.exit.promptOverride = "E / CHOOSE DESTROY OR UPLOAD";
-            run.quest.completedObjective = "05 / FINAL NODE\nReach the eastern archive. E opens the final choice.";
-            run.rules.terminalMessage = "COMMANDER / Three sources, none erased.\nThe eastern passage is open. Support can help, but review its authorization first. Tab opens your local phone. The combat shell ahead remains a development placeholder.";
+            run.rules.exit.promptOverride = "E / 选择写入或销毁";
+            run.quest.completedObjective = "05 / 最终节点\n前往东侧档案节点，按 E 作出最后的选择。";
+            run.rules.terminalMessage = "指挥官 / 三段记忆都保留下来了。\n东侧通路已开启。支援能帮上忙，但请先看清授权范围。按 Tab 打开手机。前方机体仍为测试形象，正式身份尚未确定。";
             PrefabUtility.RecordPrefabInstancePropertyModifications(run);
             EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene); AssetDatabase.SaveAssets();
             Debug.Log("U4 local phone and narrative ending sequence connected; actual Support component awaits owner integration.");

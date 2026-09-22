@@ -32,7 +32,7 @@ namespace Echo.NativeGame
         public bool CanBeTargeted => encounterActive && isActiveAndEnabled && level && level.Running && actor && !actor.IsDefeated && !actor.ArmorBroken;
         public Vector2 AimPoint => transform.position;
         public AttackStage Stage { get; private set; }
-        public string Cue { get; private set; } = "DEVELOPMENT BOSS / DORMANT";
+        public string Cue { get; private set; } = "战斗机体 / 待机";
         public float ArmorFraction => actor ? Mathf.Clamp01(actor.Armor / Mathf.Max(1, actor.maxArmor)) : 0;
         public float CoreSecondsRemaining => Stage == AttackStage.CoreWindow ? Mathf.Max(0, EffectiveCoreWindowSeconds - stageAge) : 0;
 
@@ -73,7 +73,7 @@ namespace Echo.NativeGame
         void OnDisable()
         {
             Active.Remove(this); ClearHazards();
-            if (encounterActive && !IsDefeated) SetStage(AttackStage.Recovery, "RECOVERY / KEEP FIRING");
+            if (encounterActive && !IsDefeated) SetStage(AttackStage.Recovery, "攻击间隙 / 抓紧开火");
         }
         public void ActivateEncounter()
         {
@@ -82,7 +82,7 @@ namespace Echo.NativeGame
             if (!level || !level.Running || !level.player || !level.combat || !actor || !art || !hostileProjectilePrefab || !baseView || !turretView || !turretPivot || !coreView)
             { Debug.LogError("NativeBossController: assign Level, Actor, BossArena art, projectile and visual references before activation.", this); return; }
             encounterActive = true; attackNumber = 0;
-            SetStage(AttackStage.Startup, "DEVELOPMENT BOSS / DISABLE THE OUTER SHELL");
+            SetStage(AttackStage.Startup, "战斗机体 / 击破外壳");
         }
         void Update()
         {
@@ -98,15 +98,15 @@ namespace Echo.NativeGame
                 case AttackStage.Startup: if (stageAge >= 1.6f) BeginAttack(); break;
                 case AttackStage.Tracking:
                     AimAtPlayer();
-                    if (stageAge >= trackingSeconds) { SetStage(AttackStage.LockedBurst, "LOCKED / SIDESTEP THE LINE"); shots = 0; nextShot = lockSeconds; UpdateAim(Color.white, .075f); }
+                    if (stageAge >= trackingSeconds) { SetStage(AttackStage.LockedBurst, "瞄准已锁定 / 向侧面躲开射线"); shots = 0; nextShot = lockSeconds; UpdateAim(Color.white, .075f); }
                     break;
                 case AttackStage.LockedBurst:
                     if (shots < burstCount && stageAge >= nextShot) { FirePulse(); shots++; nextShot += shotInterval; }
-                    if (shots >= burstCount) { RemoveAim(); SetStage(AttackStage.Recovery, "RECOVERY / KEEP FIRING"); }
+                    if (shots >= burstCount) { RemoveAim(); SetStage(AttackStage.Recovery, "攻击间隙 / 抓紧开火"); }
                     break;
                 case AttackStage.Bombardment:
                     if (bombsPlaced < 3 && stageAge >= nextBomb) { PlaceBomb(); bombsPlaced++; nextBomb += bombInterval; }
-                    if (bombsPlaced >= 3 && bombs.Count == 0) SetStage(AttackStage.Recovery, "RECOVERY / KEEP FIRING");
+                    if (bombsPlaced >= 3 && bombs.Count == 0) SetStage(AttackStage.Recovery, "攻击间隙 / 抓紧开火");
                     break;
                 case AttackStage.Recovery: if (stageAge >= 1.15f) BeginAttack(); break;
                 case AttackStage.CoreWindow:
@@ -119,10 +119,10 @@ namespace Echo.NativeGame
         {
             if ((attackNumber++ % 2) == 0)
             {
-                SetStage(AttackStage.Tracking, "AIM TRACKING / WAIT FOR LOCK, THEN SIDESTEP");
+                SetStage(AttackStage.Tracking, "正在追踪 / 等待锁定后向侧面闪避");
                 aim = MakeLine("Boss aim warning", Amber, .04f); aim.positionCount = 2; AimAtPlayer();
             }
-            else { SetStage(AttackStage.Bombardment, "FIXED BLAST CIRCLES / MOVE OUT OF ORANGE"); bombsPlaced = 0; nextBomb = 0; }
+            else { SetStage(AttackStage.Bombardment, "轰炸预警 / 离开橙色区域"); bombsPlaced = 0; nextBomb = 0; }
         }
         Vector2 Muzzle => (Vector2)transform.position + lockedDirection * muzzleOffset.x + new Vector2(-lockedDirection.y, lockedDirection.x) * muzzleOffset.y;
         void AimAtPlayer()
@@ -200,7 +200,7 @@ namespace Echo.NativeGame
         }
         void OpenCore()
         {
-            ClearHazards(); SetStage(AttackStage.CoreWindow, "CORE EXPOSED / APPROACH AND PRESS E");
+            ClearHazards(); SetStage(AttackStage.CoreWindow, "核心已暴露 / 靠近并按 E");
             turretPivot.rotation = Quaternion.identity;
         }
         public void ReceiveDamage(float amount)
@@ -218,7 +218,7 @@ namespace Echo.NativeGame
         public bool InteractCore(NativePlayer player)
         {
             if (!CanInteractCore(player) || !actor.FinishCore()) return false;
-            SetStage(AttackStage.Defeated, "DEVELOPMENT BOSS / CORE DISCONNECTED"); ClearHazards();
+            SetStage(AttackStage.Defeated, "战斗机体 / 核心已断开"); ClearHazards();
             turretPivot.gameObject.SetActive(false); if (damageView) damageView.enabled = false;
             baseView.sprite = art.wreck; var collider = GetComponent<CircleCollider2D>(); if (collider) collider.enabled = false;
             if (!emittedDefeat) { emittedDefeat = true; Defeated?.Invoke(); }

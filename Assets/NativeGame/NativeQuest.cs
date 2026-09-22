@@ -9,18 +9,18 @@ namespace Echo.NativeGame
         public bool BossStarted { get; private set; }
         public bool BossCleared { get; private set; }
         public bool Completed { get; private set; }
-        [TextArea] public string initialObjective = "01 / RECOVER YOUR SIGNAL\nFind the three memory records in this sector.";
-        [TextArea] public string completedObjective = "05 / KEEP THE SIGNAL\nReach the final node beyond the eastern gate. Press E.";
+        [TextArea] public string initialObjective = "01 / 找回信号\n收集这片区域中的三段记忆。";
+        [TextArea] public string completedObjective = "05 / 最终节点\n穿过东侧大门，靠近档案节点按 E。";
         public string ObjectiveText
         {
             get
             {
-                if (Completed) return "06 / SIGNAL KEPT\nThe chosen memories leave with you.";
+                if (Completed) return "06 / 信号仍在\n你选择留下的记忆，将与你同行。";
                 if (!narrative) return initialObjective;
-                if (narrative.MemoryCount < 3) return "01 / RECOVER YOUR SIGNAL   " + narrative.MemoryCount + " / 3\nPrivate: southwest. System: northeast. Initial echo: southeast.";
-                if (!RelayRestored) return "02 / RECONNECT\nAll memories recovered. Return to the cyan terminal.";
-                if (!BossStarted) return "03 / CROSS THE THRESHOLD\nFollow the east passage to the development encounter.";
-                if (!BossCleared) return "04 / BREAK THE LOCK\nSurvive the encounter. Use E when its core is exposed.";
+                if (narrative.MemoryCount < 3) return "01 / 找回信号   " + narrative.MemoryCount + " / 3\n私人记忆：西南。系统记录：东北。初始回声：东南。";
+                if (!RelayRestored) return "02 / 重新连接\n三段记忆已收齐，返回青色终端。";
+                if (!BossStarted) return "03 / 穿过封锁\n沿东侧通路前进，准备迎战。";
+                if (!BossCleared) return "04 / 解除封锁\n击破外壳。核心暴露时，靠近并按 E。";
                 return completedObjective;
             }
         }

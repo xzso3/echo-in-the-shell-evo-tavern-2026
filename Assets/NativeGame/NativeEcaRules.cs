@@ -19,7 +19,7 @@ namespace Echo.NativeGame
         public NativeMap map;
         public NativeDialogue dialogue;
         public NativeNarrative narrative;
-        [TextArea] public string terminalMessage = "COMMANDER / Three sources, none erased.\nThe eastern passage is open. The combat shell ahead is a development placeholder, not a named story character.";
+        [TextArea] public string terminalMessage = "指挥官 / 三段记忆都保留下来了。\n东侧通路已开启。前方是测试用战斗机体，其正式身份尚未确定。";
         INativeBossEncounter boss;
         public bool BossConnected => bossComponent && boss != null;
         void OnEnable()
@@ -47,7 +47,7 @@ namespace Echo.NativeGame
         void OnLevelStarted()
         {
             quest.Activate(); if (narrative) narrative.Begin();
-            dialogue.Show("COMMANDER / Your signal is fragmented.\nRecover a private memory, a system record and an initial echo. You can fight through the checkpoint or take the service path. Holding fire will not stop hostile units.");
+            dialogue.Show("指挥官 / 你的信号很不稳定。\n请找回私人记忆、系统记录和初始回声。你可以突破守卫，也可以走检修通道绕行。停火不会让敌人停止攻击。");
         }
         void OnMemoryConfirmed(NativeInteraction source)
         {
@@ -63,7 +63,7 @@ namespace Echo.NativeGame
         {
             if (!level.Running || source.Used) return;
             if (!quest.CanRecordTerminal())
-            { dialogue.Show("COMMANDER / The link needs all three memory sources.\nRecovered " + (narrative ? narrative.MemoryCount : 0) + " of 3. Check the marked archive nodes before reconnecting."); return; }
+            { dialogue.Show("指挥官 / 连接需要完整的三段记忆。\n已收集 " + (narrative ? narrative.MemoryCount : 0) + " / 3。请先找到标记的记忆节点，再回来连接。"); return; }
             if (!quest.RecordTerminal()) return;
             source.Consume(); map.OpenExit(); narrative.RecordRelay(); dialogue.Show(terminalMessage);
             Debug.Log("Native ECA: terminal -> Quest relay objective -> Map passage -> Dialogue", this);
@@ -75,10 +75,10 @@ namespace Echo.NativeGame
             { if (narrative) narrative.RecordBypass(); return; }
             if (!quest.CanStartBoss()) return;
             if (!BossConnected)
-            { dialogue.Show("DEVELOPMENT CHECKPOINT\nThe real Boss component is not connected in this main-line source branch yet. No defeat or ending has been credited. Boss integration is required to continue."); return; }
+            { dialogue.Show("暂时无法继续\n战斗区域尚未准备就绪，本局尚未通关。请使用已完成战斗区域配置的试玩版本。"); return; }
             if (boss.IsDefeated || !quest.RecordBossStart()) return;
             map.LockArena(); boss.ActivateEncounter();
-            dialogue.Show("DEVELOPMENT ENCOUNTER / Combat shell\nWatch its warning, move out of danger, then approach the exposed core and press E. Missed windows will return. This is placeholder combat, not a finalized Boss identity.");
+            dialogue.Show("测试战斗 / 战斗机体\n注意预警，及时躲避。击破外壳后，靠近暴露的核心按 E。错过机会也不用担心，核心会再次开放。机体的正式身份尚未确定。");
         }
         public bool CanInteractBossCore(NativePlayer actor) => level.Running && quest.BossStarted && !quest.BossCleared && BossConnected && boss.CanInteractCore(actor);
         public bool InteractBossCore(NativePlayer actor) => CanInteractBossCore(actor) && boss.InteractCore(actor);
@@ -86,7 +86,7 @@ namespace Echo.NativeGame
         {
             if (!level.Running || !BossConnected || !boss.IsDefeated || !quest.RecordBossDefeat()) return;
             narrative.RecordBossDefeated(); map.ReleaseArena();
-            dialogue.Show("COMMANDER / The lock has broken.\nThe final archive node is through the eastern gate. You can keep the conflicting records instead of letting the system erase their differences.");
+            dialogue.Show("指挥官 / 封锁已解除。\n最终档案节点就在东侧大门后。你可以留下彼此矛盾的记录，不必让系统抹平它们的差异。");
             Debug.Log("Native ECA: real Boss.Defeated -> Quest -> Narrative -> Map final gate -> Dialogue", this);
         }
         void OnSupportAuthorized(NativeSupportAuthorization authorization)
@@ -98,7 +98,7 @@ namespace Echo.NativeGame
         void OnExitConfirmed(NativeInteraction source)
         {
             if (!level.Running || source.Used) return;
-            if (!quest.CanLeaveSector()) { dialogue.Show("FINAL NODE / Access denied.\nRecover the three records and complete the real core encounter first."); return; }
+            if (!quest.CanLeaveSector()) { dialogue.Show("最终节点 / 暂不可用\n请先收齐三段记忆，并完成核心互动。"); return; }
             level.hud.phone.ShowFinalDecision();
         }
         public bool ChooseFinal(NativeFinalChoice choice)

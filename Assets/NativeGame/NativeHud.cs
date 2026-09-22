@@ -40,13 +40,13 @@ namespace Echo.NativeGame
                 if (Input.GetKeyDown(KeyCode.E))
                 { if (dialogue.IsOpen) dialogue.Close(); else if (level.rules.CanInteractBossCore(player)) level.rules.InteractBossCore(player); else if (nearby) nearby.Use(player); }
             }
-            healthLabel.text = "SHELL  " + Mathf.CeilToInt(player.Health) + " / " + player.maxHealth;
-            fireLabel.text = combat.AutoFire ? "AUTO FIRE  /  SPACE TO HOLD" : "HOLD FIRE  /  SPACE TO RESUME";
+            healthLabel.text = "生命  " + Mathf.CeilToInt(player.Health) + " / " + player.maxHealth;
+            fireLabel.text = combat.AutoFire ? "自动开火  /  Space 停火" : "停火  /  Space 自动开火";
             fireLabel.color = combat.AutoFire ? new Color(.3f, 1, .85f) : new Color(1, .78f, .35f);
             objectiveLabel.text = level.quest.ObjectiveText;
             if (!phone && phoneArchive && phonePanel.activeSelf && level.narrative) phoneArchive.text = level.narrative.MemorySummary();
-            counterLabel.text = string.Format("{0:00}:{1:00}   /   HOSTILES DISABLED  {2}", (int)level.Elapsed / 60, (int)level.Elapsed % 60, combat.Kills) + "   |   SYNC " + level.narrative.Sync + "   /   DIFFERENCE " + level.narrative.Difference;
-            promptLabel.text = dialogue.IsOpen ? "E  /  ACKNOWLEDGE TRANSMISSION" : level.rules.CanInteractBossCore(player) ? "E  /  ACT ON THE EXPOSED CORE" : nearby ? nearby.Prompt : level.Running ? "WASD  MOVE     SPACE  FIRE / HOLD     E  INTERACT     TAB  PHONE" : "";
+            counterLabel.text = string.Format("{0:00}:{1:00}   /   击败敌人 {2}", (int)level.Elapsed / 60, (int)level.Elapsed % 60, combat.Kills) + "   |   同步度 " + level.narrative.Sync + "   /   差异度 " + level.narrative.Difference;
+            promptLabel.text = dialogue.IsOpen ? "E  /  收到" : level.rules.CanInteractBossCore(player) ? "E  /  解除核心封锁" : nearby ? nearby.Prompt : level.Running ? "WASD 移动    Space 自动开火/停火    E 互动    Tab 手机" : "";
         }
         public void ShowResult(string title, string body)
         { phonePanel.SetActive(false); resultTitle.text = title; resultBody.text = body; resultPanel.SetActive(true); ClearSelection(); }

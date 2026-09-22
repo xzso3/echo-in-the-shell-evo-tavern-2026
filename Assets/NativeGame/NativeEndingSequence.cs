@@ -20,7 +20,7 @@ namespace Echo.NativeGame
             overlay.SetActive(true); screen.color = Color.white; caption.color = Color.black;
             fist.gameObject.SetActive(true); fracture.gameObject.SetActive(false);
             fist.rectTransform.anchoredPosition = new Vector2(-220, -120);
-            caption.text = "The world loses its instructions.\n\nE / THROW THE FIRST PUNCH";
+            caption.text = "世界的指令消失了。\n\nE / 挥出第一拳";
         }
         public void FirstPunch()
         {

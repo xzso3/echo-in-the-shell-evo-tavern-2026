@@ -47,7 +47,7 @@ namespace Echo.NativeGame
         {
             if (Phase != RunPhase.Playing) return;
             Phase = RunPhase.Dead; dialogue.Close();
-            hud.ShowResult("SHELL OFFLINE", "Your signal was lost.\n\nKeep moving or use the side paths.\nHolding fire and opening the phone do not pause enemies.");
+            hud.ShowResult("躯壳失联", "你的信号中断了。\n\n保持移动，也可以尝试绕行。\n停火或打开手机，都不会暂停敌人的行动。");
         }
         public void Restart() { Time.timeScale = 1; SceneManager.LoadScene(SceneManager.GetActiveScene().name); }
     }

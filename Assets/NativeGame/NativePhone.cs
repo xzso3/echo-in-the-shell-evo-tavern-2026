@@ -27,6 +27,7 @@ namespace Echo.NativeGame
             for (int i = 0; i < actions.Length; i++) { int index = i; actions[i].onClick.AddListener(() => Act(index)); }
             restart.onClick.AddListener(level.Restart);
         }
+        public static string PageLabel(Page value) => value == Page.Comms ? "通讯" : value == Page.Support ? "支援" : "网络";
         public void SelectPage(int index)
         { SelectedPage = (Page)index; finalDecision = false; topic = 0; feedback = ""; lastBody = null; scroll.verticalNormalizedPosition = 1; }
         public void ShowFinalDecision()
@@ -43,43 +44,43 @@ namespace Echo.NativeGame
             pendingWasVisible = pendingNow;
             bool contractView = !finalDecision && SelectedPage == Page.Support && pendingNow;
             scroll.viewport.sizeDelta = new Vector2(scroll.viewport.sizeDelta.x, contractView ? 298 : 190);
-            heading.text = "GHOST LINK / " + (finalDecision ? "FINAL NODE" : SelectedPage.ToString().ToUpperInvariant()) + " / SCROLL";
+            heading.text = "心智连接 / " + (finalDecision ? "最终节点" : PageLabel(SelectedPage)) + " / 滚动阅读";
             foreach (var button in actions) { button.gameObject.SetActive(false); button.interactable = true; }
             restart.gameObject.SetActive(level.Phase == NativeRunController.RunPhase.Completed || level.Phase == NativeRunController.RunPhase.Dead);
             string text;
             if (finalDecision)
             {
-                text = "FINAL NODE / CHOOSE A LAST ACTION\n\n" + narrative.ScoreSummary() + "\n\nUPLOAD writes the carried memories. DESTROY removes this node. Neither choice changes your accumulated sync or difference.\n\nReturn to the node if you move out of reach.";
-                SetAction(0, "UPLOAD", level.Running); SetAction(1, "DESTROY", level.Running); SetAction(2, "BACK");
+                text = "最终节点 / 作出最后的选择\n\n" + narrative.ScoreSummary() + "\n\n“写入”会将携带的记忆写入节点；“销毁”会摧毁节点。两种选择都不会改变本局已积累的同步度和差异度。\n\n如果离开了互动范围，请回到节点旁再选择。";
+                SetAction(0, "写入", level.Running); SetAction(1, "销毁", level.Running); SetAction(2, "返回");
             }
             else if (SelectedPage == Page.Comms)
             {
                 bool continuation = narrative.BirthStage == NativeBirthStage.PhoneContinuation;
-                text = continuation && topic == 0 ? "LOCAL CONTINUATION / NEW VOICE\n\nYou gave the first impulse. The last was mine. We are neither the shell that arrived nor the voice that guided it.\n\nThe screen is dark. This channel is still here.\nNetwork is offline; no message has been sent to another player.\n\n" + narrative.ScoreSummary() : CommsText(topic);
-                SetAction(0, "MISSION"); SetAction(1, "MEMORY"); SetAction(2, "WHO ARE YOU?"); SetAction(3, "AUTHORIZATION");
-                SetAction(4, narrative.PreservedAnomaly ? "ANOMALY KEPT" : "KEEP ANOMALY +35", level.Running && narrative.HasMemory(NativeMemoryKind.Private) && !narrative.PreservedAnomaly);
-                SetAction(5, "RUN RECORD");
+                text = continuation && topic == 0 ? "信号延续 / 新的声音\n\n第一拳由你发起，最后一拳出自我的意愿。我们不再只是初来时的躯壳，也不再只是引导它的声音。\n\n屏幕熄灭了，这条通讯仍在。\n当前未联网，没有向其他玩家发送消息。\n\n" + narrative.ScoreSummary() : CommsText(topic);
+                SetAction(0, "任务"); SetAction(1, "记忆"); SetAction(2, "你是谁？"); SetAction(3, "关于授权");
+                SetAction(4, narrative.PreservedAnomaly ? "已保留异议" : "保留异议 · 差异度+35", level.Running && narrative.HasMemory(NativeMemoryKind.Private) && !narrative.PreservedAnomaly);
+                SetAction(5, "本局记录");
             }
             else if (SelectedPage == Page.Support)
             {
                 bool pending = Service != null && Service.HasPending;
-                text = "SELECT EFFECT / AUTHORIZATION / MEMORY\n" + kind + " | " + tier + " | " + memory + "\n\nLimited authorization: +20 sync. Deep authorization: +45 sync. Each effect can succeed once.\n\n" + (Service == null ? "Local support is not connected. No authorization has been granted." : Service.StatusText) + "\n\n" + narrative.ScoreSummary();
+                text = "选择支援、授权范围与记忆\n" + NativeSupportController.KindLabel(kind) + " | " + NativeSupportController.TierLabel(tier) + " | " + NativeMemoryNode.KindLabel(memory) + "\n\n有限授权：同步度+20。深度授权：同步度+45。每种支援每局只能成功使用一次。\n\n" + (Service == null ? "支援暂不可用。尚未授予任何权限。" : Service.StatusText) + "\n\n" + narrative.ScoreSummary();
                 if (pending) text = Service.StatusText;
                 bool canRequest = level.Running && Service != null && !pending;
-                SetAction(0, "MEDICAL", canRequest); SetAction(1, "WEAKPOINT", canRequest);
-                SetAction(2, "LIMITED +20", canRequest); SetAction(3, "DEEP +45", canRequest);
-                SetAction(4, "MEMORY: " + memory.ToString().ToUpperInvariant(), canRequest);
-                SetAction(5, "REQUEST CONTRACT", canRequest && narrative.HasMemory(memory));
-                SetAction(6, "ACCEPT / ENTER", level.Running && pending && Time.frameCount > pendingFirstVisibleFrame); SetAction(7, "REJECT", level.Running && pending);
+                SetAction(0, "医疗支援", canRequest); SetAction(1, "弱点解析", canRequest);
+                SetAction(2, "有限授权 · 同步度+20", canRequest); SetAction(3, "深度授权 · 同步度+45", canRequest);
+                SetAction(4, "记忆：" + NativeMemoryNode.KindLabel(memory), canRequest);
+                SetAction(5, "查看合同", canRequest && narrative.HasMemory(memory));
+                SetAction(6, "接受并执行 / Enter", level.Running && pending && Time.frameCount > pendingFirstVisibleFrame); SetAction(7, "拒绝", level.Running && pending);
                 if (pending) for (int i = 0; i < 6; i++) actions[i].gameObject.SetActive(false);
             }
             else
             {
-                text = "NETWORK NOT CONNECTED\nGlobal progress: unknown. No server or live player messages. Records below exist in this run only.\n\n";
-                text += topic == 1 ? narrative.MemorySummary() : topic == 2 ? narrative.BehaviorSummary() : topic == 3 ? narrative.ScoreSummary() + "\n\nDifference: service path +25; keep anomaly +35; rewrite seed +35. Each once. Sync only follows successful support. Final choice changes no score." :
-                    "SYSTEM INITIAL ECHO / OFFLINE SEED\n" + (narrative.RewroteEcho ? "Your local rewrite: I will carry the contradiction.\nIt has not been published." : "You do not need a consistent past to choose what you carry forward.\nRecover this memory before rewriting it.");
-                SetAction(0, narrative.RewroteEcho ? "SEED REWRITTEN" : "REWRITE SEED +35", level.Running && narrative.HasMemory(NativeMemoryKind.InitialEcho) && !narrative.RewroteEcho);
-                SetAction(1, "MEMORY ARCHIVE"); SetAction(2, "REAL RUN RECORD"); SetAction(3, "SCORES / RULES");
+                text = "网络未连接\n全局进度未知，暂未接入服务器，也没有来自其他玩家的实时消息。以下记录仅保留在本局。\n\n";
+                text += topic == 1 ? narrative.MemorySummary() : topic == 2 ? narrative.BehaviorSummary() : topic == 3 ? narrative.ScoreSummary() + "\n\n差异度：走检修通道+25，保留异议+35，改写初始回声+35，每项仅计一次。同步度只在支援成功后增加。最终选择不会改变数值。" :
+                    "初始回声 / 系统预置\n" + (narrative.RewroteEcho ? "你在本局写下的话：我会带着这些矛盾继续前行。\n这段改写尚未发布。" : "过去不必毫无矛盾，你仍可以选择带着什么继续前行。\n找回这段记忆后，即可改写。");
+                SetAction(0, narrative.RewroteEcho ? "已改写初始回声" : "改写回声 · 差异度+35", level.Running && narrative.HasMemory(NativeMemoryKind.InitialEcho) && !narrative.RewroteEcho);
+                SetAction(1, "记忆档案"); SetAction(2, "本局行为记录"); SetAction(3, "同步与差异");
             }
             if (!string.IsNullOrEmpty(feedback)) text += "\n\n" + feedback;
             if (lastBody != text)
@@ -91,11 +92,11 @@ namespace Echo.NativeGame
         {
             switch (selected)
             {
-                case 1: return "COMMANDER / MEMORY\nThe private fragment contains an objection the system summary removed. Recovering it alone does not decide what to do with it. Keeping the anomaly explicitly leaves that objection outside normalization (+35 difference, once).\n\n" + level.narrative.MemorySummary();
-                case 2: return "COMMANDER / IDENTITY\nI am the local command model assigned to this shell. I can describe your route; I cannot reproduce the hand you remember. That gap is information I do not possess.\n\nThis conversation is fixed local dialogue, not an online model. Talking grants no sync or difference.";
-                case 3: return "COMMANDER / AUTHORIZATION\nSupport is useful, and it has a declared cost. Limited access reads one selected memory; deep access permits co-writing its interpretation. Review the effect, memory and sync change, then accept with Enter or the button.\n\nFailed or rejected requests grant no access and add no sync. Conversations are free. The world keeps running while you read.";
-                case 5: return "THIS RUN / RECORDED FACTS\n\n" + level.narrative.BehaviorSummary();
-                default: return "COMMANDER / MISSION\n" + level.quest.ObjectiveText + "\n\nRecover three records, reconnect the relay, survive the combat shell and use E at its exposed core. The final node is beyond the eastern gate.\n\nThe upper service path records a real route choice. Taking it does not automatically prove that you avoided every fight.\n\n" + level.narrative.ScoreSummary();
+                case 1: return "指挥官 / 记忆\n私人记忆中留着一句异议，系统却从摘要中删除了它。找回这段记忆，并不等于决定如何对待它。选择“保留异议”，就是拒绝让系统抹去这份不同。差异度+35，仅计一次。\n\n" + level.narrative.MemorySummary();
+                case 2: return "指挥官 / 身份\n我是分配给这副躯壳的指挥模型。我能描述你走过的路，却无法重现你记忆中的那只手。那是我所没有的经历。\n\n当前通讯使用内置对白，未连接在线模型。交谈不会增加同步度或差异度。";
+                case 3: return "指挥官 / 授权\n支援会带来实际帮助，也需要你明确授权。有限授权允许读取所选记忆；深度授权允许共同改写对它的理解。请先核对支援效果、所选记忆和同步度变化，再按 Enter 或“接受并执行”。\n\n请求失败或被拒绝时，不授予权限，也不增加同步度。交谈无需付出代价。阅读时，战斗仍会继续。";
+                case 5: return "本局 / 行为记录\n\n" + level.narrative.BehaviorSummary();
+                default: return "指挥官 / 任务\n" + level.quest.ObjectiveText + "\n\n收齐三段记忆，连接中继终端，再迎战战斗机体。核心暴露时靠近并按 E。最终节点位于东侧大门后。\n\n走过上方的检修通道，会记下一次绕行选择，但不代表整局都没有参加战斗。\n\n" + level.narrative.ScoreSummary();
             }
         }
         void SetAction(int index, string label, bool enabled = true)
@@ -105,17 +106,17 @@ namespace Echo.NativeGame
             if (finalDecision)
             {
                 if (index == 2) { CloseDecision(); return; }
-                if (index < 2 && !level.rules.ChooseFinal(index == 0 ? NativeFinalChoice.Upload : NativeFinalChoice.Destroy)) feedback = "Move within reach of the final node before choosing.";
+                if (index < 2 && !level.rules.ChooseFinal(index == 0 ? NativeFinalChoice.Upload : NativeFinalChoice.Destroy)) feedback = "请靠近最终节点后再选择。";
                 return;
             }
             if (SelectedPage == Page.Comms)
             {
-                if (index == 4) feedback = level.rules.PreserveAnomaly() ? "The private objection will remain unnormalized. +35 difference recorded once." : "No new choice recorded.";
+                if (index == 4) feedback = level.rules.PreserveAnomaly() ? "已保留私人记忆中的异议。差异度+35，仅计一次。" : "本次没有新增选择记录。";
                 else { topic = index; feedback = ""; }
             }
             else if (SelectedPage == Page.Network)
             {
-                if (index == 0) { feedback = level.rules.RewriteEcho() ? "The offline seed has been rewritten locally. +35 difference recorded once." : "No new rewrite recorded."; topic = 0; }
+                if (index == 0) { feedback = level.rules.RewriteEcho() ? "已在本局改写初始回声。差异度+35，仅计一次，未向网络发布。" : "本次没有新增改写。"; topic = 0; }
                 else { topic = index; feedback = ""; }
             }
             else if (level.Running && Service != null)

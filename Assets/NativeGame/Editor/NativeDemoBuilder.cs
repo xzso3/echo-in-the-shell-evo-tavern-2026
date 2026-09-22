@@ -32,7 +32,7 @@ namespace Echo.NativeGame.Editor
                 throw new InvalidOperationException("Stop Play Mode; existing NativeDemo is never overwritten by this builder.");
             Debug.Log("NativeDemo render pipeline: " + DetectPipeline());
             material = Asset<Material>("Assets/CyberCity/Materials/Actors.mat");
-            font = Asset<TMP_FontAsset>("Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset");
+            font = Asset<TMP_FontAsset>("Assets/NativeGame/Fonts/FusionPixel/FusionPixel12 Bitmap.asset");
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var world = new GameObject("World").transform;
             var actors = new GameObject("Actors").transform;
@@ -130,7 +130,7 @@ namespace Echo.NativeGame.Editor
             var panel = Panel("Dialogue", canvas, new Vector2(.5f, 0), new Vector2(0, 90), new Vector2(690, 150), Dark, true);
             run.dialogue.panel = panel.gameObject;
             run.dialogue.message = Text("Transmission", "", panel.transform, new Vector2(0, 1), new Vector2(24, -20), new Vector2(642, 72), 21, Cyan);
-            run.dialogue.closeButton = Button("Acknowledge", "ACKNOWLEDGE  /  E", panel.transform, new Vector2(0, 14), new Vector2(300, 40));
+            run.dialogue.closeButton = Button("Acknowledge", "收到 / E", panel.transform, new Vector2(0, 14), new Vector2(300, 40));
             panel.gameObject.SetActive(false);
         }
         // One-time in-place migration of the U1 scene. Existing artwork, geometry and Prefab identities stay intact.
@@ -175,28 +175,28 @@ namespace Echo.NativeGame.Editor
             var run = UnityEngine.Object.FindObjectOfType<NativeRunController>();
             if (run.narrative) throw new InvalidOperationException("U3 main line already connected.");
             material = Asset<Material>("Assets/CyberCity/Materials/Actors.mat");
-            font = Asset<TMP_FontAsset>("Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset");
+            font = Asset<TMP_FontAsset>("Assets/NativeGame/Fonts/FusionPixel/FusionPixel12 Bitmap.asset");
             square = Asset<Sprite>(Root + "/SolidMarker.asset");
             var world = run.map.transform;
             run.narrative = new GameObject("Narrative - recovered memories and ending").AddComponent<NativeNarrative>();
             run.quest.narrative = run.narrative; run.rules.narrative = run.narrative;
             SetMainLineText(run);
             var memories = new[] {
-                Memory("Private memory", NativeMemoryKind.Private, new Vector2(-10, -5), "A hand at the window",
-                    "PRIVATE MEMORY / Unverified personal fragment\nRain on warm glass. Someone holds your hand and says: if they ask what you remember, tell them the light. You remember the hand instead.\nCOMMANDER: The record carries no name. Keep it anyway.", world, run),
-                Memory("System record", NativeMemoryKind.System, new Vector2(5, 6), "A transfer without consent",
-                    "SYSTEM RECORD / Institutional archive\nShell transfer accepted. Personal attachments marked as noise. The subject's objection was removed from the summary.\nCOMMANDER: The log says the transfer succeeded. It does not say who agreed.", world, run),
-                Memory("Initial echo", NativeMemoryKind.InitialEcho, new Vector2(6, -6), "You may keep the contradiction",
-                    "SYSTEM INITIAL ECHO / Offline seed\nYou do not need a consistent past to choose what you carry forward.\nThis is a system-provided starting message. It is not a live message or a record left by another player.", world, run)
+                Memory("Private memory", NativeMemoryKind.Private, new Vector2(-10, -5), NativeMemoryNode.PrivateTitle,
+                    NativeMemoryNode.PrivateBody, world, run),
+                Memory("System record", NativeMemoryKind.System, new Vector2(5, 6), NativeMemoryNode.SystemTitle,
+                    NativeMemoryNode.SystemBody, world, run),
+                Memory("Initial echo", NativeMemoryKind.InitialEcho, new Vector2(6, -6), NativeMemoryNode.EchoTitle,
+                    NativeMemoryNode.EchoBody, world, run)
             };
             run.rules.memoryNodes = memories;
             run.hud.interactables = new[] { memories[0].interaction, memories[1].interaction, memories[2].interaction, run.rules.terminal, run.rules.exit };
-            run.rules.terminal.promptOverride = "E  /  RECONNECT WITH THREE MEMORIES";
+            run.rules.terminal.promptOverride = "E / 携带三段记忆连接终端";
             run.rules.exit.transform.position = new Vector2(33, 0);
-            run.rules.exit.promptOverride = "E  /  KEEP THE THREE MEMORIES";
+            run.rules.exit.promptOverride = "E / 保留三段记忆";
             world.Find("EXIT").GetComponent<RectTransform>().anchoredPosition = new Vector2(33, 2);
-            world.Find("EXIT").GetComponent<TMP_Text>().text = "FINAL ARCHIVE";
-            world.Find("BYPASS").GetComponent<TMP_Text>().text = "SERVICE PATH";
+            world.Find("EXIT").GetComponent<TMP_Text>().text = "最终档案";
+            world.Find("BYPASS").GetComponent<TMP_Text>().text = "检修通道";
             foreach (var name in new[] { "North perimeter", "South perimeter" })
             {
                 var wall = world.Find(name); wall.position = new Vector3(10, wall.position.y, 0); wall.localScale = new Vector3(50.5f, .5f, 1);
@@ -231,7 +231,7 @@ namespace Echo.NativeGame.Editor
             hud.phonePanel.GetComponent<RectTransform>().sizeDelta = new Vector2(350, 470);
             hud.phoneArchive = hud.phonePanel.transform.Find("Phone placeholder").GetComponent<TMP_Text>();
             hud.phoneArchive.rectTransform.sizeDelta = new Vector2(302, 316); hud.phoneArchive.fontSize = 16;
-            hud.phoneArchive.text = "MEMORY ARCHIVE / 0 OF 3\nRecover the marked memory nodes.";
+            hud.phoneArchive.text = "记忆档案 / 0 / 3\n请找回标记的记忆。";
             var card = hud.resultTitle.transform.parent.GetComponent<RectTransform>(); card.sizeDelta = new Vector2(840, 570);
             hud.resultTitle.rectTransform.sizeDelta = new Vector2(780, 58); hud.resultTitle.fontSize = 29;
             hud.resultBody.rectTransform.sizeDelta = new Vector2(760, 370); hud.resultBody.fontSize = 21;
@@ -274,14 +274,14 @@ namespace Echo.NativeGame.Editor
         }
         static void SetMainLineText(NativeRunController run)
         {
-            run.quest.initialObjective = "01 / RECOVER YOUR SIGNAL\nFind the three memory records in this sector.";
-            run.quest.completedObjective = "05 / KEEP THE SIGNAL\nReach the final archive beyond the eastern gate. Press E.";
-            run.rules.terminalMessage = "COMMANDER / Three sources, none erased.\nThe eastern passage is open. The combat shell ahead is a development placeholder, not a named story character.";
+            run.quest.initialObjective = "01 / 找回信号\n收集这片区域中的三段记忆。";
+            run.quest.completedObjective = "05 / 最终节点\n穿过东侧大门，靠近档案节点按 E。";
+            run.rules.terminalMessage = "指挥官 / 三段记忆都保留下来了。\n东侧通路已开启。前方是测试用战斗机体，其正式身份尚未确定。";
             EditorUtility.SetDirty(run.quest); EditorUtility.SetDirty(run.rules);
         }
         static NativeMemoryNode Memory(string name, NativeMemoryKind kind, Vector2 at, string title, string body, Transform parent, NativeRunController run)
         {
-            var node = Interaction(name, at, false, parent, run); node.map = run.map; node.promptOverride = "E  /  RECOVER " + name.ToUpperInvariant();
+            var node = Interaction(name, at, false, parent, run); node.map = run.map; node.promptOverride = "E / 找回" + NativeMemoryNode.KindLabel(kind);
             var memory = node.gameObject.AddComponent<NativeMemoryNode>(); memory.kind = kind; memory.interaction = node; memory.title = title; memory.body = body;
             WorldText(name.ToUpperInvariant(), at + new Vector2(0, 1.6f), parent, Cyan); return memory;
         }
@@ -323,10 +323,26 @@ namespace Echo.NativeGame.Editor
             view.color = Cyan; view.transform.localScale = Vector3.one * .8f;
             var node = view.gameObject.AddComponent<NativeInteraction>(); node.isExit = isExit; node.indicator = view; node.run = run; return node;
         }
+        // Display text only; existing hierarchy names are used by the one-time scene builders.
+        public static string WorldLabel(string name)
+        {
+            switch (name)
+            {
+                case "TERMINAL": return "中继终端";
+                case "EXIT": return "出口";
+                case "BYPASS": return "绕行通道";
+                case "PRIVATE MEMORY": return "私人记忆";
+                case "SYSTEM RECORD": return "系统记录";
+                case "INITIAL ECHO": return "初始回声";
+                case "DEVELOPMENT ENCOUNTER": return "测试战斗区";
+                case "GUARDED CHECKPOINT": return "守卫检查点";
+                default: return name;
+            }
+        }
         static void WorldText(string text, Vector2 at, Transform parent, Color color)
         {
             var go = new GameObject(text); go.transform.SetParent(parent, false); go.transform.position = at;
-            var label = go.AddComponent<TextMeshPro>(); label.font = font; label.text = text; label.fontSize = 3;
+            var label = go.AddComponent<TextMeshPro>(); label.font = font; label.text = WorldLabel(text); label.fontSize = 3;
             label.color = color; label.alignment = TextAlignmentOptions.Center; label.rectTransform.sizeDelta = new Vector2(4, 1);
         }
         static void Place(RectTransform rect, Vector2 anchor, Vector2 pivot, Vector2 point, Vector2 size)
@@ -361,29 +377,29 @@ namespace Echo.NativeGame.Editor
             var eventSystem = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule)).GetComponent<EventSystem>();
             eventSystem.sendNavigationEvents = false; // Space is gameplay only, never a hidden UI Submit.
             var top = Panel("Header", canvasObject.transform, new Vector2(.5f, 1), Vector2.zero, new Vector2(2600, 118), Dark);
-            Text("Title", "ECHO IN THE SHELL  /  SIGNAL 01", canvasObject.transform, new Vector2(0, 1), new Vector2(24, -16), new Vector2(600, 28), 23, Cyan);
+            Text("Title", "壳中回响 / 信号 01", canvasObject.transform, new Vector2(0, 1), new Vector2(24, -16), new Vector2(600, 28), 23, Cyan);
             run.hud.objectiveLabel = Text("Objective", run.quest.initialObjective, canvasObject.transform, new Vector2(0, 1), new Vector2(24, -53), new Vector2(730, 56), 19);
-            run.hud.healthLabel = Text("Health", "SHELL 100 / 100", canvasObject.transform, new Vector2(1, 1), new Vector2(-24, -18), new Vector2(350, 30), 24);
+            run.hud.healthLabel = Text("Health", "生命 100 / 100", canvasObject.transform, new Vector2(1, 1), new Vector2(-24, -18), new Vector2(350, 30), 24);
             run.hud.healthLabel.alignment = TextAlignmentOptions.TopRight;
-            run.hud.fireLabel = Text("Fire mode", "AUTO FIRE", canvasObject.transform, new Vector2(1, 1), new Vector2(-24, -57), new Vector2(380, 30), 20, Cyan);
+            run.hud.fireLabel = Text("Fire mode", "自动开火", canvasObject.transform, new Vector2(1, 1), new Vector2(-24, -57), new Vector2(380, 30), 20, Cyan);
             run.hud.fireLabel.alignment = TextAlignmentOptions.TopRight;
             Panel("Footer", canvasObject.transform, new Vector2(.5f, 0), Vector2.zero, new Vector2(2600, 74), Dark);
-            run.hud.promptLabel = Text("Input and proximity prompt", "WASD  MOVE     SPACE  FIRE / HOLD     E  INTERACT     TAB  PHONE", canvasObject.transform, new Vector2(.5f, 0), new Vector2(0, 34), new Vector2(1160, 32), 21, Cyan);
+            run.hud.promptLabel = Text("Input and proximity prompt", "WASD 移动    Space 自动开火/停火    E 互动    Tab 手机", canvasObject.transform, new Vector2(.5f, 0), new Vector2(0, 34), new Vector2(1160, 32), 21, Cyan);
             run.hud.promptLabel.alignment = TextAlignmentOptions.Center;
             run.hud.counterLabel = Text("Run status", "00:00", canvasObject.transform, new Vector2(.5f, 0), new Vector2(0, 7), new Vector2(1160, 25), 16, new Color(.65f, .75f, .79f));
             run.hud.counterLabel.alignment = TextAlignmentOptions.Center;
             var phone = Panel("Phone - Tab does not pause", canvasObject.transform, new Vector2(1, .5f), new Vector2(-24, -12), new Vector2(350, 440), Dark, true);
             run.hud.phonePanel = phone.gameObject;
-            Text("Phone title", "GHOST LINK\nLOCAL CONNECTION", phone.transform, new Vector2(0, 1), new Vector2(24, -24), new Vector2(302, 75), 26, Cyan);
-            Text("Phone placeholder", "COMMANDER\nReconnect the cyan terminal, then reach the eastern exit. Side paths remain open.\n\nNETWORK\nOffline. No live network service.\n\nSupport and memory features arrive in the next checkpoint.\n\nCombat continues while this panel is open.", phone.transform, new Vector2(0, 1), new Vector2(24, -110), new Vector2(302, 260), 18);
-            run.hud.phoneCloseButton = Button("Close phone", "CLOSE  /  TAB", phone.transform, new Vector2(0, 20), new Vector2(302, 42));
+            Text("Phone title", "心智连接\n本地通讯", phone.transform, new Vector2(0, 1), new Vector2(24, -24), new Vector2(302, 75), 26, Cyan);
+            Text("Phone placeholder", "指挥官\n连接青色终端，再前往东侧出口。也可以选择侧路绕行。\n\n网络\n未连接，暂无在线服务。\n\n请使用最新试玩版本体验记忆与支援。\n\n打开手机时，战斗仍会继续。", phone.transform, new Vector2(0, 1), new Vector2(24, -110), new Vector2(302, 260), 18);
+            run.hud.phoneCloseButton = Button("Close phone", "关闭 / Tab", phone.transform, new Vector2(0, 20), new Vector2(302, 42));
             phone.gameObject.SetActive(false);
             var overlay = Panel("Result overlay", canvasObject.transform, new Vector2(.5f, .5f), Vector2.zero, new Vector2(3000, 2000), new Color(.01f, .02f, .03f, .92f), true);
             run.hud.resultPanel = overlay.gameObject;
             var card = Panel("Result card", overlay.transform, new Vector2(.5f, .5f), Vector2.zero, new Vector2(640, 400), Dark, true);
-            run.hud.resultTitle = Text("Result title", "SHELL OFFLINE", card.transform, new Vector2(.5f, 1), new Vector2(0, -36), new Vector2(590, 58), 30, Cyan); run.hud.resultTitle.alignment = TextAlignmentOptions.Center;
+            run.hud.resultTitle = Text("Result title", "躯壳失联", card.transform, new Vector2(.5f, 1), new Vector2(0, -36), new Vector2(590, 58), 30, Cyan); run.hud.resultTitle.alignment = TextAlignmentOptions.Center;
             run.hud.resultBody = Text("Result body", "", card.transform, new Vector2(.5f, 1), new Vector2(0, -120), new Vector2(550, 190), 21); run.hud.resultBody.alignment = TextAlignmentOptions.Center;
-            run.hud.restartButton = Button("Restart", "RESTART RUN", card.transform, new Vector2(0, 32), new Vector2(300, 52));
+            run.hud.restartButton = Button("Restart", "重新开始", card.transform, new Vector2(0, 32), new Vector2(300, 52));
             overlay.gameObject.SetActive(false);
             BuildDialogue(run, canvasObject.transform);
         }

@@ -12,7 +12,7 @@ namespace Echo.NativeGame
         public SpriteRenderer indicator;
         public bool Used { get; private set; }
         public event Action<NativeInteraction> Confirmed;
-        public string Prompt => !string.IsNullOrEmpty(promptOverride) ? promptOverride : isExit ? map.ExitOpen ? "E  /  LEAVE THE SECTOR" : "EXIT LOCKED  /  RECONNECT THE CYAN TERMINAL" : "E  /  RECONNECT TERMINAL";
+        public string Prompt => !string.IsNullOrEmpty(promptOverride) ? promptOverride : isExit ? map.ExitOpen ? "E  /  离开区域" : "出口已锁定 / 请先连接青色终端" : "E  /  连接终端";
         public bool CanReach(NativePlayer player) => player && Vector2.Distance(player.transform.position, transform.position) <= radius && !NativeObstacle.Blocked(player.transform.position, transform.position);
         public void Use(NativePlayer player)
         {
