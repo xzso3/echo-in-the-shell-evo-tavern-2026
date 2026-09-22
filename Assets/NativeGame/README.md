@@ -44,17 +44,22 @@
 
 ECA 在 OnEnable/OnDisable 订阅/解除，重开重载场景。未接 Boss 时明确阻断进度，不记录胜利或结局。
 
-## Boss 集成交接
+## Boss 集成
 
-Boss owner 独占 `Boss/`、`NativeCombat.cs`、`NativeProjectile.cs`，本次没有改这些路径。主线仅依赖 `INativeBossEncounter`（ActivateEncounter、Defeated、CanInteractCore、InteractCore、IsDefeated）。`NativeEcaRules.bossComponent` 需绑定实现接口的真实组件；无需用具体类型替换接口。
+Boss owner 独占 `Boss/`、`NativeCombat.cs`、`NativeProjectile.cs`，已合入 Boss owner 提交 `9def779`（本地 `da4b5f4`），未手改其玩法实现。主线仅依赖 `INativeBossEncounter`（ActivateEncounter、Defeated、CanInteractCore、InteractCore、IsDefeated）。`NativeEcaRules.bossComponent` 已绑定真实 NativeBossController；接口保持不变。
 
-场景预留 `World/BossSpawn - real component required`，位置 **(23, 0)**；净空 x=15..31、y=-7..7。入口门 x=14，入口触发区中心 (17,0)，最终门 x=31，最终节点 (33,0)。真实 Boss prefab 放在 (23,0)，连接 player/combat 等 owner 所需引用，最后将组件赋给 ECA.bossComponent。未绑定的主线源分支可验证前半段，但不可通关。
+场景 `Actors/Development Boss` 位于 **(23, 0)**；净空 x=15..31、y=-7..7。入口门 x=14，入口触发区中心 (17,0)，最终门 x=31，最终节点 (33,0)。真实 prefab 已生成并绑定 Level，ECA 绑定其组件；保留缺引用时的阻断分支。Boss 仅为开发占位身份，不指认为最终故事角色。
 
 ## 检查与边界
 
 - U1 本机 Unity 编译、模块/ECA 冒烟已通过，日志 `/private/tmp/native-u1-final-compile.log`、`native-u1-eca-smoke.log`，安全点 `91ca855`。
 - 主控同步：用户已确认集成提交 `66ea557` 的首次 Windows 构建能启动、移动、切换开火、操作终端和重开，无错误。此为 U2 用户实测，不等同 U3 全路线实测。
 - U3 场景原地迁移及编译：`/private/tmp/native-u3-connect.log`，退出 0。
-- U3 新增路径检查结果随当前交接记录更新；使用临时本地 Play Mode 探针，不新增测试框架。
+- U3 三记忆/relay/物理绕行及缺 Boss 时拒绝结局：`/private/tmp/native-u3-main-smoke.log`，退出 0。对白/手机 1280×720 运行时相机截图已检查可读；场景实际为 Screen Space Overlay。
+- 真实 Boss 首次编译、Prefab 生成和场景接线：`/private/tmp/native-u3-boss-connect.log`，退出 0。
+- 真实 Boss 新增路径 Play Mode：`/private/tmp/native-u3-boss-smoke.log`，退出 0。休眠→区域激活/封门→真实三连射和圈轰炸→真实弹丸破壳（49.48 秒）→远距核心拒绝→错过窗口后重开→实际物理靠近/核心互动→一次 Defeated→开最终门→单结局→重开全部初始状态。角色实受 12 点攻击伤害，未加无敌、未强制破壳或注入胜利。
+- 检查采用故事节点/入口显式定位、脚本驱动物理绕行/核心靠近以及直接组件互动；不是人工键鼠完整通关。49.48 秒是探针持续射击测量，不是代表性玩家战斗时长；不据此改数值。
+- 记忆/手机、锁定射线、核心与结局截图位于 `/private/tmp/native-u3-*.png`；已查看。修正旧最终文字标记位置、旧 U1 序列化目标文案，并下移 Boss 世界提示避免页头遮挡；最终编译/场景保存重读日志 `/private/tmp/native-u3-final-compile.log`。
+- 使用临时本地 Play Mode 探针，不新增测试框架；探针已从 Assets 移除，源码仅留 `/private/tmp/native-u3-{main,boss}-smoke-source.cs`。
 
-当前交付范围仅 U3 主线源与真实 Boss 接线点；实际 Boss 合入、完整键鼠通关和约五分钟节奏仍需集成验证。本阶段不做 U4 支援、四象限多结局或新生演出，不声称已有在线服务或真实玩家回声。
+当前交付范围为 U3 三记忆→真实 Boss→最终节点→单结局→重开的主线；完整键鼠通关和约五分钟节奏仍需玩家实测。本阶段不做 U4 支援、四象限多结局或新生演出，不声称已有在线服务或真实玩家回声。

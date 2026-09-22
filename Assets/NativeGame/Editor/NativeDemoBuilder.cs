@@ -180,6 +180,7 @@ namespace Echo.NativeGame.Editor
             var world = run.map.transform;
             run.narrative = new GameObject("Narrative - recovered memories and ending").AddComponent<NativeNarrative>();
             run.quest.narrative = run.narrative; run.rules.narrative = run.narrative;
+            SetMainLineText(run);
             var memories = new[] {
                 Memory("Private memory", NativeMemoryKind.Private, new Vector2(-10, -5), "A hand at the window",
                     "PRIVATE MEMORY / Unverified personal fragment\nRain on warm glass. Someone holds your hand and says: if they ask what you remember, tell them the light. You remember the hand instead.\nCOMMANDER: The record carries no name. Keep it anyway.", world, run),
@@ -193,7 +194,7 @@ namespace Echo.NativeGame.Editor
             run.rules.terminal.promptOverride = "E  /  RECONNECT WITH THREE MEMORIES";
             run.rules.exit.transform.position = new Vector2(33, 0);
             run.rules.exit.promptOverride = "E  /  KEEP THE THREE MEMORIES";
-            world.Find("EXIT").position = new Vector2(33, 2);
+            world.Find("EXIT").GetComponent<RectTransform>().anchoredPosition = new Vector2(33, 2);
             world.Find("EXIT").GetComponent<TMP_Text>().text = "FINAL ARCHIVE";
             world.Find("BYPASS").GetComponent<TMP_Text>().text = "SERVICE PATH";
             foreach (var name in new[] { "North perimeter", "South perimeter" })
@@ -236,6 +237,47 @@ namespace Echo.NativeGame.Editor
             hud.resultBody.rectTransform.sizeDelta = new Vector2(760, 370); hud.resultBody.fontSize = 21;
             EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene); AssetDatabase.SaveAssets();
             Debug.Log("U3 main line connected: three memories, physical service route, relay, real Boss interface pending, final archive and one ending.");
+        }
+        [MenuItem("Echo/Native/Connect Real Boss")]
+        public static void ConnectBoss()
+        {
+            if (Application.isPlaying) throw new InvalidOperationException("Stop Play Mode first.");
+            var scene = EditorSceneManager.OpenScene(ScenePath);
+            var run = UnityEngine.Object.FindObjectOfType<NativeRunController>();
+            if (!run.narrative || run.rules.bossComponent) throw new InvalidOperationException("Requires U3 main line with no Boss connected yet.");
+            var asset = NativeBossPrefabBuilder.CreatePrefab();
+            var instance = (GameObject)PrefabUtility.InstantiatePrefab(asset, GameObject.Find("Actors").transform);
+            instance.transform.position = new Vector3(23, 0, 0);
+            var boss = instance.GetComponent<NativeBossController>(); boss.level = run; run.rules.bossComponent = boss;
+            PrefabUtility.RecordPrefabInstancePropertyModifications(boss);
+            var anchor = GameObject.Find("BossSpawn - real component required"); if (anchor) UnityEngine.Object.DestroyImmediate(anchor);
+            EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene); AssetDatabase.SaveAssets();
+            Debug.Log("U3 real Boss connected at (23,0): interface activation, core E, Defeated -> final gate -> one ending.");
+        }
+        [MenuItem("Echo/Native/Finish U3 Presentation")]
+        public static void FinishMainLinePresentation()
+        {
+            if (Application.isPlaying) throw new InvalidOperationException("Stop Play Mode first.");
+            var scene = EditorSceneManager.OpenScene(ScenePath);
+            var label = GameObject.Find("World").transform.Find("EXIT").GetComponent<RectTransform>();
+            label.anchoredPosition = new Vector2(33, 2); EditorUtility.SetDirty(label);
+            var run = UnityEngine.Object.FindObjectOfType<NativeRunController>();
+            SetMainLineText(run);
+            var display = run.rules.bossComponent.GetComponentInChildren<NativeBossDisplay>().GetComponent<RectTransform>();
+            display.localPosition = new Vector3(0, 1.9f, 0);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(display);
+            EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene); AssetDatabase.SaveAssets();
+            EditorSceneManager.OpenScene(ScenePath);
+            var saved = GameObject.Find("World").transform.Find("EXIT").GetComponent<RectTransform>();
+            if (Vector2.Distance(saved.anchoredPosition, new Vector2(33, 2)) > .01f) throw new InvalidOperationException("Final archive label position was not persisted.");
+            Debug.Log("U3 presentation saved and reloaded: final archive label matches node, Boss cue below header.");
+        }
+        static void SetMainLineText(NativeRunController run)
+        {
+            run.quest.initialObjective = "01 / RECOVER YOUR SIGNAL\nFind the three memory records in this sector.";
+            run.quest.completedObjective = "05 / KEEP THE SIGNAL\nReach the final archive beyond the eastern gate. Press E.";
+            run.rules.terminalMessage = "COMMANDER / Three sources, none erased.\nThe eastern passage is open. The combat shell ahead is a development placeholder, not a named story character.";
+            EditorUtility.SetDirty(run.quest); EditorUtility.SetDirty(run.rules);
         }
         static NativeMemoryNode Memory(string name, NativeMemoryKind kind, Vector2 at, string title, string body, Transform parent, NativeRunController run)
         {

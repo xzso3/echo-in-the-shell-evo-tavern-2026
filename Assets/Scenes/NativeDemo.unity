@@ -804,7 +804,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 13, y: 2}
+  m_AnchoredPosition: {x: 33, y: 2}
   m_SizeDelta: {x: 4, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &116340542
@@ -974,6 +974,7 @@ Transform:
   - {fileID: 361119725}
   - {fileID: 1337646810}
   - {fileID: 1284725057}
+  - {fileID: 1662598257}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1369,14 +1370,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   narrative: {fileID: 1410152068}
-  initialObjective: '01 / RECONNECT
+  initialObjective: '01 / RECOVER YOUR SIGNAL
 
-    Reach the cyan terminal. Press E nearby
-    to open the exit.'
-  completedObjective: '02 / SIGNAL RESTORED
+    Find the three memory records
+    in this sector.'
+  completedObjective: '05 / KEEP THE SIGNAL
 
-    The eastern gate is open. Reach
-    the exit and press E.'
+    Reach the final archive beyond the
+    eastern gate. Press E.'
 --- !u!4 &394963353
 Transform:
   m_ObjectHideFlags: 0
@@ -1776,7 +1777,6 @@ Transform:
   - {fileID: 1606950654}
   - {fileID: 1809249053}
   - {fileID: 1840906123}
-  - {fileID: 1402481804}
   - {fileID: 1222147773}
   - {fileID: 1782571452}
   - {fileID: 1463516402}
@@ -2580,15 +2580,16 @@ MonoBehaviour:
   regions:
   - {fileID: 1463516404}
   - {fileID: 1826545839}
-  bossComponent: {fileID: 0}
+  bossComponent: {fileID: 1662598256}
   quest: {fileID: 394963352}
   map: {fileID: 504567131}
   dialogue: {fileID: 99691251}
   narrative: {fileID: 1410152068}
-  terminalMessage: 'COMMANDER / Link restored.
+  terminalMessage: 'COMMANDER / Three sources, none erased.
 
-    The eastern gate is open. Take
-    the exit when you are ready.'
+    The eastern passage
+    is open. The combat shell ahead is a development placeholder, not a named story
+    character.'
 --- !u!4 &771702667
 Transform:
   m_ObjectHideFlags: 0
@@ -4350,7 +4351,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 504567130}
-  m_RootOrder: 49
+  m_RootOrder: 48
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -5668,37 +5669,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1401836845}
   m_Mesh: {fileID: 4300000, guid: 6044467025e93e243a542cec57a2273d, type: 2}
---- !u!1 &1402481803
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1402481804}
-  m_Layer: 0
-  m_Name: BossSpawn - real component required
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1402481804
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1402481803}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 23, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 504567130}
-  m_RootOrder: 48
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1403466799
 GameObject:
   m_ObjectHideFlags: 0
@@ -6240,7 +6210,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 504567130}
-  m_RootOrder: 51
+  m_RootOrder: 50
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &1463516403
 BoxCollider2D:
@@ -6931,6 +6901,83 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1001 &1662598255
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 132522763}
+    m_Modifications:
+    - target: {fileID: 3286074531037451397, guid: 43fcc83df28a94c0ea9386a0f679ad78, type: 3}
+      propertyPath: m_Name
+      value: DevelopmentBoss
+      objectReference: {fileID: 0}
+    - target: {fileID: 6791384801311264434, guid: 43fcc83df28a94c0ea9386a0f679ad78, type: 3}
+      propertyPath: level
+      value: 
+      objectReference: {fileID: 1161945326}
+    - target: {fileID: 8018884621128788464, guid: 43fcc83df28a94c0ea9386a0f679ad78, type: 3}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8018884621128788464, guid: 43fcc83df28a94c0ea9386a0f679ad78, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 23
+      objectReference: {fileID: 0}
+    - target: {fileID: 8018884621128788464, guid: 43fcc83df28a94c0ea9386a0f679ad78, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8018884621128788464, guid: 43fcc83df28a94c0ea9386a0f679ad78, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8018884621128788464, guid: 43fcc83df28a94c0ea9386a0f679ad78, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8018884621128788464, guid: 43fcc83df28a94c0ea9386a0f679ad78, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8018884621128788464, guid: 43fcc83df28a94c0ea9386a0f679ad78, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8018884621128788464, guid: 43fcc83df28a94c0ea9386a0f679ad78, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8018884621128788464, guid: 43fcc83df28a94c0ea9386a0f679ad78, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8018884621128788464, guid: 43fcc83df28a94c0ea9386a0f679ad78, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8018884621128788464, guid: 43fcc83df28a94c0ea9386a0f679ad78, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 43fcc83df28a94c0ea9386a0f679ad78, type: 3}
+--- !u!114 &1662598256 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6791384801311264434, guid: 43fcc83df28a94c0ea9386a0f679ad78, type: 3}
+  m_PrefabInstance: {fileID: 1662598255}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c06a9979665f40f2951da3e869d58311, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1662598257 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8018884621128788464, guid: 43fcc83df28a94c0ea9386a0f679ad78, type: 3}
+  m_PrefabInstance: {fileID: 1662598255}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1670588607
 GameObject:
   m_ObjectHideFlags: 0
@@ -7437,7 +7484,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 504567130}
-  m_RootOrder: 50
+  m_RootOrder: 49
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -8162,7 +8209,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 504567130}
-  m_RootOrder: 52
+  m_RootOrder: 51
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &1826545838
 BoxCollider2D:

@@ -15,6 +15,7 @@ namespace Echo.NativeGame
         {
             get
             {
+                if (Completed) return "06 / SIGNAL KEPT\nThe chosen memories leave with you.";
                 if (!narrative) return initialObjective;
                 if (narrative.MemoryCount < 3) return "01 / RECOVER YOUR SIGNAL   " + narrative.MemoryCount + " / 3\nPrivate: southwest. System: northeast. Initial echo: southeast.";
                 if (!RelayRestored) return "02 / RECONNECT\nAll memories recovered. Return to the cyan terminal.";
