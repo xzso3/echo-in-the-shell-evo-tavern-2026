@@ -11,6 +11,15 @@ namespace Echo.NativeGame.Editor
     {
         const string ScenePath = "Assets/Scenes/NativeDemo.unity";
 
+        // Batch-mode entry point for the isolated P2-07 worktree after the integration base is updated.
+        public static void ConnectBatch()
+        {
+            if (Application.isPlaying) throw new InvalidOperationException("Stop Play Mode before configuring passage ECA.");
+            EditorSceneManager.OpenScene(ScenePath);
+            Connect();
+            EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
+        }
+
         [MenuItem("Echo/Native/Connect P2-07 Passage ECA")]
         public static void Connect()
         {
