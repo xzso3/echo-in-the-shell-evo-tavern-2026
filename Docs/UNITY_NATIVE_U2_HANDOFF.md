@@ -42,6 +42,14 @@ P2-08 从 P2-07 交接点 `a99f8e296657eae45cff6aacbae4c891368b6e85` 顺序导�
 
 源任务 `/private/tmp/p2-08-compile.log` 离线编译 0 错误，`/private/tmp/p2-08-connect.log` 的 Unity batch 保存/编译正常退出；`/private/tmp/p2-08-smoke.log` 报 `P2_08_SMOKE_PASS`，覆盖拒绝、离距失败、真实 Combat 命中后一次性代价、重复保护、手机记录及旧支援/阈值。该聚焦检查使用显式定位和按钮回调。集成端仅静态核对终端、ArcSentry、HUD、Narrative、手机与字体引用及 NativeDemo 唯一构建场景，未重跑 Unity。敌人已死／关卡结束分支、人工键鼠、四结局完整路线和 Windows 仍待测。
 
+## P2-09 安全节点在线文本准备
+
+P2-09 最终原提交 `4428650e591b204198991288882ca3c48eaa75f4` 从可玩基线 `2fbe16b` 起步；当前集成从主目录文档 `7eca880` 只选一次等价功能提交 `1098c9f`，并以独立的一行文档提交 `16b9fc3` 修正 Windows 的 `<可执行文件名>_Data/StreamingAssets/commander-proxy.json` 路径。功能资产与最终原提交一致，未重复导入 amend 后整笔提交。
+
+出生点北侧 `(-13,3)` 的安全节点内，打开手机通讯页可输入最多 300 字的自由文本。当前随包 `Assets/StreamingAssets/commander-proxy.json` 的 `proxyUrl` **为空**，所以发送不可用，任务／记忆／身份／授权等预设通讯仍可使用；没有真实在线服务、回复或凭据。未来配置由项目方控制的 HTTPS 代理（本机开发可用 loopback HTTP），上游密钥只能留在服务端。客户端仅展示受限长度的回复文本，不将它传给 Quest、Support、Map 或结局逻辑。详细契约见 [P2-09 代理说明](Framework/Phase2/P2_09_COMMANDER_PROXY.md)。
+
+源任务 Unity batch 接线/编译日志 `/private/tmp/p2-09-connect-escalated.log` 正常退出；图形 Play 日志 `/private/tmp/p2-09-smoke-graphics.log` 报 14 项聚焦检查通过，截图 `/private/tmp/p2-09-phone.png` 已由执行者检查无阻断溢出。首次 `-nographics` 截图探针触发 Unity 原生崩溃，改为图形复验后通过；临时探针未加入 Assets。本次集成只静态核对安全节点、输入/发送按钮、Proxy、空 URL、无客户端密钥及 NativeDemo 唯一构建入口，未重跑 Unity。真实服务/网络回复、断网/超时实网回退、人工键鼠及 Windows 都未测；**B9 保持 not_run**。
+
 ## 既有 U4 路线与证据
 
 以下保留 NPC 合入前的 U4 操作说明。U4 原源码集成提交 `47c487759ee191fdb8b4dc34c947f872d512aacc`；中文差量 `f3bef9d`→`6115f13`、`a8f5910`→`749e0d1`、`e4891ed`→`800242b`，译文原 `8a2cb96` 未重复合入；主控两文档提交 `50f1eeb`→`d6fdc99`。
