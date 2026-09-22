@@ -19,14 +19,14 @@
 | P2-01 | complete | P1-07 `01a0c9bb-fdbe-7f62-a3d1-8a80fd0fb604`，原 4113 分支（工作树已关闭） | `6daddd3`；Unity 2021.3.27f1c2 场景接线/编译命令退出 0，聚焦 Play Mode 21 断言、6 张快照；A/B 事件链、重复结算保护及未完成 B 时三记忆→relay 通过。检查含显式定位和按钮回调，不是人工键鼠通关；未重测 Boss/结局或 Windows |
 | P2-02 | complete | INT-00 `01a0c881-9454-7fa3-a276-cb5756debad3`，原 de32（工作树已关闭） | 指定 NPC 和 P2 文档提交已集成；核对唯一构建场景、Prefab/脚本/按钮/字体/许可引用及交接说明。仅静态核对，未重复启动 Unity |
 | P2-03 | integrated_dev | `codex/p2-03-chunk-map` 原 `231a97c` → 隔离集成 `4c57582` | 两块同源 NorthRouteChunk、端口相接、Map 门与 E 开关已保存于 NativeDemo。执行者 Unity batchmode 保存/编译及聚焦 Play Mode 退出 0，检查预制体复用、端口、主线引用和实体门阻挡/放行；集成端仅核对文件/引用，未重跑 Unity、人工键鼠或 Windows |
-| P2-04 | code_ready | `codex/p2-04-actor-combat`，工作树 `909d` | `f6b8580`：ArcSentry Prefab、Actor 绕射移动和预警三连弹；本次三个脚本使用 Unity 2021 程序集离线编译 0 错误/警告、Prefab 静态引用核对；未接 NativeDemo，实际交战及 Windows 未测 |
-| P2-05 | code_ready | `codex/p2-05-equipment-effect`，工作树 `c398` | `bc5a403`：拾取、装备、限时超频、状态条及一次性场景接线器；只做差量与 Prefab 静态核对，Unity 编译/场景/Windows 未测；待 Unity 槽接线 |
-| P2-06 | code_ready | `codex/p2-06-audio`，工作树 `d7c0` | `5db4ab3`：独立音频组件、四段自制 WAV、Prefab；全 NativeGame 非 Editor 源码离线编译 0 错误、PCM/幅度/循环边界及 GUID 检查通过；Unity 导入、场景接线、人工试听与 Windows 未测 |
+| P2-04 | scene_wired_dev | 原代码 `54dc362` → 本地 `092f537`，原场景 `f37c632` → 本地 `8f4384e` | ArcSentry 位于北区 `(-8,25)`，Unity batchmode 场景接线/编译正常退出；Prefab、攻击脚本与场景引用静态核对。短 Play Mode 已核对敌人与主线接线；实际交战、死亡/重开及 Windows 未测；`8f4384e` 为独立可回退安全点 |
+| P2-05 | scene_wired_dev | 原代码 `daa7de3` → 本地 `a7dba48`，原场景 `dd0350b` → 本地 `1f6b8a6` | 第一块北区 `(-12,14)` 的线圈拾取、装备组件和状态条已接 NativeDemo；Unity batchmode 接线/编译正常退出。短 Play Mode 已核对 E 拾取、F 装备、Q 超频效果；实际战斗结果、人工节奏及 Windows 未测；`1f6b8a6` 为独立安全点 |
+| P2-06 | scene_wired_dev | 原音频 `484f59d` → 本地 `2f3d731`，原场景 `7422528` → 本地 `b71a911`，补字形 `5d94c0c` → 本地 `c98e037` | NativeDemo 根级唯一 AudioDirector、四段自制 WAV、一个 AudioListener 与运行引用静态核对；Unity batchmode 导入/接线/编译正常退出。短 Play Mode 已核对 BGM AudioSource 循环启动；声音听感、F5—F8 音量操作及 Windows 未测 |
 | P2-07—P2-09 | pending | 依 [任务卡](PHASE2_TASKS.md)按序续派 | ECA 复用 → 叙事/支援 → 在线指挥官；前置条件满足后才启动 |
 | P2-10 | pending | INT-00 与用户 | 截止前集成/用户手动 Windows 试玩：靠近档案员实际选择并交付一条支线，再确认主线可继续；另一条未玩的支线保持未测。未完成项移交下阶段 |
 
-四个新执行任务均指定 GPT-6 Sol / Extra High；Unity Editor 槽由当前场景接线任务协调。P2-04—P2-06 的代码/资源提交已就绪，但均未形成场景内可玩交付；三个原执行任务现已空闲，可供后续修补。用户先前要求的暂停已由本次接续指令解除。
+四个新执行任务均指定 GPT-6 Sol / Extra High；Unity Editor 槽由当前场景接线任务协调。P2-04—P2-06 的代码与场景实例均已接入，但实际交战、装备效果和音频听感尚未通过人工试玩；不能将场景接线等同于 Windows 验收。用户先前要求的暂停已由本次接续指令解除。
 
 ## 检查边界与恢复点
 
-P2-01 证据见 `Assets/NativeGame/README.md`、`/private/tmp/native-npc-connect.log`、`/private/tmp/native-npc-smoke.log`；临时探针已移除。P2-02 只核对集成后的文件和引用，没有把原工作区的运行结果冒称为 de32 重测。A2—A6 的完整人工操作、A8 Windows 路线，以及 Boss/结局全流程仍待用户试玩；P2 整体尚未完成。路线文档已入主目录，旧工作区已安全收束。P2-03 的源任务从 `4d64c4c` 起步，本次只选择 `231a97c`，未导入其后续敌人提交或 P2-05/06 未接线代码；后续提交按依赖串行集成。开发期只做必要编译/启动/当前阻断检查，08:00 停止新增功能，11:00 收束，未完成项转后续阶段。
+P2-01 证据见 `Assets/NativeGame/README.md`、`/private/tmp/native-npc-connect.log`、`/private/tmp/native-npc-smoke.log`；临时探针已移除。P2-02 只核对集成后的文件和引用，没有把原工作区的运行结果冒称为 de32 重测。A2—A6 的完整人工操作、A8 Windows 路线，以及 Boss/结局全流程仍待用户试玩；P2 整体尚未完成。路线文档已入主目录，旧工作区已安全收束。P2-03 源任务从 `4d64c4c` 起步，先只选择地图 `231a97c` 形成 `fabefdc`；随后按父链精确导入 P2-04 代码/场景、P2-05 代码/场景、P2-06 音频/场景。源场景任务最新短 Play Mode `/private/tmp/p2-integrated-play.log` 报 `NATIVE_INTEGRATED_SMOKE: PASS`，涵盖物理穿越、Map 门、装备拾取/效果、音频启动及敌人与主线接线；集成端只做静态核对，未重跑 Unity 或构建 Windows。后续 P2-07/P2-08 从本文件所在交接提交与集成引用继续。开发期只做必要编译/启动/当前阻断检查，08:00 停止新增功能，11:00 收束，未完成项转后续阶段。

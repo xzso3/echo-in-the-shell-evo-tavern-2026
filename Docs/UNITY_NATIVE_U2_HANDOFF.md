@@ -18,7 +18,15 @@ P2-01 执行者报告 Unity 2021.3.27f1c2 的场景接线/编译命令退出 0�
 
 P2-03 原提交 `231a97c75b0c9aba7fd417ccb4003baf1dbe2b23` → 隔离集成 `4c5758280a6830d955186b39b2862c2e2e96696a`，仅导入该提交。出生点往北从 `(-10, 9)` 开口进入第一块；两块同源 `NorthRouteChunk` 在 `(-10, 19)` 连接，靠近 `(-10, 16.5)` 的开关按 E 后，`NativeMap` 关闭实体门阻挡，玩家可进入第二块并原路返回。原东侧三记忆、中继、Boss 路线保留。场景已保存，直接 Play；不要重复执行一次性接线菜单。
 
-执行者在 Unity 2021.3.27f1c2 的 batchmode 保存/编译日志 `/private/tmp/p2-03-build-escalated.log` 显示 `NATIVE_CHUNK_BUILD` 且正常退出；聚焦 Play Mode 日志 `/private/tmp/p2-03-smoke.log` 显示预制体复用、端口对齐、主线引用及实体门阻挡/放行通过并正常退出。本次集成仅静态核对两实例、端口、Map/ECA/HUD 引用和唯一构建场景，没有重跑 Unity。玩家完整键鼠路线、与后续敌人交战、Windows 构建仍待测；P2-04/05/06 未接线代码不属于本交付点。
+执行者在 Unity 2021.3.27f1c2 的 batchmode 保存/编译日志 `/private/tmp/p2-03-build-escalated.log` 显示 `NATIVE_CHUNK_BUILD` 且正常退出；聚焦 Play Mode 日志 `/private/tmp/p2-03-smoke.log` 显示预制体复用、端口对齐、主线引用及实体门阻挡/放行通过并正常退出。本次集成仅静态核对两实例、端口、Map/ECA/HUD 引用和唯一构建场景，没有重跑 Unity。玩家完整键鼠路线与 Windows 构建仍待测。`fabefdc` 保留为独立地图安全点；后续接线见下节。
+
+## P2-04—P2-06 已接线切片
+
+按源提交 `54dc362` → `f37c632` → `daa7de3` → `dd0350b` → `484f59d` → `7422528` → `5d94c0c` 精确接入，本地依次为 `092f537` → `8f4384e` → `a7dba48` → `1f6b8a6` → `2f3d731` → `b71a911` → `c98e037`。末项补齐“脉／伤／频”字形。`8f4384e` 是 ArcSentry 场景安全点，`1f6b8a6` 是脉冲线圈场景安全点；没有重复导入另一个 P2-04 原代码提交 `f6b8580`。
+
+第二块北区 `(-8,25)` 有绕射移动并预警三连弹的 ArcSentry；第一块北区 `(-12,14)` 有金色脉冲线圈，靠近按 E 拾取，F 装备/卸下（伤害 +12），Q 启动 8 秒超频（射击间隔乘 0.6）。NativeDemo 根级接入唯一 AudioDirector，四段本项目自制占位 WAV 对应循环 BGM、互动、受伤和击败；F5/F6 调节音乐、F7/F8 调节音效。三个一次性接线菜单均已执行并保存场景，不要重复运行。
+
+执行者的 `/private/tmp/p2-04-connect.log`、`/private/tmp/p2-05-connect.log`、`/private/tmp/p2-06-connect.log` 均显示对应场景引用接线和 Unity batchmode 正常退出。本次隔离集成又静态核对三种 Prefab 场景实例、装备/互动/音频引用、唯一 AudioListener、四个有效 PCM WAV 与唯一启用构建场景，未重复运行 Unity。源场景任务的短 Play Mode `/private/tmp/p2-integrated-play.log` 报 `NATIVE_INTEGRATED_SMOKE: PASS`，覆盖物理穿越、ECA 门、装备 E/F/Q 效果、BGM AudioSource 循环启动及敌人/主线接线；临时探针已从 Assets 移除。集成端未重跑 Unity。ArcSentry 的实际交战及死亡/重开、线圈在人工战斗中的伤害/射速表现、声音听感和音量键、Boss/结局全程及 Windows 构建仍待测，不能把聚焦检查冒称为人工通过。
 
 ## 既有 U4 路线与证据
 
