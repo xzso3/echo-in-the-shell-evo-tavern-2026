@@ -11,6 +11,9 @@ namespace Echo.NativeGame
         public NativeRegion[] regions = new NativeRegion[0];
         [Tooltip("Assign the real NativeBossController implementing INativeBossEncounter. No placeholder victory.")]
         public MonoBehaviour bossComponent;
+        public MonoBehaviour supportComponent;
+        INativeSupport support;
+        public INativeSupport Support => support;
         [Header("Conditions and actions")]
         public NativeQuest quest;
         public NativeMap map;
@@ -28,6 +31,8 @@ namespace Echo.NativeGame
             foreach (var region in regions) if (region) region.Entered += OnRegionEntered;
             boss = bossComponent as INativeBossEncounter;
             if (boss != null) boss.Defeated += OnBossDefeated;
+            support = supportComponent as INativeSupport;
+            if (support != null) support.Authorized += OnSupportAuthorized;
         }
         void OnDisable()
         {
@@ -37,6 +42,7 @@ namespace Echo.NativeGame
             foreach (var memory in memoryNodes) if (memory && memory.interaction) memory.interaction.Confirmed -= OnMemoryConfirmed;
             foreach (var region in regions) if (region) region.Entered -= OnRegionEntered;
             if (boss != null) boss.Defeated -= OnBossDefeated; boss = null;
+            if (support != null) support.Authorized -= OnSupportAuthorized; support = null;
         }
         void OnLevelStarted()
         {
@@ -83,13 +89,25 @@ namespace Echo.NativeGame
             dialogue.Show("COMMANDER / The lock has broken.\nThe final archive node is through the eastern gate. You can keep the conflicting records instead of letting the system erase their differences.");
             Debug.Log("Native ECA: real Boss.Defeated -> Quest -> Narrative -> Map final gate -> Dialogue", this);
         }
+        void OnSupportAuthorized(NativeSupportAuthorization authorization)
+        {
+            if (level.Running) narrative.RecordSupport(authorization);
+        }
+        public bool PreserveAnomaly() => level.Running && narrative.PreserveAnomaly();
+        public bool RewriteEcho() => level.Running && narrative.RewriteEcho();
         void OnExitConfirmed(NativeInteraction source)
         {
             if (!level.Running || source.Used) return;
             if (!quest.CanLeaveSector()) { dialogue.Show("FINAL NODE / Access denied.\nRecover the three records and complete the real core encounter first."); return; }
-            if (!narrative.CommitEnding(level.combat.Kills, level.Elapsed) || !quest.RecordFinalObjective()) return;
-            if (level.Complete()) source.Consume();
-            Debug.Log("Native ECA: final interaction -> Quest condition -> Narrative ending -> Level complete", this);
+            level.hud.phone.ShowFinalDecision();
+        }
+        public bool ChooseFinal(NativeFinalChoice choice)
+        {
+            if (!level.Running || !quest.CanLeaveSector() || !exit.CanReach(level.player)) return false;
+            if (!narrative.CommitEnding(level.combat.Kills, level.Elapsed, choice) || !quest.RecordFinalObjective()) return false;
+            if (level.Complete()) exit.Consume();
+            Debug.Log("Native ECA: final choice -> Quest condition -> Narrative quadrant -> Level ending", this);
+            return true;
         }
     }
 }
