@@ -1,28 +1,27 @@
-# 原生源码交接 · U3 主线与真实 Boss
+# U4 集中试玩源码交接 · U5 人工反馈
 
-工作区：`/Users/const/.codex/worktrees/de32/echo-in-the-shell-evo-tavern-2026`。分支：`codex/unity-native-u2-candidate`；本文件所在提交为当前交接点，`codex/unity-native-integration`同步至该点。
+工作区：`/Users/const/.codex/worktrees/de32/echo-in-the-shell-evo-tavern-2026`。分支：`codex/unity-native-u2-candidate`；源码集成提交 `47c487759ee191fdb8b4dc34c947f872d512aacc`，最终交接点为本文件所在提交，`codex/unity-native-integration` 同步到该点。使用 Unity 2021.3.27f1c2 打开此目录，入口 `Assets/Scenes/NativeDemo.unity`，无需执行创建/迁移菜单。
 
-使用 Unity 2021.3.27f1c2 打开工作区，入口 `Assets/Scenes/NativeDemo.unity`，无需重建场景。Build Settings 仍为 NativeDemo 首位唯一勾选；历史四场景保留未勾选。Windows x64 / Mono 构建由用户手动执行；本轮未启动 Unity、构建、安装或测试，未修改用户主工作区内容。
+Build Settings 保留 NativeDemo 首位唯一勾选，四个历史场景未勾选但未删除。Windows x64 / Mono 由用户手动构建；本轮仅源码集成/交接，没有运行 Unity、构建、安装或测试。用户主工作区的 README、原型文档及其他未提交内容保持原样。
 
-## 当前操作与路径
+## 操作与一局路径
 
-WASD 移动，Space 切换自动开火；E 近距离互动，打开对白后下一次 E 确认关闭。Tab 查看记忆目录，Escape/按钮关闭；手机、对白均不暂停战斗。死亡或结局点击 Restart Run。
+- WASD 移动；Space 切换自动开火；E 近距离互动/确认当前对白。Tab 打开手机，Escape/按钮关闭；手机和对白不暂停战斗。
+- 收集西南私人记忆、东北系统记录、东南系统初始回声；上方 service path 可实际绕行，下方有守卫。收齐三段回青色 relay 按 E，再进东侧 Boss 区。
+- 躲三连射和圈轰炸，破壳后靠近核心按 E；普通窗口6秒，错过8秒后重开。真实击败开启最终门，最终节点 E 后在范围内选 UPLOAD / DESTROY；该按钮不改变本局象限分数。
+- 手机 COMMS / SUPPORT / NETWORK 三页签可滚动。支援选择类型、Limited/Deep 和记忆，Request Contract 后使用新的 Enter 或 ACCEPT 确认，也可拒绝；不是 E/Space。医疗需实际缺血才有效；解析只延长真实核心窗口，不替代破壳或核心 E。每种支援每局成功一次，失败/拒绝不收费。
+- 四象限由实际同步/差异形成。新生白屏等待新的 E 第一拳；随后不再输入也应自主打出最后一拳，黑屏约2秒后手机接续。死亡/结局/接续手机可 Restart Run。
 
-收集西南 Private Memory、东北 System Record、东南 System Initial Echo 三段记忆；上方 service path 记录真实绕行，下方有守卫。回青色 relay 按 E，进入东侧 Boss 区域触发封门和真实战斗；破壳后靠近暴露核心按 E，错过窗口可等待再次开放。真实 Defeated 事件开最终门，最终节点 E 提交一种结局和本局摘要，随后可重开。Boss 为开发占位，系统初始回声不冒充真实玩家内容。
+四象限具体可达路线、计分和系统职责见 [详细操作说明](../Assets/NativeGame/README.md)。不要用最终按钮代替整局行为，也不把脚本到达四结局当作人工通关。
 
-ECA 实际协调 Interaction/区域事件→Quest/Narrative→Map/Dialogue→Boss→Level；状态由各系统持有，移动/战斗使用 Unity 原生组件。具体职责和场景位置见 Assets/NativeGame/README.md。U4 支援、四象限结局及新生演出尚未完成。
+## 本轮集成与人工边界
 
-## 提交与验证边界
+从 `b742811` 保留既有 U3。两份状态文档主工作区提交 `83337bd` → 集成 `292cff5`；顺序精确导入 U4：`90a3ab9`→`528629b`，`993568c`→`d87a8ac`，`3f7bebd`→`c2d28ef`，`d29b004`→`47c4877`。支援原 `d24ecee` 与 `3f7bebd`等价，没有重复合入；没有合入旧 P1 祖先或 world WIP，完整旧分支/产物保留。
 
-在已有 ECA 集成 `66ea557` 上先接入两份状态文档 `597162e`（本地 `cc890f2`），再精确按序导入：
+用户已确认旧 `66ea557` 在 Windows 启动、移动、开火切换、终端和重开无错误。该证据不外推到 U4。执行者报告其原工作区 support-connect / smoke / visual / final-compile 退出0；检查含显式定位/脚本移动，前三象限经 Combat 加速布置战斗，非人工通关或五分钟节奏证明。本轮没有重复执行这些检查。
 
-- 接口 `4191c87` → `a28b9e8`。
-- 主线 `69d2df9` → `f7e51d5`。
-- Boss `da4b5f4` → `694967b`，与原 `9def779`等价，不重复合入。
-- 最终场景接线 `9e2a787` → `a23ee89`。
+现在请集中反馈当前 Windows 版本的真实启动与 WASD/Space/E/Tab、完整三记忆→Boss→最终节点通关、死亡及结局重开、支援确认/拒绝、四象限实际走到的结果，以及新生第一拳等待/自主末拳/黑屏后手机接续。只按真正试玩的路线记录通过；尚未试玩的象限保持未测。遇严重问题请附所在节点、操作、现象及截图/错误日志；功能不再扩展，只处理实际阻断/严重反馈。
 
-没有合入旧 P1 祖先或 world WIP；旧分支与用户改动保留。此次交付 Assets 字节与 U1 最终源提交一致，Build Settings 保持原集成设置。
+已知限制：英文 UI、静态角色图、简化 Canvas 方块拳与裂线、无声音；记录仅本局内存，重开清空。在线 LLM、外置手机、全服服务与真实继承链未实现。难度、滚动手感和约五分钟节奏仍待人工试玩。
 
-用户已确认旧 U2 `66ea557` 的 Windows 启动、移动、开火切换、终端及重开无错误。此反馈不能外推到新增 U3。执行者报告 U3 Unity 编译及必要组件冒烟通过：三记忆/绕行、真实 Boss 两类攻击与破壳/核心窗口、一次 Defeated、最终节点单结局及重开。检查使用显式定位、脚本移动与组件调用，不是玩家人工路线。U3 真实键鼠完整通关、节奏及 Windows 新版本仍未测；本轮不重复验证或将原工作区报告转记为当前候选运行通过。日志范围见 Assets/NativeGame/README.md。
-
-旧 .NET bin/obj 产物位于 Assets 外，保留且不暂存；本轮不运行旧验收、不清理历史产物。
+旧 .NET bin/obj 产物位于 Assets 外，原样保留不暂存；本轮不运行旧验收，不清理历史产物。
