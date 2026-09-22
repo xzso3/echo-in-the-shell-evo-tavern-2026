@@ -1,0 +1,46 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "run",
+        "level",
+        "encounter",
+        "entity",
+        "execution",
+        "rule_set",
+        "attack",
+        "quest",
+        "dialogue",
+        "map",
+        "chunk",
+        "projectile",
+        "control_lease"
+      ]
+    },
+    "serial": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    }
+  },
+  "required": [
+    "run_id",
+    "kind",
+    "serial",
+    "generation"
+  ],
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:echo:contracts:0.1.0:instance_ref"
+}

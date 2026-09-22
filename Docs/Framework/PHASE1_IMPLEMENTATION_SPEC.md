@@ -176,3 +176,7 @@ Core 不引用 UnityEngine、UnityEditor、Gameplay 或具体内容。Gameplay �
 Unity 资源和视觉检查不能由无图形测试代替。历史原型验证只用于回归参考，不计入新框架通过数。所有尚未执行的项目标为 not_run；本文件不提供已通过的运行结果。
 
 第一阶段完成条件：配套验收中的必需项全部通过、第二内容包证明配置复用、已有原型无意外回归、未完成项与能力限制在交付报告明确列出。
+
+## P1-01 工程契约冻结补充（2026-09-22）
+
+公共契约版本为 `0.1.0`，接口、JSON/Schema 子集、精确工具链、测试入口和路径所有权见 [契约说明](Contracts/README.md)、[所有权](Contracts/OWNERSHIP.md) 与 [版本/许可](Contracts/VERSIONS_LICENSES.md)。基础协议已提供可编译源码；生产能力目录仍为空。计划清单和事件 Schema 不构成已实现生产能力。契约夹具的实际结果单列在 `Contracts/Evidence/`，不替代本文件规定的完整内容、逻辑、Unity 和视觉验收。

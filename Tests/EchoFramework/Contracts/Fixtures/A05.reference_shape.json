@@ -1,0 +1,11 @@
+{
+  "case_id": "A05.reference_shape",
+  "schema": "instance_ref",
+  "data": {
+    "run_id": "test-run",
+    "kind": "entity",
+    "serial": 1,
+    "generation": 0
+  },
+  "expected_code": "schema.minimum"
+}

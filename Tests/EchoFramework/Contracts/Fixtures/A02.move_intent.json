@@ -1,0 +1,22 @@
+{
+  "case_id": "A02.move_intent",
+  "schema": "input",
+  "data": {
+    "input_id": "key-1",
+    "run_id": "test-run",
+    "sequence": 1,
+    "tick": 0,
+    "kind": "move",
+    "actor": {
+      "run_id": "test-run",
+      "kind": "entity",
+      "serial": 1,
+      "generation": 1
+    },
+    "direction": {
+      "x": 1,
+      "y": 0
+    }
+  },
+  "expected_code": ""
+}

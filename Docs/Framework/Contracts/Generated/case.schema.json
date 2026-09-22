@@ -1,0 +1,929 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "case_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "requirement_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "package": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "package_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!.*\\.\\.)[a-z][a-z0-9_.-]*(?![\\s\\S])"
+        },
+        "package_version": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?![\\s\\S])"
+        },
+        "sha256": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "package_id",
+        "package_version",
+        "sha256"
+      ]
+    },
+    "entrypoint": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!.*\\.\\.)(?!.*\\/(?![\\s\\S]))[a-z][a-z0-9_.-]*:[a-z][a-z0-9_]*\\/[a-z][a-z0-9_./-]*(?![\\s\\S])"
+    },
+    "seed": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "timestep": {
+      "type": "number",
+      "minimum": 1E-06,
+      "maximum": 1
+    },
+    "max_ticks": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "setup": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fixture_kind": {
+          "type": "string",
+          "enum": [
+            "unit",
+            "integration"
+          ]
+        },
+        "fixture_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "fixture_kind",
+        "fixture_id"
+      ]
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "input"
+                ]
+              },
+              "intent": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "input_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "run_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "sequence": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 9007199254740991
+                      },
+                      "tick": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "kind": {
+                        "type": "string",
+                        "enum": [
+                          "move"
+                        ]
+                      },
+                      "actor": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "run_id": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "entity"
+                            ]
+                          },
+                          "serial": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 9007199254740991
+                          },
+                          "generation": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 2147483647
+                          }
+                        },
+                        "required": [
+                          "run_id",
+                          "kind",
+                          "serial",
+                          "generation"
+                        ]
+                      },
+                      "direction": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "x": {
+                            "type": "number"
+                          },
+                          "y": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "x",
+                          "y"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "input_id",
+                      "run_id",
+                      "sequence",
+                      "tick",
+                      "kind",
+                      "actor",
+                      "direction"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "input_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "run_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "sequence": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 9007199254740991
+                      },
+                      "tick": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "kind": {
+                        "type": "string",
+                        "enum": [
+                          "toggle_auto_fire"
+                        ]
+                      },
+                      "actor": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "run_id": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "entity"
+                            ]
+                          },
+                          "serial": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 9007199254740991
+                          },
+                          "generation": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 2147483647
+                          }
+                        },
+                        "required": [
+                          "run_id",
+                          "kind",
+                          "serial",
+                          "generation"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "input_id",
+                      "run_id",
+                      "sequence",
+                      "tick",
+                      "kind",
+                      "actor"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "input_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "run_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "sequence": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 9007199254740991
+                      },
+                      "tick": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "kind": {
+                        "type": "string",
+                        "enum": [
+                          "interact"
+                        ]
+                      },
+                      "actor": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "run_id": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "entity"
+                            ]
+                          },
+                          "serial": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 9007199254740991
+                          },
+                          "generation": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 2147483647
+                          }
+                        },
+                        "required": [
+                          "run_id",
+                          "kind",
+                          "serial",
+                          "generation"
+                        ]
+                      },
+                      "target": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "run_id": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "entity"
+                            ]
+                          },
+                          "serial": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 9007199254740991
+                          },
+                          "generation": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 2147483647
+                          }
+                        },
+                        "required": [
+                          "run_id",
+                          "kind",
+                          "serial",
+                          "generation"
+                        ]
+                      },
+                      "interaction_id": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "input_id",
+                      "run_id",
+                      "sequence",
+                      "tick",
+                      "kind",
+                      "actor",
+                      "target",
+                      "interaction_id"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "input_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "run_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "sequence": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 9007199254740991
+                      },
+                      "tick": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "kind": {
+                        "type": "string",
+                        "enum": [
+                          "dialogue_advance"
+                        ]
+                      },
+                      "session": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "run_id": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "dialogue"
+                            ]
+                          },
+                          "serial": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 9007199254740991
+                          },
+                          "generation": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 2147483647
+                          }
+                        },
+                        "required": [
+                          "run_id",
+                          "kind",
+                          "serial",
+                          "generation"
+                        ]
+                      },
+                      "node_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "revision": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      }
+                    },
+                    "required": [
+                      "input_id",
+                      "run_id",
+                      "sequence",
+                      "tick",
+                      "kind",
+                      "session",
+                      "node_id",
+                      "revision"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "input_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "run_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "sequence": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 9007199254740991
+                      },
+                      "tick": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "kind": {
+                        "type": "string",
+                        "enum": [
+                          "dialogue_choose"
+                        ]
+                      },
+                      "session": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "run_id": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "dialogue"
+                            ]
+                          },
+                          "serial": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 9007199254740991
+                          },
+                          "generation": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 2147483647
+                          }
+                        },
+                        "required": [
+                          "run_id",
+                          "kind",
+                          "serial",
+                          "generation"
+                        ]
+                      },
+                      "node_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "revision": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "choice_id": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "input_id",
+                      "run_id",
+                      "sequence",
+                      "tick",
+                      "kind",
+                      "session",
+                      "node_id",
+                      "revision",
+                      "choice_id"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "input_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "run_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "sequence": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 9007199254740991
+                      },
+                      "tick": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "kind": {
+                        "type": "string",
+                        "enum": [
+                          "dialogue_close"
+                        ]
+                      },
+                      "session": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "run_id": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "dialogue"
+                            ]
+                          },
+                          "serial": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 9007199254740991
+                          },
+                          "generation": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 2147483647
+                          }
+                        },
+                        "required": [
+                          "run_id",
+                          "kind",
+                          "serial",
+                          "generation"
+                        ]
+                      },
+                      "node_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "revision": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      }
+                    },
+                    "required": [
+                      "input_id",
+                      "run_id",
+                      "sequence",
+                      "tick",
+                      "kind",
+                      "session",
+                      "node_id",
+                      "revision"
+                    ]
+                  }
+                ]
+              }
+            },
+            "required": [
+              "op",
+              "intent"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "advance"
+                ]
+              },
+              "ticks": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "op",
+              "ticks"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "wait_event"
+                ]
+              },
+              "event_type": {
+                "type": "string",
+                "minLength": 1
+              },
+              "max_ticks": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "op",
+              "event_type",
+              "max_ticks"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "move_to_marker"
+                ]
+              },
+              "actor": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "run_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "entity"
+                    ]
+                  },
+                  "serial": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "generation": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  }
+                },
+                "required": [
+                  "run_id",
+                  "kind",
+                  "serial",
+                  "generation"
+                ]
+              },
+              "marker": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "map": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "run_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "kind": {
+                        "type": "string",
+                        "enum": [
+                          "map"
+                        ]
+                      },
+                      "serial": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 9007199254740991
+                      },
+                      "generation": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 2147483647
+                      }
+                    },
+                    "required": [
+                      "run_id",
+                      "kind",
+                      "serial",
+                      "generation"
+                    ]
+                  },
+                  "chunk": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "run_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "kind": {
+                        "type": "string",
+                        "enum": [
+                          "chunk"
+                        ]
+                      },
+                      "serial": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 9007199254740991
+                      },
+                      "generation": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 2147483647
+                      }
+                    },
+                    "required": [
+                      "run_id",
+                      "kind",
+                      "serial",
+                      "generation"
+                    ]
+                  },
+                  "local_id": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "map",
+                  "chunk",
+                  "local_id"
+                ]
+              },
+              "max_ticks": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "op",
+              "actor",
+              "marker",
+              "max_ticks"
+            ]
+          }
+        ]
+      },
+      "minItems": 0
+    },
+    "expect": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "succeeded",
+            "failed",
+            "cancelled"
+          ]
+        },
+        "error_codes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string",
+                "minLength": 1
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "type",
+              "count"
+            ]
+          },
+          "minItems": 0
+        },
+        "event_order": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "remaining_resources": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "listeners": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "actions": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "control_leases": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "projectiles": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "dialogues": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": [
+            "listeners",
+            "actions",
+            "control_leases",
+            "projectiles",
+            "dialogues"
+          ]
+        }
+      },
+      "required": [
+        "outcome",
+        "error_codes",
+        "events",
+        "event_order",
+        "remaining_resources"
+      ]
+    },
+    "verification_layer": {
+      "type": "string",
+      "enum": [
+        "static",
+        "logic",
+        "unity",
+        "manual"
+      ]
+    }
+  },
+  "required": [
+    "case_id",
+    "requirement_ids",
+    "package",
+    "entrypoint",
+    "seed",
+    "timestep",
+    "max_ticks",
+    "setup",
+    "steps",
+    "expect",
+    "verification_layer"
+  ],
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:echo:contracts:0.1.0:case"
+}
