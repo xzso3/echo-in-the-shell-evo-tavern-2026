@@ -1,15 +1,28 @@
-# U2 可打包源码检查点 · ECA 增量版
+# 原生源码交接 · U3 主线与真实 Boss
 
-工作区：`/Users/const/.codex/worktrees/de32/echo-in-the-shell-evo-tavern-2026`。分支：`codex/unity-native-u2-candidate`。首次源码 `988b163` 单独导入为 `3c6edd5`；本次仅将其直接子提交 `91ca8556cbe7239bee3a3e9d668a95293de18d53` cherry-pick 为 `df120194a4f8e3d739b1a6984a66094d3e5741e5`，未合入旧 P1 祖先。最终交接提交见本文件所在提交，原生集成分支同步到该点。旧 world 分支仍保留 be40cd3，不在当前候选中。
+工作区：`/Users/const/.codex/worktrees/de32/echo-in-the-shell-evo-tavern-2026`。分支：`codex/unity-native-u2-candidate`；本文件所在提交为当前交接点，`codex/unity-native-integration`同步至该点。
 
-使用现有 Unity 2021.3.27f1c2 打开上述工作区，入口 `Assets/Scenes/NativeDemo.unity`。Build Settings 保留 NativeDemo 首位且唯一勾选；四个历史场景保留未勾选，文件未删除。用户手动选择 Windows x64 / Mono 并构建。此次仅源码集成和文档交接，不启动 Unity、不构建、不安装模块，不修改用户主工作区。
+使用 Unity 2021.3.27f1c2 打开工作区，入口 `Assets/Scenes/NativeDemo.unity`，无需重建场景。Build Settings 仍为 NativeDemo 首位唯一勾选；历史四场景保留未勾选。Windows x64 / Mono 构建由用户手动执行；本轮未启动 Unity、构建、安装或测试，未修改用户主工作区内容。
 
-操作：WASD 移动；Space 切换自动开火/停火；靠近青色终端按 E，触发 Quest 完成目标→Map 开门→Dialogue 提示；再次 E 或确认按钮关闭对白；到东侧出口按 E，由 ECA 查询 Quest 后交 Level 完成检查点。Tab 开关手机占位，Escape 关闭，手机不暂停战斗；死亡或结果界面点击 Restart Run 重开。
+## 当前操作与路径
 
-当前已接入本关实际 ECA：Level.Started→Quest.Activate；Interaction.Confirmed→只读条件→Quest/Map/Dialogue；出口确认→任务条件→Level.Complete。Actor 持有生命和移动，Combat 管开火/索敌/冷却/伤害调用与击杀，Map 管门，Quest 管目标，Dialogue 管会话，Run 收敛为 Level，Hud 采样输入并读取各系统；ECA 只协调规则，不持有业务副本。具体分工见 `Assets/NativeGame/README.md`。
+WASD 移动，Space 切换自动开火；E 近距离互动，打开对白后下一次 E 确认关闭。Tab 查看记忆目录，Escape/按钮关闭；手机、对白均不暂停战斗。死亡或结局点击 Restart Run。
 
-仍是最小操作检查点：主线、正式 Boss、记忆、支援、结局和新生演出未完成，不代表最终架构或完整游戏完成。英文 UI、静态角色帧与部分素材占位保留。
+收集西南 Private Memory、东北 System Record、东南 System Initial Echo 三段记忆；上方 service path 记录真实绕行，下方有守卫。回青色 relay 按 E，进入东侧 Boss 区域触发封门和真实战斗；破壳后靠近暴露核心按 E，错过窗口可等待再次开放。真实 Defeated 事件开最终门，最终节点 E 提交一种结局和本局摘要，随后可重开。Boss 为开发占位，系统初始回声不冒充真实玩家内容。
 
-验证边界：U1 报告其工作区 Unity 编译及 Play Mode 组件/ECA链冒烟通过，日志 `/private/tmp/native-u1-eca-smoke.log`；移除临时探针后最终编译 `/private/tmp/native-u1-final-compile.log` 退出0。终端/出口通过显式定位玩家和组件调用检查，不能算真实玩家路线。最后补的出口条件失败对白仅编译，未额外运行。真实键鼠、鼠标点击、Windows 构建/启动、分辨率适配及完整通关未测。本轮没有重复运行验证，也不把 U1 原工作区报告转记为当前候选运行通过。上轮33个外部GUID检查属于早期检查点，不能当作本次新增组件的运行证据。
+ECA 实际协调 Interaction/区域事件→Quest/Narrative→Map/Dialogue→Boss→Level；状态由各系统持有，移动/战斗使用 Unity 原生组件。具体职责和场景位置见 Assets/NativeGame/README.md。U4 支援、四象限结局及新生演出尚未完成。
 
-工作区备注：已跟踪源码无未提交修改；旧 .NET bin/obj 产物在 Assets 外原样保留且不暂存，不运行旧测试、不删除旧产物。原始场景资源差量保持交付字节，候选独有 Build Settings 未受本次导入影响。后续等待开发交付再做精确源码集成。
+## 提交与验证边界
+
+在已有 ECA 集成 `66ea557` 上先接入两份状态文档 `597162e`（本地 `cc890f2`），再精确按序导入：
+
+- 接口 `4191c87` → `a28b9e8`。
+- 主线 `69d2df9` → `f7e51d5`。
+- Boss `da4b5f4` → `694967b`，与原 `9def779`等价，不重复合入。
+- 最终场景接线 `9e2a787` → `a23ee89`。
+
+没有合入旧 P1 祖先或 world WIP；旧分支与用户改动保留。此次交付 Assets 字节与 U1 最终源提交一致，Build Settings 保持原集成设置。
+
+用户已确认旧 U2 `66ea557` 的 Windows 启动、移动、开火切换、终端及重开无错误。此反馈不能外推到新增 U3。执行者报告 U3 Unity 编译及必要组件冒烟通过：三记忆/绕行、真实 Boss 两类攻击与破壳/核心窗口、一次 Defeated、最终节点单结局及重开。检查使用显式定位、脚本移动与组件调用，不是玩家人工路线。U3 真实键鼠完整通关、节奏及 Windows 新版本仍未测；本轮不重复验证或将原工作区报告转记为当前候选运行通过。日志范围见 Assets/NativeGame/README.md。
+
+旧 .NET bin/obj 产物位于 Assets 外，保留且不暂存；本轮不运行旧验收、不清理历史产物。
