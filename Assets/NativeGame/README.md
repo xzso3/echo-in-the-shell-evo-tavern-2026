@@ -1,4 +1,4 @@
-# Unity Native — U4 简体中文试玩版
+# Unity Native — 简体中文试玩版与本地 NPC 支线
 
 当前 NativeDemo 及其依赖游戏界面已统一使用 FusionPixel 与简体中文，WASD/Space/E/Tab/Enter 等键位保留英文。场景和 Boss Prefab 已保存，无需重跑迁移菜单；旧历史场景不在当前试玩构建中。字模和源 OTF 随包，许可位于 StreamingAssets；详细证据见 [字体与中文集成说明](Fonts/INTEGRATION.zh-CN.md)。新版 Windows 完整人工流程仍待用户试玩。
 
@@ -11,6 +11,14 @@
 - Boss 是开发占位战斗壳，没有正式剧情身份。躲避锁定射线三连射和橙色圈轰炸，外壳破裂后靠近核心按 E。普通窗口 6 秒；错过后 8 秒重新开放。子弹不能直接提交胜利。
 - Boss 的真实完成事件开最终门。最终节点 E 打开 **写入 / 销毁** 两个按钮；必须仍在节点范围内才能提交。按钮不加同步/差异，不覆盖整局形成的象限。
 - 非新生显示对应短文本和 重新开始。新生白屏等待新的 E 第一拳，随后没有输入也会自主打出最后一拳，黑屏约 2 秒后手机接续；手机仍可读记忆/行为记录和 重新开始。
+
+## 本地 NPC 可选支线
+
+出生点北侧 `(-11, 3)` 的金色「本地档案员」是静态本地角色。靠近按 E，点击 **A：个人记录** 或 **B：路线报告**；E 可暂时关闭选项。每局只能选一项：A 找回西南私人记忆后返回提交；B 实际走过上方检修通道后返回提交。选择前已达成条件也有效，无需重复取得；关闭对白后再按 E 确认交付。重复交谈只显示完成反馈，不会再次结算或改选。手机通讯的「任务／本局记录」可滚动查看进度，重开清空本局支线。
+
+两条支线分别留下个人记录、检修路线报告，不额外增加同步度／差异度或支援授权；未接取或未完成也不阻挡三段记忆、中继、Boss 和最终节点。当前场景、LocalArchivist Prefab、按钮及字体已保存，直接 Play，无需运行生成菜单。
+
+此次采用临时 Play Mode 聚焦检查：A 使用已取得的真实私人记忆，B 使用真实物理触发的检修通道事实，两项均通过 Interaction → ECA → Quest → Dialogue 完成交付；重复交付与改选保护通过。B 尚未完成时，三段真实记忆互动与中继开门通过。共 21 个断言、6 张界面快照，中文无缺字／文本高度溢出；已抽查选项、手机和交付截图。日志 `/private/tmp/native-npc-smoke.log`，临时源码 `/private/tmp/native-npc-smoke-source.cs`；探针已从 Assets 移除。检查使用显式定位和按钮回调，不是人工键鼠通关；未重测 Boss／结局全流程，未构建 Windows，最终由用户 Windows 人工验收。
 
 ## 三页签与真实支援
 
@@ -45,13 +53,13 @@
 | Combat | NativeCombat/Projectile 真实索敌、冷却、扫掠弹丸、伤害和击杀 |
 | Map | NativeMap 门状态；Collider2D/NativeObstacle 阻挡与视线 |
 | Interaction | NativeInteraction 距离、Confirmed、消耗；NativeRegion 实际碰撞进入事件 |
-| Quest | 主线阶段/条件，查询 Narrative，不复制记忆/同步/差异/结局 |
+| Quest | 主线阶段及支线互斥选择、进度、一次结算，查询 Narrative，不复制记忆/同步/差异/结局 |
 | Narrative | NativeNarrative 持有记忆归属、有效行为、共享/同步/差异、结局与新生状态 |
 | Support | NativeSupportController 合同、可用性、实际效果、每项成功一次；只发成功授权事件 |
-| Dialogue | NativeDialogue 当前会话和确认关闭 |
+| Dialogue | NativeDialogue 当前会话、选项与确认关闭，只发选择事件 |
 | Level | NativeRunController Playing/Ending/Completed/Dead、计时、重开 |
 | UI | NativeHud 输入；NativePhone 当前页和选择；NativeEndingSequence Canvas/协程演出，不复制故事状态 |
-| ECA | NativeEcaRules 订阅事件、查条件、调用所属组件；不保存第二份业务状态 |
+| ECA | NativeEcaRules 与 NativeNpcEcaRules 订阅事件、查条件、调用所属组件；不保存第二份业务状态 |
 
 真实链路：记忆互动→Narrative 收集；区域进入→绕行记录；relay→Quest/Map；Boss 区域→激活/封门；真实 Defeated→Quest/Narrative/开最终门；Support.Authorized→Narrative 同步/共享；最终有效选择→Narrative 象限提交→Quest/Level。新生第一拳/自主拳/黑屏接续由 Narrative 的顺序状态校验，演出协程负责时间和表现。
 

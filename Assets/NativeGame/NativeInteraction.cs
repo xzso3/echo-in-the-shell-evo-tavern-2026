@@ -6,6 +6,7 @@ namespace Echo.NativeGame
     {
         public NativeRunController run;
         public NativeMap map;
+        public NativeLocalNpc npc;
         public bool isExit;
         public float radius = 1.65f;
         public string promptOverride;
@@ -13,7 +14,7 @@ namespace Echo.NativeGame
         public bool Used { get; private set; }
         public event Action<NativeInteraction> Confirmed;
         public string Prompt => !string.IsNullOrEmpty(promptOverride) ? promptOverride : isExit ? map.ExitOpen ? "E  /  离开区域" : "出口已锁定 / 请先连接青色终端" : "E  /  连接终端";
-        public bool CanReach(NativePlayer player) => player && Vector2.Distance(player.transform.position, transform.position) <= radius && !NativeObstacle.Blocked(player.transform.position, transform.position);
+        public bool CanReach(NativePlayer player) => isActiveAndEnabled && (!npc || npc.CanInteract) && player && Vector2.Distance(player.transform.position, transform.position) <= radius && !NativeObstacle.Blocked(player.transform.position, transform.position);
         public void Use(NativePlayer player)
         {
             if (Used || !run || !run.Running || !CanReach(player)) return;

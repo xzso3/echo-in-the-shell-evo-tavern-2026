@@ -46,7 +46,7 @@ namespace Echo.NativeGame
             objectiveLabel.text = level.quest.ObjectiveText;
             if (!phone && phoneArchive && phonePanel.activeSelf && level.narrative) phoneArchive.text = level.narrative.MemorySummary();
             counterLabel.text = string.Format("{0:00}:{1:00}   /   击败敌人 {2}", (int)level.Elapsed / 60, (int)level.Elapsed % 60, combat.Kills) + "   |   同步度 " + level.narrative.Sync + "   /   差异度 " + level.narrative.Difference;
-            promptLabel.text = dialogue.IsOpen ? "E  /  收到" : level.rules.CanInteractBossCore(player) ? "E  /  解除核心封锁" : nearby ? nearby.Prompt : level.Running ? "WASD 移动    Space 自动开火/停火    E 互动    Tab 手机" : "";
+            promptLabel.text = dialogue.HasChoices ? "点击选择委托方向 / E 暂不选择" : dialogue.IsOpen ? "E  /  收到" : level.rules.CanInteractBossCore(player) ? "E  /  解除核心封锁" : nearby ? nearby.Prompt : level.Running ? "WASD 移动    Space 自动开火/停火    E 互动    Tab 手机" : "";
         }
         public void ShowResult(string title, string body)
         { phonePanel.SetActive(false); resultTitle.text = title; resultBody.text = body; resultPanel.SetActive(true); ClearSelection(); }
