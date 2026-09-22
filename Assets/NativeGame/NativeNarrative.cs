@@ -76,7 +76,12 @@ namespace Echo.NativeGame
         public string MemorySummary()
         {
             var text = new StringBuilder("MEMORIES / " + MemoryCount + " OF 3\n");
-            foreach (var memory in memories) text.Append("\n").Append(memory.Source).Append(IsShared(memory.Kind) ? " [SHARED]" : " [LOCAL]").Append("\n").Append(memory.Title).Append("\n");
+            foreach (var memory in memories)
+            {
+                text.Append("\n").Append(memory.Source).Append(IsShared(memory.Kind) ? " [SHARED]" : " [LOCAL]").Append("\n").Append(memory.Title).Append("\n");
+                if (memory.Kind == NativeMemoryKind.Private && PreservedAnomaly) text.Append("Objection protected from normalization.\n");
+                if (memory.Kind == NativeMemoryKind.InitialEcho && RewroteEcho) text.Append("Local rewrite: I will carry the contradiction.\n");
+            }
             if (memories.Count == 0) text.Append("\nRecover the marked records first.\n");
             return text.ToString();
         }

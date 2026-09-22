@@ -57,6 +57,22 @@ namespace Echo.NativeGame.Editor
             EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene); AssetDatabase.SaveAssets();
             Debug.Log("U4 local phone and narrative ending sequence connected; actual Support component awaits owner integration.");
         }
+        [MenuItem("Echo/Native/Connect Real Support")]
+        public static void ConnectSupport()
+        {
+            if (Application.isPlaying) throw new InvalidOperationException("Stop Play Mode first.");
+            var scene = EditorSceneManager.OpenScene(NativeDemoBuilder.ScenePath);
+            var run = UnityEngine.Object.FindObjectOfType<NativeRunController>();
+            if (!run.hud.phone || !run.endingSequence || !run.endingSequence.overlay) throw new InvalidOperationException("U4 saved scene is incomplete.");
+            if (run.rules.supportComponent) throw new InvalidOperationException("Support already connected.");
+            var support = new GameObject("Support - local confirmed effects").AddComponent<NativeSupportController>();
+            support.level = run; support.boss = run.rules.bossComponent as NativeBossController;
+            run.rules.supportComponent = support;
+            EditorUtility.SetDirty(run.rules); EditorSceneManager.MarkSceneDirty(scene);
+            Debug.Log("U4 scene references reloaded; saving real Support integration.");
+            EditorSceneManager.SaveScene(scene); AssetDatabase.SaveAssets();
+            Debug.Log("U4 real Support connected: UI requests, confirmed effects, Authorized -> ECA -> Narrative.");
+        }
         static Image Box(string name, Transform parent, Vector2 anchor, Vector2 at, Vector2 size, Color color)
         {
             var image = new GameObject(name, typeof(RectTransform), typeof(Image)).GetComponent<Image>(); image.transform.SetParent(parent,false);

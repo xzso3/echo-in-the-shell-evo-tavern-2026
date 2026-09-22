@@ -17,7 +17,8 @@ namespace Echo.NativeGame
         NativeSupportTier tier;
         NativeMemoryKind memory;
         int topic;
-        bool finalDecision;
+        bool finalDecision, pendingWasVisible;
+        int pendingFirstVisibleFrame;
         string feedback = "", lastBody;
         INativeSupport Service => level.rules.Support;
         void Awake()
@@ -37,7 +38,12 @@ namespace Echo.NativeGame
         {
             if (!level.hud.phonePanel.activeSelf) return;
             var narrative = level.narrative;
-            heading.text = "GHOST LINK / " + (finalDecision ? "FINAL NODE" : SelectedPage.ToString().ToUpperInvariant());
+            bool pendingNow = Service != null && Service.HasPending;
+            if (pendingNow && !pendingWasVisible) pendingFirstVisibleFrame = Time.frameCount;
+            pendingWasVisible = pendingNow;
+            bool contractView = !finalDecision && SelectedPage == Page.Support && pendingNow;
+            scroll.viewport.sizeDelta = new Vector2(scroll.viewport.sizeDelta.x, contractView ? 298 : 190);
+            heading.text = "GHOST LINK / " + (finalDecision ? "FINAL NODE" : SelectedPage.ToString().ToUpperInvariant()) + " / SCROLL";
             foreach (var button in actions) { button.gameObject.SetActive(false); button.interactable = true; }
             restart.gameObject.SetActive(level.Phase == NativeRunController.RunPhase.Completed || level.Phase == NativeRunController.RunPhase.Dead);
             string text;
@@ -58,12 +64,14 @@ namespace Echo.NativeGame
             {
                 bool pending = Service != null && Service.HasPending;
                 text = "SELECT EFFECT / AUTHORIZATION / MEMORY\n" + kind + " | " + tier + " | " + memory + "\n\nLimited authorization: +20 sync. Deep authorization: +45 sync. Each effect can succeed once.\n\n" + (Service == null ? "Local support is not connected. No authorization has been granted." : Service.StatusText) + "\n\n" + narrative.ScoreSummary();
+                if (pending) text = Service.StatusText;
                 bool canRequest = level.Running && Service != null && !pending;
                 SetAction(0, "MEDICAL", canRequest); SetAction(1, "WEAKPOINT", canRequest);
                 SetAction(2, "LIMITED +20", canRequest); SetAction(3, "DEEP +45", canRequest);
                 SetAction(4, "MEMORY: " + memory.ToString().ToUpperInvariant(), canRequest);
                 SetAction(5, "REQUEST CONTRACT", canRequest && narrative.HasMemory(memory));
-                SetAction(6, "ACCEPT / ENTER", level.Running && pending); SetAction(7, "REJECT", level.Running && pending);
+                SetAction(6, "ACCEPT / ENTER", level.Running && pending && Time.frameCount > pendingFirstVisibleFrame); SetAction(7, "REJECT", level.Running && pending);
+                if (pending) for (int i = 0; i < 6; i++) actions[i].gameObject.SetActive(false);
             }
             else
             {
@@ -76,7 +84,7 @@ namespace Echo.NativeGame
             if (!string.IsNullOrEmpty(feedback)) text += "\n\n" + feedback;
             if (lastBody != text)
             {
-                body.text = text; body.rectTransform.sizeDelta = new Vector2(body.rectTransform.sizeDelta.x, Mathf.Max(190, body.preferredHeight + 12)); lastBody = text;
+                body.text = text; body.rectTransform.sizeDelta = new Vector2(body.rectTransform.sizeDelta.x, Mathf.Max(scroll.viewport.sizeDelta.y, body.preferredHeight + 12)); lastBody = text;
             }
         }
         string CommsText(int selected)
@@ -119,12 +127,13 @@ namespace Echo.NativeGame
                     if (index < 2) kind = (NativeSupportKind)index;
                     else if (index < 4) tier = (NativeSupportTier)(index - 2);
                     else if (index == 4) memory = (NativeMemoryKind)(((int)memory + 1) % 3);
-                    else if (index == 5) Service.Request(kind, tier, memory);
+                    else if (index == 5 && Service.Request(kind, tier, memory))
+                    { pendingWasVisible = true; pendingFirstVisibleFrame = Time.frameCount; }
                 }
             }
             scroll.verticalNormalizedPosition = 1;
         }
         public void ConfirmSupport()
-        { if (!finalDecision && SelectedPage == Page.Support && level.Running && Service != null && Service.HasPending) Service.Confirm(); }
+        { if (!finalDecision && SelectedPage == Page.Support && level.Running && Service != null && Service.HasPending && pendingWasVisible && Time.frameCount > pendingFirstVisibleFrame) Service.Confirm(); }
     }
 }

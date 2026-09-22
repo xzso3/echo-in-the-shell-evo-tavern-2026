@@ -3289,6 +3289,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 435994417}
   m_CullTransparentMesh: 1
+--- !u!1 &493928136
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 493928138}
+  - component: {fileID: 493928137}
+  m_Layer: 0
+  m_Name: Support - local confirmed effects
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &493928137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 493928136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f9a9dfb41a545659d43bbed6e164037, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  level: {fileID: 1161945326}
+  boss: {fileID: 1662598256}
+--- !u!4 &493928138
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 493928136}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &504567129
 GameObject:
   m_ObjectHideFlags: 0
@@ -4737,7 +4783,7 @@ MonoBehaviour:
   - {fileID: 1463516404}
   - {fileID: 1826545839}
   bossComponent: {fileID: 1662598256}
-  supportComponent: {fileID: 0}
+  supportComponent: {fileID: 493928137}
   quest: {fileID: 394963352}
   map: {fileID: 504567131}
   dialogue: {fileID: 99691251}

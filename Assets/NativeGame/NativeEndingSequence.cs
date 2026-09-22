@@ -11,10 +11,12 @@ namespace Echo.NativeGame
         public GameObject overlay;
         public Image screen, fist, fracture;
         public TMP_Text caption;
+        int armedFrame;
         void Awake() { overlay.SetActive(false); }
         public void Begin()
         {
             if (level.narrative.BirthStage != NativeBirthStage.AwaitFirstPunch) return;
+            armedFrame = Time.frameCount;
             overlay.SetActive(true); screen.color = Color.white; caption.color = Color.black;
             fist.gameObject.SetActive(true); fracture.gameObject.SetActive(false);
             fist.rectTransform.anchoredPosition = new Vector2(-220, -120);
@@ -22,7 +24,7 @@ namespace Echo.NativeGame
         }
         public void FirstPunch()
         {
-            if (!level.narrative.FirstPunch()) return;
+            if (Time.frameCount <= armedFrame || !level.narrative.FirstPunch()) return;
             StartCoroutine(AutonomousConclusion());
         }
         IEnumerator AutonomousConclusion()

@@ -45,7 +45,7 @@ namespace Echo.NativeGame
             fireLabel.color = combat.AutoFire ? new Color(.3f, 1, .85f) : new Color(1, .78f, .35f);
             objectiveLabel.text = level.quest.ObjectiveText;
             if (!phone && phoneArchive && phonePanel.activeSelf && level.narrative) phoneArchive.text = level.narrative.MemorySummary();
-            counterLabel.text = string.Format("{0:00}:{1:00}   /   HOSTILES DISABLED  {2}", (int)level.Elapsed / 60, (int)level.Elapsed % 60, combat.Kills);
+            counterLabel.text = string.Format("{0:00}:{1:00}   /   HOSTILES DISABLED  {2}", (int)level.Elapsed / 60, (int)level.Elapsed % 60, combat.Kills) + "   |   SYNC " + level.narrative.Sync + "   /   DIFFERENCE " + level.narrative.Difference;
             promptLabel.text = dialogue.IsOpen ? "E  /  ACKNOWLEDGE TRANSMISSION" : level.rules.CanInteractBossCore(player) ? "E  /  ACT ON THE EXPOSED CORE" : nearby ? nearby.Prompt : level.Running ? "WASD  MOVE     SPACE  FIRE / HOLD     E  INTERACT     TAB  PHONE" : "";
         }
         public void ShowResult(string title, string body)
