@@ -7,6 +7,7 @@ namespace Echo.NativeGame
         [Header("Event sources")]
         public NativeRunController level;
         public NativeInteraction terminal, exit;
+        public NativeInteraction northRouteSwitch;
         public NativeMemoryNode[] memoryNodes = new NativeMemoryNode[0];
         public NativeRegion[] regions = new NativeRegion[0];
         [Tooltip("Assign the real NativeBossController implementing INativeBossEncounter. No placeholder victory.")]
@@ -27,6 +28,7 @@ namespace Echo.NativeGame
             if (!level || !terminal || !exit || !quest || !map || !dialogue)
             { if (Application.isPlaying) Debug.LogError("Native ECA: missing scene references", this); return; }
             level.Started += OnLevelStarted; terminal.Confirmed += OnTerminalConfirmed; exit.Confirmed += OnExitConfirmed;
+            if (northRouteSwitch) northRouteSwitch.Confirmed += OnNorthRouteConfirmed;
             foreach (var memory in memoryNodes) if (memory && memory.interaction) memory.interaction.Confirmed += OnMemoryConfirmed;
             foreach (var region in regions) if (region) region.Entered += OnRegionEntered;
             boss = bossComponent as INativeBossEncounter;
@@ -39,6 +41,7 @@ namespace Echo.NativeGame
             if (level) level.Started -= OnLevelStarted;
             if (terminal) terminal.Confirmed -= OnTerminalConfirmed;
             if (exit) exit.Confirmed -= OnExitConfirmed;
+            if (northRouteSwitch) northRouteSwitch.Confirmed -= OnNorthRouteConfirmed;
             foreach (var memory in memoryNodes) if (memory && memory.interaction) memory.interaction.Confirmed -= OnMemoryConfirmed;
             foreach (var region in regions) if (region) region.Entered -= OnRegionEntered;
             if (boss != null) boss.Defeated -= OnBossDefeated; boss = null;
@@ -67,6 +70,13 @@ namespace Echo.NativeGame
             if (!quest.RecordTerminal()) return;
             source.Consume(); map.OpenExit(); narrative.RecordRelay(); dialogue.Show(terminalMessage);
             Debug.Log("Native ECA: terminal -> Quest relay objective -> Map passage -> Dialogue", this);
+        }
+        void OnNorthRouteConfirmed(NativeInteraction source)
+        {
+            if (source != northRouteSwitch || !level.Running || source.Used || !source.CanReach(level.player)) return;
+            if (!map.OpenNorthRoute()) return;
+            source.Consume();
+            dialogue.Show("北侧通路 / 门锁已解除。\n沿连接的两块区段向北继续，原东侧主线仍可返回。");
         }
         void OnRegionEntered(NativeRegion region, NativePlayer actor)
         {
