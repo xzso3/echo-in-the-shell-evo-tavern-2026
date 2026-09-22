@@ -1,0 +1,64 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "run",
+        "level",
+        "encounter",
+        "entity",
+        "execution"
+      ]
+    },
+    "context": {
+      "type": "string",
+      "enum": [
+        "ordinary",
+        "attack",
+        "before_damage_commit"
+      ]
+    },
+    "parameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "duration": {
+          "type": "number",
+          "minimum": 0.0,
+          "description": "Simulation seconds; zero yields at least one tick",
+          "default": 0
+        },
+        "clock": {
+          "type": "string",
+          "enum": [
+            "simulation"
+          ]
+        }
+      },
+      "required": [
+        "duration",
+        "clock"
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "scope",
+    "context",
+    "parameters"
+  ],
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:echo:contracts:0.1.0:fixture_action"
+}

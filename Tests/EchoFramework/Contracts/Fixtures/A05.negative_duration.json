@@ -1,0 +1,15 @@
+{
+  "case_id": "A05.negative_duration",
+  "schema": "fixture_action",
+  "data": {
+    "id": "fixture.wait",
+    "version": "0.1.0",
+    "scope": "execution",
+    "context": "ordinary",
+    "parameters": {
+      "duration": -1,
+      "clock": "simulation"
+    }
+  },
+  "expected_code": "schema.minimum"
+}

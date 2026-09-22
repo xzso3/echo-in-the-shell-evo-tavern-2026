@@ -1,0 +1,16 @@
+{
+  "case_id": "A03.missing_field",
+  "schema": "package",
+  "data": {
+    "package_id": "contract.fixture",
+    "package_version": "0.1.0",
+    "schema_version": "0.1.0",
+    "required_capabilities": [],
+    "dependencies": [],
+    "exports": [
+      "contract.fixture:level/main"
+    ],
+    "resource_manifest": "resources.json"
+  },
+  "expected_code": "schema.required"
+}

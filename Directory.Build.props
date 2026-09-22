@@ -1,0 +1,1 @@
+<Project><PropertyGroup><BaseIntermediateOutputPath>obj/$(MSBuildProjectName)/</BaseIntermediateOutputPath><LangVersion>9.0</LangVersion><Nullable>disable</Nullable><ImplicitUsings>disable</ImplicitUsings><TreatWarningsAsErrors>true</TreatWarningsAsErrors><Deterministic>true</Deterministic><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup></Project>

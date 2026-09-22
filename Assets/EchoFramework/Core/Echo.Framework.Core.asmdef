@@ -1,0 +1,10 @@
+{
+  "name": "Echo.Framework.Core",
+  "references": [],
+  "autoReferenced": true,
+  "noEngineReferences": true,
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "Newtonsoft.Json.dll"
+  ]
+}

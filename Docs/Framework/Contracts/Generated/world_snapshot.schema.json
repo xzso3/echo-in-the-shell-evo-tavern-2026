@@ -1,0 +1,563 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tick": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "entities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "entity": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "run_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "entity"
+                ]
+              },
+              "serial": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "generation": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "run_id",
+              "kind",
+              "serial",
+              "generation"
+            ]
+          },
+          "definition": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(?!.*\\.\\.)(?!.*\\/$)[a-z][a-z0-9_.-]*:[a-z][a-z0-9_]*\\/[a-z][a-z0-9_./-]*$"
+          },
+          "scope": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "run_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "run",
+                  "level",
+                  "encounter",
+                  "entity",
+                  "execution"
+                ]
+              },
+              "serial": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "generation": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "run_id",
+              "kind",
+              "serial",
+              "generation"
+            ]
+          },
+          "map": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "run_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "map"
+                ]
+              },
+              "serial": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "generation": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "run_id",
+              "kind",
+              "serial",
+              "generation"
+            ]
+          },
+          "position": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "x",
+              "y"
+            ]
+          },
+          "facing": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "x",
+              "y"
+            ]
+          },
+          "animation_semantic": {
+            "type": "string",
+            "minLength": 1
+          },
+          "attack_phase": {
+            "oneOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "phase_progress": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "presentation": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(?!.*\\.\\.)(?!.*\\/$)[a-z][a-z0-9_.-]*:[a-z][a-z0-9_]*\\/[a-z][a-z0-9_./-]*$"
+          },
+          "alive": {
+            "type": "boolean"
+          },
+          "auto_fire": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "entity",
+          "definition",
+          "scope",
+          "map",
+          "position",
+          "facing",
+          "animation_semantic",
+          "attack_phase",
+          "phase_progress",
+          "presentation",
+          "alive",
+          "auto_fire"
+        ]
+      },
+      "minItems": 0
+    },
+    "doors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "door": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "run_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "entity"
+                ]
+              },
+              "serial": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "generation": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "run_id",
+              "kind",
+              "serial",
+              "generation"
+            ]
+          },
+          "open": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "door",
+          "open"
+        ]
+      },
+      "minItems": 0
+    },
+    "objectives": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "quest": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "run_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "quest"
+                ]
+              },
+              "serial": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "generation": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "run_id",
+              "kind",
+              "serial",
+              "generation"
+            ]
+          },
+          "objective_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "progress": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "required": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "inactive",
+              "active",
+              "completed",
+              "failed",
+              "cancelled"
+            ]
+          }
+        },
+        "required": [
+          "quest",
+          "objective_id",
+          "progress",
+          "required",
+          "state"
+        ]
+      },
+      "minItems": 0
+    },
+    "interactions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "actor": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "run_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "entity"
+                ]
+              },
+              "serial": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "generation": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "run_id",
+              "kind",
+              "serial",
+              "generation"
+            ]
+          },
+          "target": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "run_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "entity"
+                ]
+              },
+              "serial": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "generation": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "run_id",
+              "kind",
+              "serial",
+              "generation"
+            ]
+          },
+          "interaction_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "available": {
+            "type": "boolean"
+          },
+          "reason": {
+            "oneOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "actor",
+          "target",
+          "interaction_id",
+          "text",
+          "available",
+          "reason"
+        ]
+      },
+      "minItems": 0
+    },
+    "dialogues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "session": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "run_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "dialogue"
+                ]
+              },
+              "serial": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "generation": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "run_id",
+              "kind",
+              "serial",
+              "generation"
+            ]
+          },
+          "node_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "speaker": {
+            "type": "string",
+            "minLength": 1
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "choice_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "choice_id",
+                "text"
+              ]
+            },
+            "minItems": 0
+          }
+        },
+        "required": [
+          "session",
+          "node_id",
+          "revision",
+          "speaker",
+          "text",
+          "choices"
+        ]
+      },
+      "minItems": 0
+    },
+    "result": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "result_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "success": {
+              "type": "boolean"
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "result_id",
+            "success",
+            "reason"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "run_id",
+    "tick",
+    "entities",
+    "doors",
+    "objectives",
+    "interactions",
+    "dialogues",
+    "result"
+  ],
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:echo:contracts:0.1.0:world_snapshot"
+}

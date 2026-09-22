@@ -1,0 +1,9 @@
+{
+  "name": "Echo.UnityHost",
+  "references": [
+    "Echo.Framework.Core",
+    "Echo.Gameplay"
+  ],
+  "autoReferenced": true,
+  "noEngineReferences": false
+}

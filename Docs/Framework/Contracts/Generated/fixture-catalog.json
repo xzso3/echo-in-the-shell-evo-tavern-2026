@@ -1,0 +1,55 @@
+{
+  "contract_version": "0.1.0",
+  "use": "contract_fixture",
+  "capabilities": [
+    {
+      "id": "fixture.wait",
+      "version": "0.1.0",
+      "kind": "action",
+      "owner_module": "contract.fixture",
+      "parameter_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "duration": {
+            "type": "number",
+            "minimum": 0.0,
+            "description": "Simulation seconds; zero yields at least one tick",
+            "default": 0
+          },
+          "clock": {
+            "type": "string",
+            "enum": [
+              "simulation"
+            ]
+          }
+        },
+        "required": [
+          "duration",
+          "clock"
+        ]
+      },
+      "result_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {},
+        "required": []
+      },
+      "allowed_scopes": [
+        "execution"
+      ],
+      "contexts": [
+        "ordinary"
+      ],
+      "timing": "sustained",
+      "cancellation": "cancel before next tick; release test lease",
+      "side_effects": "fixture only; no production state",
+      "hook_permissions": [],
+      "emitted_events": [],
+      "error_codes": [
+        "fixture.cancelled"
+      ],
+      "use": "contract_fixture"
+    }
+  ]
+}

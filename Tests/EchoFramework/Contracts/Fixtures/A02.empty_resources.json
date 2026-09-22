@@ -1,0 +1,9 @@
+{
+  "case_id": "A02.empty_resources",
+  "schema": "resources",
+  "data": {
+    "schema_version": "0.1.0",
+    "resources": []
+  },
+  "expected_code": ""
+}

@@ -1,0 +1,17 @@
+{
+  "case_id": "A04.resource_type",
+  "schema": "resources",
+  "data": {
+    "schema_version": "0.1.0",
+    "resources": [
+      {
+        "id": "contract.fixture:resource/a",
+        "type": "gameobject",
+        "source_path": "assets/a.png",
+        "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "license": "fixture-only"
+      }
+    ]
+  },
+  "expected_code": "schema.enum"
+}

@@ -1,0 +1,109 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "package_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z][a-z0-9_.-]*$"
+    },
+    "package_version": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "schema_version": {
+      "type": "string",
+      "enum": [
+        "0.1.0"
+      ]
+    },
+    "required_capabilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+          }
+        },
+        "required": [
+          "id",
+          "version"
+        ]
+      },
+      "minItems": 0
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "package_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "package_version": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+          },
+          "sha256": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "package_id",
+          "package_version",
+          "sha256"
+        ]
+      },
+      "minItems": 0
+    },
+    "exports": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^(?!.*\\.\\.)(?!.*\\/$)[a-z][a-z0-9_.-]*:[a-z][a-z0-9_]*\\/[a-z][a-z0-9_./-]*$"
+      },
+      "minItems": 0
+    },
+    "entrypoints": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^(?!.*\\.\\.)(?!.*\\/$)[a-z][a-z0-9_.-]*:[a-z][a-z0-9_]*\\/[a-z][a-z0-9_./-]*$"
+      },
+      "minItems": 0
+    },
+    "resource_manifest": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)[a-zA-Z0-9_./-]+$"
+    }
+  },
+  "required": [
+    "package_id",
+    "package_version",
+    "schema_version",
+    "required_capabilities",
+    "dependencies",
+    "exports",
+    "entrypoints",
+    "resource_manifest"
+  ],
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:echo:contracts:0.1.0:package"
+}

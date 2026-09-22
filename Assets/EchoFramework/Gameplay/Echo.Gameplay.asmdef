@@ -1,0 +1,8 @@
+{
+  "name": "Echo.Gameplay",
+  "references": [
+    "Echo.Framework.Core"
+  ],
+  "autoReferenced": true,
+  "noEngineReferences": true
+}
