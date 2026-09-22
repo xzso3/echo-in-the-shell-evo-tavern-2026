@@ -1,8 +1,8 @@
 # Unity Native 集成交接 · P2 本地 NPC 支线
 
-工作区：`/Users/const/.codex/worktrees/de32/echo-in-the-shell-evo-tavern-2026`。分支：`codex/unity-native-p2-npc-candidate`；本文件所在提交为 P2 交接点，`codex/unity-native-integration` 同步到该点。使用 Unity 2021.3.27f1c2 打开此目录，入口 `Assets/Scenes/NativeDemo.unity`，无需执行创建/迁移菜单。
+交付主目录：`/Users/const/Projects/Unity/echo-in-the-shell-evo-tavern-2026`。分支：`codex/unity-native-docs`；de32 集成 `bb39ca51922e79f4c3c73a5a9fe95a8cc21d667c` 经 `5d0c168f89623dcd452bab21dcbfb5053c241900` 合入主目录且提交树相同。本文件所在提交为当前交接点，`codex/unity-native-integration` 同步到该点。使用 Unity 2021.3.27f1c2 打开此目录，入口 `Assets/Scenes/NativeDemo.unity`，无需执行创建/迁移菜单。
 
-Build Settings 保留 NativeDemo 首位唯一勾选，四个历史场景未勾选但未删除。Windows x64 / Mono 由用户手动构建；本次 P2 集成只做源码、文档和引用静态核对，没有在 de32 运行 Unity、构建或安装。用户主工作区的 README、原型文档、项目设置及其他未提交内容保持原样。
+Build Settings 保留 NativeDemo 首位唯一勾选，四个历史场景未勾选但未删除。Windows x64 / Mono 由用户手动构建；本次 P2 集成只做源码、文档和引用静态核对，没有在集成环节重跑 Unity、构建或安装。主目录原有 6 个已跟踪未提交文件及 13 个未跟踪调度文档逐文件核对未变，也未暂存或提交。
 
 ## P2 本地 NPC 支线
 
@@ -12,7 +12,7 @@ Build Settings 保留 NativeDemo 首位唯一勾选，四个历史场景未勾�
 
 P2-01 执行者报告 Unity 2021.3.27f1c2 的场景接线/编译命令退出 0；临时 Play Mode 聚焦检查 21 个断言、6 张界面快照：两项均从真实既有证据经 Interaction → ECA → Quest → Dialogue 完成交付，重复交付与改选被拦截，未完成 B 时三段记忆与 relay 仍可继续。新增中文未见缺字或文本高度溢出。证据在 `Assets/NativeGame/README.md`、`/private/tmp/native-npc-connect.log` 和 `/private/tmp/native-npc-smoke.log`；临时探针已从 Assets 移除。检查使用显式定位和按钮回调，并非人工键鼠通关；未重测 Boss／结局全流程，未构建 Windows。
 
-本次静态核对确认场景中 LocalArchivist Prefab、NpcEcaRules、玩家、Quest/Narrative、对白按钮与 HUD 互动表引用存在；FusionPixel 字体及 `Assets/StreamingAssets/ThirdPartyLicenses/FusionPixel/` 许可文件存在。交付后的 Windows 人工试玩请实际靠近 NPC、完成任选一条支线并继续主线；未玩的另一条支线和未走的结局仍标未测。其余 P2 架构目标等待用户选择。
+本次静态核对确认场景中 LocalArchivist Prefab、NpcEcaRules、玩家、Quest/Narrative、对白按钮与 HUD 互动表引用存在；FusionPixel 字体及 `Assets/StreamingAssets/ThirdPartyLicenses/FusionPixel/` 许可文件存在。交付后的 Windows 人工试玩请实际靠近 NPC、完成任选一条支线并继续主线；未玩的另一条支线和未走的结局仍标未测。其余 P2 目标与截止时间见 [P2 路线](Framework/Phase2/PHASE2_ROADMAP.md)。本轮后暂停，等待用户再次授权，不启动 P2-03 及后续任务。七个旧开发工作树和 de32 已关闭，分支与 Git 历史保留；非 Git 跟踪的产物及 de32 未提交字体快照在 `/Users/const/Projects/Unity/echo-in-the-shell-evo-tavern-2026/.codex-retired-worktrees/2026-09-23-p2`。
 
 ## 既有 U4 路线与证据
 
