@@ -4,7 +4,7 @@
 
 ## 配置与运行边界
 
-- Windows 构建后编辑 `NativeDemo_Data/StreamingAssets/commander-proxy.json` 中的 `proxyUrl`。值应为由项目方控制的 HTTPS 代理端点；本机开发可用 `http://127.0.0.1`。局域网的非本机代理也须用 HTTPS；URL 不接受用户信息、查询参数或片段，避免把令牌带进客户端配置。`timeoutSeconds` 限制在 3–20 秒。文件只放 URL 和超时，绝不放 API 密钥、Bearer token 或任何凭据。
+- Windows 构建后编辑 `<可执行文件名>_Data/StreamingAssets/commander-proxy.json` 中的 `proxyUrl`。值应为由项目方控制的 HTTPS 代理端点；本机开发可用 `http://127.0.0.1`。局域网的非本机代理也须用 HTTPS；URL 不接受用户信息、查询参数或片段，避免把令牌带进客户端配置。`timeoutSeconds` 限制在 3–20 秒。文件只放 URL 和超时，绝不放 API 密钥、Bearer token 或任何凭据。
 - Unity 客户端只向该 URL 发送 POST；不直接连接模型服务。代理在服务端读取环境变量中的服务密钥，并自行限制来源、流量、输入输出大小与费用。真实服务商和部署环境确定后，再实现其上游适配并配置端点。
 - URL 留空、断网、非 200、超时、无效/迟到回复均保留草稿，通讯页的本地主题仍可使用。取消、离开安全节点、敌人接近、切换页签、关卡结束或重开都会废弃在途回复。
 
