@@ -6,7 +6,7 @@
 
 - 交付工作区：`/Users/const/.codex/worktrees/de32/echo-in-the-shell-evo-tavern-2026`。
 - 上一集成基线：`c8083c1853049d189d94f3c5ea25ee006abb3cfa`。P2 NPC 原提交 `6daddd38c3f4b7be2cdb50ed3c88c0ba80796019` → 本地集成 `0e256054b695ab2c73c47510b4017fc10b483085`。本文件所在提交为 P2 交接点，`codex/unity-native-integration` 同步到该点。
-- P2 文档按原提交 `42deb75d015ba3a83bf4c6c98dae7728cf2a3a16` → `b1240326f8b62fdc120a9096aeec2553090859e7` → `db1bb65877774c221a6cfa836c7587e9fbc620e2` 导入；本地提交依次为 `26b6593` → `14f000c` → `67f4159`。仅导入指定提交，没有引入原分支旧 P1 祖先或主工作区未提交改动。
+- P2 文档按原提交 `42deb75d015ba3a83bf4c6c98dae7728cf2a3a16` → `b1240326f8b62fdc120a9096aeec2553090859e7` → `db1bb65877774c221a6cfa836c7587e9fbc620e2` → `c5ba0a5999445f6319f39353a1f7166efd680b58` → `1fc50ef24a9c19ff095f81de50188c7b353de02f` 导入；本地依次为 `26b6593` → `14f000c` → `67f4159` → `518a249` → `198e965`。仅导入指定提交，没有引入原分支旧 P1 祖先或主工作区未提交改动。
 - 入口 `Assets/Scenes/NativeDemo.unity`，仍为 Build Settings 唯一启用场景；场景 NPC、ECA、对白按钮、玩家及字体引用静态核对完整，FusionPixel 字体和 StreamingAssets 许可文件存在。此工作区未启动 Unity，也未构建 Windows。
 - 用户此前反馈新版 Windows 人工试玩总体正常，小问题暂缓；该反馈属于 NPC 合入前版本，具体路线和四象限未逐项确认，不能作为本轮 NPC 验收。
 - 主控文档工作区：`codex/unity-native-docs`；用户原有未提交文档、项目设置改动及历史未跟踪材料保持原样。
