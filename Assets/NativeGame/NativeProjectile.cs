@@ -9,6 +9,7 @@ namespace Echo.NativeGame
         float damage;
         NativeCombat combat;
         NativeBossController bossOwner;
+        NativeEnemy enemyOwner;
         bool hostile;
         public void Launch(Vector2 value, float amount, NativeCombat owner)
         {
@@ -18,9 +19,14 @@ namespace Echo.NativeGame
         }
         public void LaunchHostile(Vector2 value, float amount, NativeCombat owner, NativeBossController source)
         { hostile = true; bossOwner = source; Launch(value, amount, owner); }
+        public void LaunchHostile(Vector2 value, float amount, NativeCombat owner, NativeEnemy source)
+        { hostile = true; enemyOwner = source; Launch(value, amount, owner); }
         void FixedUpdate()
         {
-            if (!combat || !combat.level || !combat.level.Running || (hostile && (!bossOwner || !bossOwner.isActiveAndEnabled || bossOwner.IsDefeated)))
+            if (!combat || !combat.level || !combat.level.Running ||
+                (hostile && bossOwner && (!bossOwner.isActiveAndEnabled || bossOwner.IsDefeated)) ||
+                (hostile && enemyOwner && (!enemyOwner.isActiveAndEnabled || !enemyOwner.Alive || enemyOwner.run != combat.level)) ||
+                (hostile && !bossOwner && !enemyOwner))
             { Destroy(gameObject); return; }
             float distance = speed * Time.fixedDeltaTime;
             // Whole-step Unity sweep; both teams stop at the nearest real obstacle or valid recipient.
