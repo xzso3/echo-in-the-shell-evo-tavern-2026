@@ -34,7 +34,20 @@ namespace Echo.NativeGame
         public AttackStage Stage { get; private set; }
         public string Cue { get; private set; } = "DEVELOPMENT BOSS / DORMANT";
         public float ArmorFraction => actor ? Mathf.Clamp01(actor.Armor / Mathf.Max(1, actor.maxArmor)) : 0;
-        public float CoreSecondsRemaining => Stage == AttackStage.CoreWindow ? Mathf.Max(0, coreWindowSeconds - stageAge) : 0;
+        public float CoreSecondsRemaining => Stage == AttackStage.CoreWindow ? Mathf.Max(0, EffectiveCoreWindowSeconds - stageAge) : 0;
+
+        float supportWindowBonus;
+        public const float WeakpointSupportSeconds = 3;
+        float EffectiveCoreWindowSeconds => coreWindowSeconds + supportWindowBonus;
+        public bool CanEnableWeakpointSupport => encounterActive && isActiveAndEnabled && level && level.Running &&
+            actor && !actor.IsDefeated && supportWindowBonus == 0;
+        // A real per-encounter timing change: current (if open) and all future windows gain three seconds.
+        public bool TryEnableWeakpointSupport()
+        {
+            if (!CanEnableWeakpointSupport) return false;
+            supportWindowBonus = WeakpointSupportSeconds;
+            return true;
+        }
 
         sealed class Bomb
         {
@@ -97,7 +110,7 @@ namespace Echo.NativeGame
                     break;
                 case AttackStage.Recovery: if (stageAge >= 1.15f) BeginAttack(); break;
                 case AttackStage.CoreWindow:
-                    if (stageAge >= coreWindowSeconds) { nextCoreAt = Time.time + retryWindowDelay; BeginAttack(); }
+                    if (stageAge >= EffectiveCoreWindowSeconds) { nextCoreAt = Time.time + retryWindowDelay; BeginAttack(); }
                     break;
             }
         }
@@ -198,7 +211,7 @@ namespace Echo.NativeGame
         }
         public bool CanInteractCore(NativePlayer player)
         {
-            return isActiveAndEnabled && encounterActive && !IsDefeated && actor && actor.ArmorBroken && Stage == AttackStage.CoreWindow && stageAge < coreWindowSeconds &&
+            return isActiveAndEnabled && encounterActive && !IsDefeated && actor && actor.ArmorBroken && Stage == AttackStage.CoreWindow && stageAge < EffectiveCoreWindowSeconds &&
                 level && level.Running && player && player == level.player && player.Alive &&
                 Vector2.Distance(player.transform.position, AimPoint) <= coreInteractionRadius && !NativeObstacle.Blocked(player.transform.position, AimPoint);
         }

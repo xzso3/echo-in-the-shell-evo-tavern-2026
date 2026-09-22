@@ -22,6 +22,15 @@ namespace Echo.NativeGame
             if (MoveInput.x != 0) view.flipX = MoveInput.x < 0;
             view.sortingOrder = 100 - Mathf.RoundToInt(transform.position.y * 10);
         }
+        public bool TryHeal(float amount)
+        {
+            if (!isActiveAndEnabled || !Alive || !run || !run.Running || run.player != this ||
+                amount <= 0 || float.IsNaN(amount) || float.IsInfinity(amount) || Health >= maxHealth) return false;
+            float healed = Mathf.Min(maxHealth, Health + amount);
+            if (healed <= Health) return false;
+            Health = healed;
+            return true;
+        }
         public void ReceiveDamage(float value)
         {
             if (!Alive || !run || !run.Running || Time.time < nextHurt) return;
