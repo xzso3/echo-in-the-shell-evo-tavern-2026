@@ -33,6 +33,8 @@ namespace Echo.NativeGame
         public bool TookBypass { get; private set; }
         public bool PreservedAnomaly { get; private set; }
         public bool RewroteEcho { get; private set; }
+        public const int NorthPulseSyncCost = 20;
+        public bool CanRecordNorthPulse => !EndingCommitted && !recorded.Contains("north_pulse");
         public bool EndingCommitted { get; private set; }
         public NativeEnding Ending { get; private set; }
         public NativeFinalChoice FinalChoice { get; private set; }
@@ -69,6 +71,12 @@ namespace Echo.NativeGame
             if (EndingCommitted || authorization.SyncDelta <= 0 || !HasMemory(authorization.SharedMemory) ||
                 !Record("support_" + authorization.Kind, NativeSupportController.KindLabel(authorization.Kind) + "已生效；" + NativeSupportController.TierLabel(authorization.Tier) + "，共享记忆：" + NativeMemoryNode.KindLabel(authorization.SharedMemory) + "。同步度+" + authorization.SyncDelta + "。")) return false;
             Sync += authorization.SyncDelta; shared.Add(authorization.SharedMemory); return true;
+        }
+        public bool RecordNorthPulse()
+        {
+            if (!CanRecordNorthPulse || !Record("north_pulse", "北侧定向脉冲命中弧光哨兵。同步度+" + NorthPulseSyncCost + "。")) return false;
+            Sync += NorthPulseSyncCost;
+            return true;
         }
         public void RecordRelay() { Record("relay", "携带三段记忆，重新连接了终端。"); }
         public void RecordBossDefeated() { Record("boss", "在核心暴露时完成互动，解除了封锁。"); }
