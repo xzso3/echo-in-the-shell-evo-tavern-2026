@@ -1,22 +1,35 @@
+using System;
 using UnityEngine;
 namespace Echo.NativeGame
 {
     public sealed class NativeInteraction : MonoBehaviour
     {
         public NativeRunController run;
+        public NativeMap map;
         public bool isExit;
         public float radius = 1.65f;
         public SpriteRenderer indicator;
         public bool Used { get; private set; }
-        public string Prompt => isExit ? run.TerminalActivated ? "E  /  LEAVE THE SECTOR" : "EXIT LOCKED  /  RECONNECT THE CYAN TERMINAL" : "E  /  RECONNECT TERMINAL";
+        public event Action<NativeInteraction> Confirmed;
+        public string Prompt => isExit ? map.ExitOpen ? "E  /  LEAVE THE SECTOR" : "EXIT LOCKED  /  RECONNECT THE CYAN TERMINAL" : "E  /  RECONNECT TERMINAL";
         public bool CanReach(NativePlayer player) => player && Vector2.Distance(player.transform.position, transform.position) <= radius && !NativeObstacle.Blocked(player.transform.position, transform.position);
         public void Use(NativePlayer player)
         {
             if (Used || !run || !run.Running || !CanReach(player)) return;
-            if (isExit && !run.TerminalActivated) return;
-            Used = true;
-            if (indicator) indicator.color = new Color(.35f, 1, .75f);
-            if (isExit) run.ReachExit(); else run.ActivateRelay();
+            Confirmed?.Invoke(this);
+        }
+        public void Consume()
+        { if (Used) return; Used = true; if (indicator) indicator.color = new Color(.35f, 1, .75f); }
+        public static NativeInteraction FindNearest(NativeInteraction[] targets, NativePlayer player)
+        {
+            NativeInteraction best = null; float distance = float.MaxValue;
+            foreach (var target in targets)
+            {
+                if (!target || target.Used || !target.CanReach(player)) continue;
+                float d = Vector2.Distance(target.transform.position, player.transform.position);
+                if (d < distance) { distance = d; best = target; }
+            }
+            return best;
         }
         void OnDrawGizmosSelected() { Gizmos.color = Color.cyan; Gizmos.DrawWireSphere(transform.position, radius); }
     }

@@ -33,12 +33,12 @@ namespace Echo.NativeGame
             view.flipX = direction.x < 0; view.sortingOrder = 100 - Mathf.RoundToInt(transform.position.y * 10);
         }
         void OnCollisionStay2D(Collision2D collision)
-        { var player = collision.collider.GetComponent<NativePlayer>(); if (player && Alive) player.TakeDamage(contactDamage); }
-        public void Hit(float damage)
+        { var player = collision.collider.GetComponent<NativePlayer>(); if (player && Alive) run.combat.HitPlayer(contactDamage); }
+        public void ReceiveDamage(float damage)
         {
             if (!Alive) return;
             health -= damage;
-            if (!Alive) { if (run) run.RecordKill(); Destroy(gameObject); }
+            if (!Alive) { Destroy(gameObject); }
             else StartCoroutine(Flash());
         }
         IEnumerator Flash() { view.color = new Color(1, .35f, .35f); yield return new WaitForSeconds(.08f); if (view) view.color = Color.white; }

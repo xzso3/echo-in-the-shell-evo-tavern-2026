@@ -1,0 +1,50 @@
+using UnityEngine;
+using UnityEngine.EventSystems;
+using TMPro;
+namespace Echo.NativeGame
+{
+    // Concrete input/presentation component. Reads module state; never owns quest/combat/door state.
+    public sealed class NativeHud : MonoBehaviour
+    {
+        public NativeRunController level;
+        public NativeInteraction[] interactables;
+        public TMP_Text healthLabel, fireLabel, objectiveLabel, promptLabel, counterLabel, resultTitle, resultBody;
+        public GameObject phonePanel, resultPanel;
+        public UnityEngine.UI.Button restartButton, phoneCloseButton;
+        void Awake()
+        {
+            phonePanel.SetActive(false); resultPanel.SetActive(false);
+            restartButton.onClick.AddListener(level.Restart); phoneCloseButton.onClick.AddListener(ClosePhone);
+        }
+        void Update()
+        {
+            var player = level.player; var combat = level.combat; var dialogue = level.dialogue;
+            bool typing = EventSystem.current && EventSystem.current.currentSelectedGameObject &&
+                (EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() || EventSystem.current.currentSelectedGameObject.GetComponent<UnityEngine.UI.InputField>());
+            player.MoveInput = Vector2.zero;
+            NativeInteraction nearby = null;
+            if (level.Running && !typing)
+            {
+                player.MoveInput = Vector2.ClampMagnitude(new Vector2((Input.GetKey(KeyCode.D) ? 1 : 0) - (Input.GetKey(KeyCode.A) ? 1 : 0),
+                    (Input.GetKey(KeyCode.W) ? 1 : 0) - (Input.GetKey(KeyCode.S) ? 1 : 0)), 1);
+                if (Input.GetKeyDown(KeyCode.Space)) combat.ToggleFire();
+                if (Input.GetKeyDown(KeyCode.Tab)) { phonePanel.SetActive(!phonePanel.activeSelf); ClearSelection(); }
+                if (Input.GetKeyDown(KeyCode.Escape)) { ClosePhone(); dialogue.Close(); }
+                nearby = NativeInteraction.FindNearest(interactables, player);
+                // An E that opens a dialogue cannot also close that newly created session.
+                if (Input.GetKeyDown(KeyCode.E))
+                { if (dialogue.IsOpen) dialogue.Close(); else if (nearby) nearby.Use(player); }
+            }
+            healthLabel.text = "SHELL  " + Mathf.CeilToInt(player.Health) + " / " + player.maxHealth;
+            fireLabel.text = combat.AutoFire ? "AUTO FIRE  /  SPACE TO HOLD" : "HOLD FIRE  /  SPACE TO RESUME";
+            fireLabel.color = combat.AutoFire ? new Color(.3f, 1, .85f) : new Color(1, .78f, .35f);
+            objectiveLabel.text = level.quest.ObjectiveText;
+            counterLabel.text = string.Format("{0:00}:{1:00}   /   HOSTILES DISABLED  {2}", (int)level.Elapsed / 60, (int)level.Elapsed % 60, combat.Kills);
+            promptLabel.text = dialogue.IsOpen ? "E  /  ACKNOWLEDGE TRANSMISSION" : nearby ? nearby.Prompt : level.Running ? "WASD  MOVE     SPACE  FIRE / HOLD     E  INTERACT     TAB  PHONE" : "";
+        }
+        public void ShowResult(string title, string body)
+        { phonePanel.SetActive(false); resultTitle.text = title; resultBody.text = body; resultPanel.SetActive(true); ClearSelection(); }
+        public void ClosePhone() { phonePanel.SetActive(false); ClearSelection(); }
+        static void ClearSelection() { if (EventSystem.current) EventSystem.current.SetSelectedGameObject(null); }
+    }
+}

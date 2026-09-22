@@ -37,6 +37,10 @@ namespace Echo.NativeGame.Editor
             var world = new GameObject("World").transform;
             var actors = new GameObject("Actors").transform;
             var run = new GameObject("Run").AddComponent<NativeRunController>();
+            run.map = world.gameObject.AddComponent<NativeMap>();
+            run.quest = new GameObject("Quest").AddComponent<NativeQuest>();
+            run.combat = new GameObject("Combat").AddComponent<NativeCombat>();
+            run.rules = new GameObject("ECA - scene rules").AddComponent<NativeEcaRules>();
             var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point, name = "Native solid marker" };
             texture.SetPixels(new[] { Color.white, Color.white, Color.white, Color.white }); texture.Apply();
             AssetDatabase.CreateAsset(texture, Root + "/SolidMarkerTexture.asset");
@@ -53,8 +57,8 @@ namespace Echo.NativeGame.Editor
             Wall("Central machinery - routes above and below", Vector2.zero, new Vector2(3, 8), world);
             Wall("Exit partition north", new Vector2(10, 5.5f), new Vector2(.55f, 7), world);
             Wall("Exit partition south", new Vector2(10, -5.5f), new Vector2(.55f, 7), world);
-            run.gate = Wall("Gate - relay opens this collider", new Vector2(10, 0), new Vector2(.55f, 4), world);
-            run.gate.GetComponent<SpriteRenderer>().color = new Color(1, .32f, .2f);
+            run.map.exitGate = Wall("Gate - relay opens this collider", new Vector2(10, 0), new Vector2(.55f, 4), world);
+            run.map.exitGate.GetComponent<SpriteRenderer>().color = new Color(1, .32f, .2f);
             for (int y = -3; y <= 3; y += 2) Prop("Power cabinet", new Vector2(0, y), world);
             for (int x = -12; x < 10; x += 3)
             {
@@ -70,7 +74,7 @@ namespace Echo.NativeGame.Editor
             var player = playerObject.AddComponent<NativePlayer>();
             player.view = Draw("Visual", Asset<Sprite>("Assets/CyberCity/Sprites/Cyber operative.asset"), Vector2.zero, playerObject.transform, 100);
             player.view.transform.localPosition = new Vector3(0, -.2f, 0);
-            player.projectilePrefab = boltPrefab; Body(playerObject, .32f);
+            run.combat.projectilePrefab = boltPrefab; Body(playerObject, .32f);
             var playerPrefab = PrefabUtility.SaveAsPrefabAsset(playerObject, Root + "/Prefabs/Player.prefab");
             UnityEngine.Object.DestroyImmediate(playerObject);
             run.player = ((GameObject)PrefabUtility.InstantiatePrefab(playerPrefab, actors)).GetComponent<NativePlayer>();
@@ -86,9 +90,9 @@ namespace Echo.NativeGame.Editor
                 var instance = ((GameObject)PrefabUtility.InstantiatePrefab(enemyPrefab, actors)).GetComponent<NativeEnemy>();
                 instance.transform.position = point; instance.run = run;
             }
-            run.relay = Interaction("Relay terminal", new Vector2(6, 0), false, world, run);
+            var relay = Interaction("Relay terminal", new Vector2(6, 0), false, world, run);
             Prop("Data beacon", new Vector2(6, 0), world);
-            run.exit = Interaction("Exit uplink", new Vector2(13, 0), true, world, run);
+            var exit = Interaction("Exit uplink", new Vector2(13, 0), true, world, run);
             WorldText("TERMINAL", new Vector2(6, 2), world, Cyan);
             WorldText("EXIT", new Vector2(13, 2), world, Cyan);
             WorldText("BYPASS", new Vector2(-6, 7.5f), world, new Color(.9f, .8f, .4f));
@@ -99,6 +103,7 @@ namespace Echo.NativeGame.Editor
             camera.transform.position = new Vector3(-3.4f, 0, -10);
             cameraObject.AddComponent<NativeCamera>().target = run.player.transform;
             BuildUI(run);
+            WireModules(run, relay, exit);
             EditorSceneManager.SaveScene(scene, ScenePath); AssetDatabase.SaveAssets();
             Debug.Log("NativeDemo created: 1 player, 4 enemies, 2 interactions, native Physics2D, Canvas HUD and phone. Build settings unchanged.");
         }
@@ -109,6 +114,58 @@ namespace Echo.NativeGame.Editor
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
             EditorSceneManager.OpenScene(ScenePath);
             EditorApplication.ExecuteMenuItem("Window/General/Game");
+        }
+        static void WireModules(NativeRunController run, NativeInteraction relay, NativeInteraction exit)
+        {
+            run.player.run = run;
+            run.combat.level = run; run.combat.actor = run.player;
+            run.hud.level = run; run.hud.interactables = new[] { relay, exit };
+            relay.run = exit.run = run; relay.map = exit.map = run.map;
+            run.rules.level = run; run.rules.terminal = relay; run.rules.exit = exit;
+            run.rules.quest = run.quest; run.rules.map = run.map; run.rules.dialogue = run.dialogue;
+        }
+        static void BuildDialogue(NativeRunController run, Transform canvas)
+        {
+            run.dialogue = canvas.gameObject.AddComponent<NativeDialogue>();
+            var panel = Panel("Dialogue", canvas, new Vector2(.5f, 0), new Vector2(0, 90), new Vector2(690, 150), Dark, true);
+            run.dialogue.panel = panel.gameObject;
+            run.dialogue.message = Text("Transmission", "", panel.transform, new Vector2(0, 1), new Vector2(24, -20), new Vector2(642, 72), 21, Cyan);
+            run.dialogue.closeButton = Button("Acknowledge", "ACKNOWLEDGE  /  E", panel.transform, new Vector2(0, 14), new Vector2(300, 40));
+            panel.gameObject.SetActive(false);
+        }
+        // One-time in-place migration of the U1 scene. Existing artwork, geometry and Prefab identities stay intact.
+        [MenuItem("Echo/Native/Connect Scene ECA")]
+        public static void ConnectSceneEca()
+        {
+            if (Application.isPlaying) throw new InvalidOperationException("Stop Play Mode first.");
+            var scene = EditorSceneManager.OpenScene(ScenePath);
+            var run = UnityEngine.Object.FindObjectOfType<NativeRunController>();
+            if (run.rules) throw new InvalidOperationException("Scene ECA is already connected.");
+            run.map = GameObject.Find("World").AddComponent<NativeMap>();
+            run.map.exitGate = GameObject.Find("Gate - relay opens this collider");
+            run.quest = new GameObject("Quest").AddComponent<NativeQuest>();
+            run.combat = new GameObject("Combat").AddComponent<NativeCombat>();
+            run.combat.projectilePrefab = Asset<GameObject>(Root + "/Prefabs/Pulse.prefab").GetComponent<NativeProjectile>();
+            run.rules = new GameObject("ECA - scene rules").AddComponent<NativeEcaRules>();
+            var canvas = GameObject.Find("UI"); run.hud = canvas.AddComponent<NativeHud>();
+            var hud = run.hud;
+            hud.healthLabel = canvas.transform.Find("Health").GetComponent<TMP_Text>();
+            hud.fireLabel = canvas.transform.Find("Fire mode").GetComponent<TMP_Text>();
+            hud.objectiveLabel = canvas.transform.Find("Objective").GetComponent<TMP_Text>();
+            hud.promptLabel = canvas.transform.Find("Input and proximity prompt").GetComponent<TMP_Text>();
+            hud.counterLabel = canvas.transform.Find("Run status").GetComponent<TMP_Text>();
+            hud.phonePanel = canvas.transform.Find("Phone - Tab does not pause").gameObject;
+            hud.phoneCloseButton = hud.phonePanel.transform.Find("Close phone").GetComponent<UnityEngine.UI.Button>();
+            hud.resultPanel = canvas.transform.Find("Result overlay").gameObject;
+            var card = hud.resultPanel.transform.Find("Result card");
+            hud.resultTitle = card.Find("Result title").GetComponent<TMP_Text>();
+            hud.resultBody = card.Find("Result body").GetComponent<TMP_Text>();
+            hud.restartButton = card.Find("Restart").GetComponent<UnityEngine.UI.Button>();
+            BuildDialogue(run, canvas.transform);
+            WireModules(run, GameObject.Find("Relay terminal").GetComponent<NativeInteraction>(), GameObject.Find("Exit uplink").GetComponent<NativeInteraction>());
+            EditorUtility.SetDirty(run);
+            EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene); AssetDatabase.SaveAssets();
+            Debug.Log("NativeDemo ECA connected in place: Interaction -> Quest -> Map -> Dialogue; exit -> Quest -> Level.");
         }
         static SpriteRenderer Draw(string name, Sprite sprite, Vector2 point, Transform parent, int order)
         {
@@ -173,6 +230,7 @@ namespace Echo.NativeGame.Editor
         static void BuildUI(NativeRunController run)
         {
             var canvasObject = new GameObject("UI", typeof(RectTransform), typeof(Canvas), typeof(UnityEngine.UI.CanvasScaler), typeof(UnityEngine.UI.GraphicRaycaster));
+            run.hud = canvasObject.AddComponent<NativeHud>();
             canvasObject.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
             var scaler = canvasObject.GetComponent<UnityEngine.UI.CanvasScaler>(); scaler.uiScaleMode = UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1280, 720); scaler.matchWidthOrHeight = .5f;
@@ -180,29 +238,30 @@ namespace Echo.NativeGame.Editor
             eventSystem.sendNavigationEvents = false; // Space is gameplay only, never a hidden UI Submit.
             var top = Panel("Header", canvasObject.transform, new Vector2(.5f, 1), Vector2.zero, new Vector2(2600, 118), Dark);
             Text("Title", "ECHO IN THE SHELL  /  SIGNAL 01", canvasObject.transform, new Vector2(0, 1), new Vector2(24, -16), new Vector2(600, 28), 23, Cyan);
-            run.objectiveLabel = Text("Objective", run.initialObjective, canvasObject.transform, new Vector2(0, 1), new Vector2(24, -53), new Vector2(730, 56), 19);
-            run.healthLabel = Text("Health", "SHELL 100 / 100", canvasObject.transform, new Vector2(1, 1), new Vector2(-24, -18), new Vector2(350, 30), 24);
-            run.healthLabel.alignment = TextAlignmentOptions.TopRight;
-            run.fireLabel = Text("Fire mode", "AUTO FIRE", canvasObject.transform, new Vector2(1, 1), new Vector2(-24, -57), new Vector2(380, 30), 20, Cyan);
-            run.fireLabel.alignment = TextAlignmentOptions.TopRight;
+            run.hud.objectiveLabel = Text("Objective", run.quest.initialObjective, canvasObject.transform, new Vector2(0, 1), new Vector2(24, -53), new Vector2(730, 56), 19);
+            run.hud.healthLabel = Text("Health", "SHELL 100 / 100", canvasObject.transform, new Vector2(1, 1), new Vector2(-24, -18), new Vector2(350, 30), 24);
+            run.hud.healthLabel.alignment = TextAlignmentOptions.TopRight;
+            run.hud.fireLabel = Text("Fire mode", "AUTO FIRE", canvasObject.transform, new Vector2(1, 1), new Vector2(-24, -57), new Vector2(380, 30), 20, Cyan);
+            run.hud.fireLabel.alignment = TextAlignmentOptions.TopRight;
             Panel("Footer", canvasObject.transform, new Vector2(.5f, 0), Vector2.zero, new Vector2(2600, 74), Dark);
-            run.promptLabel = Text("Input and proximity prompt", "WASD  MOVE     SPACE  FIRE / HOLD     E  INTERACT     TAB  PHONE", canvasObject.transform, new Vector2(.5f, 0), new Vector2(0, 34), new Vector2(1160, 32), 21, Cyan);
-            run.promptLabel.alignment = TextAlignmentOptions.Center;
-            run.counterLabel = Text("Run status", "00:00", canvasObject.transform, new Vector2(.5f, 0), new Vector2(0, 7), new Vector2(1160, 25), 16, new Color(.65f, .75f, .79f));
-            run.counterLabel.alignment = TextAlignmentOptions.Center;
+            run.hud.promptLabel = Text("Input and proximity prompt", "WASD  MOVE     SPACE  FIRE / HOLD     E  INTERACT     TAB  PHONE", canvasObject.transform, new Vector2(.5f, 0), new Vector2(0, 34), new Vector2(1160, 32), 21, Cyan);
+            run.hud.promptLabel.alignment = TextAlignmentOptions.Center;
+            run.hud.counterLabel = Text("Run status", "00:00", canvasObject.transform, new Vector2(.5f, 0), new Vector2(0, 7), new Vector2(1160, 25), 16, new Color(.65f, .75f, .79f));
+            run.hud.counterLabel.alignment = TextAlignmentOptions.Center;
             var phone = Panel("Phone - Tab does not pause", canvasObject.transform, new Vector2(1, .5f), new Vector2(-24, -12), new Vector2(350, 440), Dark, true);
-            run.phonePanel = phone.gameObject;
+            run.hud.phonePanel = phone.gameObject;
             Text("Phone title", "GHOST LINK\nLOCAL CONNECTION", phone.transform, new Vector2(0, 1), new Vector2(24, -24), new Vector2(302, 75), 26, Cyan);
             Text("Phone placeholder", "COMMANDER\nReconnect the cyan terminal, then reach the eastern exit. Side paths remain open.\n\nNETWORK\nOffline. No live network service.\n\nSupport and memory features arrive in the next checkpoint.\n\nCombat continues while this panel is open.", phone.transform, new Vector2(0, 1), new Vector2(24, -110), new Vector2(302, 260), 18);
-            run.phoneCloseButton = Button("Close phone", "CLOSE  /  TAB", phone.transform, new Vector2(0, 20), new Vector2(302, 42));
+            run.hud.phoneCloseButton = Button("Close phone", "CLOSE  /  TAB", phone.transform, new Vector2(0, 20), new Vector2(302, 42));
             phone.gameObject.SetActive(false);
             var overlay = Panel("Result overlay", canvasObject.transform, new Vector2(.5f, .5f), Vector2.zero, new Vector2(3000, 2000), new Color(.01f, .02f, .03f, .92f), true);
-            run.resultPanel = overlay.gameObject;
+            run.hud.resultPanel = overlay.gameObject;
             var card = Panel("Result card", overlay.transform, new Vector2(.5f, .5f), Vector2.zero, new Vector2(640, 400), Dark, true);
-            run.resultTitle = Text("Result title", "SHELL OFFLINE", card.transform, new Vector2(.5f, 1), new Vector2(0, -36), new Vector2(590, 58), 30, Cyan); run.resultTitle.alignment = TextAlignmentOptions.Center;
-            run.resultBody = Text("Result body", "", card.transform, new Vector2(.5f, 1), new Vector2(0, -120), new Vector2(550, 190), 21); run.resultBody.alignment = TextAlignmentOptions.Center;
-            run.restartButton = Button("Restart", "RESTART RUN", card.transform, new Vector2(0, 32), new Vector2(300, 52));
+            run.hud.resultTitle = Text("Result title", "SHELL OFFLINE", card.transform, new Vector2(.5f, 1), new Vector2(0, -36), new Vector2(590, 58), 30, Cyan); run.hud.resultTitle.alignment = TextAlignmentOptions.Center;
+            run.hud.resultBody = Text("Result body", "", card.transform, new Vector2(.5f, 1), new Vector2(0, -120), new Vector2(550, 190), 21); run.hud.resultBody.alignment = TextAlignmentOptions.Center;
+            run.hud.restartButton = Button("Restart", "RESTART RUN", card.transform, new Vector2(0, 32), new Vector2(300, 52));
             overlay.gameObject.SetActive(false);
+            BuildDialogue(run, canvasObject.transform);
         }
     }
 }
