@@ -81,3 +81,19 @@ CheckSchema 在验证前递归检查 Schema；即使 oneOf 未选中分支有不
 报告 status 仅 passed/failed/not_run/blocked，expected/actual 必填，错误有文件/内容 ID/字段位置。契约输入摘要覆盖 Fixtures；源码摘要按排序相对路径和各文件 SHA-256 聚合，覆盖 Assets/EchoFramework、测试源码/工程、工具契约、global.json/Directory.Build.props/EchoFramework.sln/.gitignore，包含新 .meta，不含 bin/obj/报告和 Generated。源码摘要算法在 ContractSmoke，可跨 worktree 重现。实际内容包摘要由 P1-03 统一实现：UTF-8 ordinal 排序包内相对路径 + SHA-256，覆盖 manifest/definitions/rules/assets/cases，排除 reports 和导入生成物，并记录依赖摘要；禁止把 P1-01 夹具摘要当作 A 包摘要。
 
 A01 完成工具链与契约层；A02—05 仅完成报告中明确列出的契约子例。完整有效 A 包加载、权威事件发布、真实 runtime scope/actor、资源导入幂等和能力运行均需后续实现。A06—A26、Play Mode、画面和原型玩法回归没有在本任务宣称通过。
+
+## P1-01 attempt 1 / revision 1（未接受候选的边界修正）
+
+INT-00 发现的 R1/R2/R3 已回归覆盖，保留 0.1.0 尚未接受的候选版本标识，契约和 Schema 摘要重新生成，不沿用初次候选的通过结论。公开接口签名未改变。
+
+- 全部词法型 pattern（内容 ID、资源 ID、包 ID、路径、版本、摘要）以可移植的 `(?![\s\S])` 表示绝对字符串末尾，拒绝尾随 LF 等字符；不能用可在末尾 LF 前匹配的 `$` 作为完整匹配保证。普通文本仍允许换行。Schema 的 pattern 关键字继续遵循正则匹配语义，不对使用者提供的模式隐式追加锚点。
+- CheckSchema 将 min/maxLength、min/maxItems 限为 0..2147483647；超范围、错误类型、负值均在转换前以 FormatException 拒绝。minimum/maximum 以及程序构造的 Schema 树中的数字必须有限，倒置区间拒绝。整数比较使用 BigInteger 保持精确，整数/浮点混合比较处理小数方向，不经 double 舍入整数。number 类型数据不能超出 DTO 的有限 double 范围。
+- instance_ref.generation 为 1..2147483647；case.seed、report.seed、module_descriptor.order 为 0..2147483647，与 Int32 DTO 一致。其余已导出整数字段为 Int64，继续采用既定 ±(2^53−1) 或非负子区间。ECA Priority/Capacity 尚未有独立生产 Schema，不从通用 Int64 模板猜测其将来范围。
+
+返修证据写入 `Evidence/Revision1/`；初次报告保留为历史，不表示候选已接受：
+
+```sh
+ECHO_EVIDENCE_DIR=Docs/Framework/Contracts/Evidence/Revision1 sh Tests/EchoFramework/Contracts/verify.sh
+```
+
+Unity 命令增加同一个 `ECHO_EVIDENCE_DIR` 环境变量，仍显式设置 ECHO_TESTED_COMMIT。`BoundaryRegression.Run` 是两宿主共同源码。`Tests/EchoFramework/Contracts/ReviewProbe/Program.cs` 为 INT-00 原探针的逐字复制，未修改断言，单独 `Echo.ReviewProbe.csproj` 可编译复跑，不写 INT 工作区。

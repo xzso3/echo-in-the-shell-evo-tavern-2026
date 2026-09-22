@@ -1,10 +1,12 @@
 """Independent file/assembly/meta and generated-schema checks; no gameplay claims."""
+import os
 import hashlib
 import json
 import re
 import subprocess
 from pathlib import Path
 root = Path(__file__).resolve().parents[3]
+evidence = root / os.environ.get('ECHO_EVIDENCE_DIR', 'Docs/Framework/Contracts/Evidence')
 base = '94ccceff3d00e3e929161e2024ca0a2728aa3067'
 checks = []
 def check(name, condition, detail):
@@ -32,13 +34,13 @@ check('A01.write_boundary', not bad, repr(bad))
 for rel in ['Packages/manifest.json', 'Packages/packages-lock.json', 'ProjectSettings/ProjectVersion.txt']:
     original = subprocess.check_output(['git','show',base+':'+rel], cwd=root)
     check('A01.unchanged.'+rel, original == (root/rel).read_bytes(), hashlib.sha256(original).hexdigest())
-report = json.loads((root/'Docs/Framework/Contracts/Evidence/dotnet-report.json').read_text())
+report = json.loads((evidence/'dotnet-report.json').read_text())
 files = sorted((root/'Docs/Framework/Contracts/Generated').rglob('*.schema.json'))
 joined = '\n'.join(str(p.relative_to(root/'Docs/Framework/Contracts/Generated')).removesuffix('.schema.json')+':'+re.sub(r'("(?:\\.|[^"\\])*")|\s+', lambda m: m.group(1) or '', p.read_text()) for p in files)
 check('A02.generated_schema_digest', hashlib.sha256(joined.encode()).hexdigest() == report['schema_digest'], f'{len(files)} generated schemas')
 prod = json.loads((root/'Docs/Framework/Contracts/Generated/production-catalog.json').read_text())
 check('A03.production_catalog_empty', prod['use'] == 'production' and prod['capabilities'] == [], 'No production capability implemented by P1-01')
-output = root/'Docs/Framework/Contracts/Evidence/static-report.json'
+output = evidence/'static-report.json'
 output.write_text(json.dumps(dict(tested_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(), framework_digest=report['framework_digest'], checks=checks), indent=2)+'\n')
 for c in checks: print(c['case_id']+': '+c['status'])
 raise SystemExit(0 if all(c['status']=='passed' for c in checks) else 1)

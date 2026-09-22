@@ -17,7 +17,7 @@
           "id": {
             "type": "string",
             "minLength": 1,
-            "pattern": "^(?!.*\\.\\.)(?!.*\\/$)[a-z][a-z0-9_.-]*:resource/[a-z][a-z0-9_./-]*$"
+            "pattern": "^(?!.*\\.\\.)(?!.*\\/(?![\\s\\S]))[a-z][a-z0-9_.-]*:resource/[a-z][a-z0-9_./-]*(?![\\s\\S])"
           },
           "type": {
             "type": "string",
@@ -32,12 +32,12 @@
           "source_path": {
             "type": "string",
             "minLength": 1,
-            "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)[a-zA-Z0-9_./-]+$"
+            "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|(?![\\s\\S])))(?!.*\\\\)[a-zA-Z0-9_./-]+(?![\\s\\S])"
           },
           "sha256": {
             "type": "string",
             "minLength": 1,
-            "pattern": "^[a-f0-9]{64}$"
+            "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
           },
           "license": {
             "type": "string",

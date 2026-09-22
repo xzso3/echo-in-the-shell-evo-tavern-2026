@@ -12,7 +12,7 @@ class Program
         string root=Path.GetFullPath(args[0]);
         if(args.Contains("--export"))ContractSmoke.Export(root);
         var report=ContractSmoke.Run(root,"dotnet",args[1]);
-        string path=Path.Combine(root,"Docs/Framework/Contracts/Evidence/dotnet-report.json");Directory.CreateDirectory(Path.GetDirectoryName(path));File.WriteAllText(path,report.ToString(Formatting.Indented)+"\n");
+        string path=Path.Combine(root,Environment.GetEnvironmentVariable("ECHO_EVIDENCE_DIR")??"Docs/Framework/Contracts/Evidence","dotnet-report.json");Directory.CreateDirectory(Path.GetDirectoryName(path));File.WriteAllText(path,report.ToString(Formatting.Indented)+"\n");
         foreach(var c in (JArray)report["cases"])Console.WriteLine(c["case_id"]+": "+c["status"]+((string)c["status"]=="failed"?" "+c["actual"]:""));
         Console.WriteLine("Report: "+path);return ((JArray)report["cases"]).Any(c=>(string)c["status"]!="passed")?1:0;
     }

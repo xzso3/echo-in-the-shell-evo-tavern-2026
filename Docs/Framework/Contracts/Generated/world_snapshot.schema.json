@@ -39,7 +39,7 @@
               "generation": {
                 "type": "integer",
                 "minimum": 1,
-                "maximum": 9007199254740991
+                "maximum": 2147483647
               }
             },
             "required": [
@@ -52,7 +52,7 @@
           "definition": {
             "type": "string",
             "minLength": 1,
-            "pattern": "^(?!.*\\.\\.)(?!.*\\/$)[a-z][a-z0-9_.-]*:[a-z][a-z0-9_]*\\/[a-z][a-z0-9_./-]*$"
+            "pattern": "^(?!.*\\.\\.)(?!.*\\/(?![\\s\\S]))[a-z][a-z0-9_.-]*:[a-z][a-z0-9_]*\\/[a-z][a-z0-9_./-]*(?![\\s\\S])"
           },
           "scope": {
             "type": "object",
@@ -80,7 +80,7 @@
               "generation": {
                 "type": "integer",
                 "minimum": 1,
-                "maximum": 9007199254740991
+                "maximum": 2147483647
               }
             },
             "required": [
@@ -112,7 +112,7 @@
               "generation": {
                 "type": "integer",
                 "minimum": 1,
-                "maximum": 9007199254740991
+                "maximum": 2147483647
               }
             },
             "required": [
@@ -177,7 +177,7 @@
           "presentation": {
             "type": "string",
             "minLength": 1,
-            "pattern": "^(?!.*\\.\\.)(?!.*\\/$)[a-z][a-z0-9_.-]*:[a-z][a-z0-9_]*\\/[a-z][a-z0-9_./-]*$"
+            "pattern": "^(?!.*\\.\\.)(?!.*\\/(?![\\s\\S]))[a-z][a-z0-9_.-]*:[a-z][a-z0-9_]*\\/[a-z][a-z0-9_./-]*(?![\\s\\S])"
           },
           "alive": {
             "type": "boolean"
@@ -231,7 +231,7 @@
               "generation": {
                 "type": "integer",
                 "minimum": 1,
-                "maximum": 9007199254740991
+                "maximum": 2147483647
               }
             },
             "required": [
@@ -280,7 +280,7 @@
               "generation": {
                 "type": "integer",
                 "minimum": 1,
-                "maximum": 9007199254740991
+                "maximum": 2147483647
               }
             },
             "required": [
@@ -353,7 +353,7 @@
               "generation": {
                 "type": "integer",
                 "minimum": 1,
-                "maximum": 9007199254740991
+                "maximum": 2147483647
               }
             },
             "required": [
@@ -385,7 +385,7 @@
               "generation": {
                 "type": "integer",
                 "minimum": 1,
-                "maximum": 9007199254740991
+                "maximum": 2147483647
               }
             },
             "required": [
@@ -457,7 +457,7 @@
               "generation": {
                 "type": "integer",
                 "minimum": 1,
-                "maximum": 9007199254740991
+                "maximum": 2147483647
               }
             },
             "required": [

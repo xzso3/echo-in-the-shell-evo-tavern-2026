@@ -10,7 +10,7 @@ if [ ! -f "$json_dll" ]; then
   echo 'Newtonsoft.Json 13.0.2 not found. Import this worktree in Unity or set ECHO_JSON_DLL to its Runtime/Newtonsoft.Json.dll.' >&2
   exit 2
 fi
-mkdir -p Docs/Framework/Contracts/Evidence
+mkdir -p "${ECHO_EVIDENCE_DIR:-Docs/Framework/Contracts/Evidence}"
 dotnet build Tests/EchoFramework/Host/Echo.Contracts.Host.csproj --disable-build-servers "-p:EchoJsonAssembly=$json_dll" "-p:RestoreSources=$repo/Tests/EchoFramework/Contracts/Fixtures" -p:NuGetAudit=false --nologo
 dotnet Tests/EchoFramework/Host/bin/Debug/net8.0/Echo.Contracts.Host.dll "$repo" "$(git rev-parse HEAD)" --export
 python3 Tests/EchoFramework/Contracts/verify_static.py

@@ -18,7 +18,7 @@ namespace Echo.Editor.Contracts
                 string root=Directory.GetParent(Application.dataPath).FullName;
                 string commit=Environment.GetEnvironmentVariable("ECHO_TESTED_COMMIT")??"working-tree";
                 var report=ContractSmoke.Run(root,"Unity "+Application.unityVersion,commit);
-                string path=Path.Combine(root,"Docs/Framework/Contracts/Evidence/unity-report.json");Directory.CreateDirectory(Path.GetDirectoryName(path));File.WriteAllText(path,report.ToString(Formatting.Indented)+"\n");
+                string path=Path.Combine(root,Environment.GetEnvironmentVariable("ECHO_EVIDENCE_DIR")??"Docs/Framework/Contracts/Evidence","unity-report.json");Directory.CreateDirectory(Path.GetDirectoryName(path));File.WriteAllText(path,report.ToString(Formatting.Indented)+"\n");
                 exit=((JArray)report["cases"]).Any(c=>(string)c["status"]!="passed")?1:0;
                 Debug.Log("ECHO_CONTRACT_SMOKE exit="+exit+" report="+path);
             }

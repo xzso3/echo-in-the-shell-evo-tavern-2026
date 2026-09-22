@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -45,20 +46,45 @@ namespace Echo.Framework.Contracts
         }
         public static void CheckSchema(JObject schema,string path)
         {
+            RejectNonFinite(schema);
             foreach(var property in schema.Properties()) if(!Keywords.Contains(property.Name))throw new NotSupportedException("Unsupported schema keyword: "+path+"."+property.Name);
             foreach(string key in new[]{"$schema","$id","title","description","type","pattern"}) if(schema[key]!=null && schema[key].Type!=JTokenType.String)throw new FormatException("Schema string required: "+key);
             var type=(string)schema["type"];
             if(type!=null && !new[]{"object","array","string","integer","number","boolean","null"}.Contains(type))throw new NotSupportedException("Unsupported schema type: "+type);
             if(schema["$schema"]!=null && (string)schema["$schema"]!="http://json-schema.org/draft-07/schema#")throw new NotSupportedException("Unsupported schema dialect");
             if(schema["additionalProperties"]!=null && schema["additionalProperties"].Type!=JTokenType.Boolean)throw new NotSupportedException("additionalProperties must be boolean");
-            foreach(string key in new[]{"minItems","maxItems","minLength","maxLength"}) if(schema[key]!=null && (schema[key].Type!=JTokenType.Integer || (long)schema[key]<0))throw new FormatException("Invalid schema limit: "+key);
+            foreach(string key in new[]{"minItems","maxItems","minLength","maxLength"})
+            {
+                var limit=schema[key];
+                if(limit!=null && (limit.Type!=JTokenType.Integer || IntegerValue(limit)<0 || IntegerValue(limit)>int.MaxValue))
+                    throw new FormatException("Schema length/item limit must fit nonnegative Int32: "+path+"."+key);
+            }
             foreach(string key in new[]{"minimum","maximum"}) if(schema[key]!=null && schema[key].Type!=JTokenType.Integer && schema[key].Type!=JTokenType.Float)throw new FormatException("Invalid numeric schema limit");
+            foreach(var pair in new[]{("minItems","maxItems"),("minLength","maxLength"),("minimum","maximum")})
+                if(schema[pair.Item1]!=null && schema[pair.Item2]!=null && CompareNumbers(schema[pair.Item1],schema[pair.Item2])>0)
+                    throw new FormatException("Inverted schema bounds: "+path+"."+pair.Item1);
             if(schema["pattern"]!=null) _ = new Regex((string)schema["pattern"]);
             if(schema["required"]!=null && (!(schema["required"] is JArray required) || required.Any(x=>x.Type!=JTokenType.String) || required.Select(x=>(string)x).Distinct().Count()!=required.Count))throw new FormatException("Invalid required list");
             if(schema["enum"]!=null && (!(schema["enum"] is JArray en) || en.Count==0 || en.Select(x=>x.ToString(Formatting.None)).Distinct().Count()!=en.Count))throw new FormatException("Invalid enum");
             if(schema["properties"]!=null) { if(!(schema["properties"] is JObject props))throw new FormatException("properties must be object"); foreach(var p in props.Properties()) { if(!(p.Value is JObject child))throw new FormatException("Schema object required");CheckSchema(child,path+".properties."+p.Name); } }
             if(schema["items"]!=null) { if(!(schema["items"] is JObject item))throw new NotSupportedException("Tuple items unsupported");CheckSchema(item,path+".items"); }
             if(schema["oneOf"]!=null) { if(!(schema["oneOf"] is JArray variants)||variants.Count==0)throw new FormatException("oneOf array required"); foreach(var variant in variants) { if(!(variant is JObject obj))throw new FormatException("Schema object required");CheckSchema(obj,path+".oneOf"); } }
+        }
+        private static BigInteger IntegerValue(JToken value) => BigInteger.Parse(value.ToString(Formatting.None),CultureInfo.InvariantCulture);
+        // Never round an integer through double before comparing a numeric boundary.
+        private static int CompareNumbers(JToken left,JToken right)
+        {
+            bool leftInteger=left.Type==JTokenType.Integer, rightInteger=right.Type==JTokenType.Integer;
+            if(leftInteger && rightInteger)return IntegerValue(left).CompareTo(IntegerValue(right));
+            if(leftInteger)return CompareIntegerToDouble(IntegerValue(left),(double)right);
+            if(rightInteger)return -CompareIntegerToDouble(IntegerValue(right),(double)left);
+            return ((double)left).CompareTo((double)right);
+        }
+        private static int CompareIntegerToDouble(BigInteger integer,double number)
+        {
+            int comparison=integer.CompareTo(new BigInteger(number));
+            if(comparison!=0 || number==Math.Truncate(number))return comparison;
+            return number>0 ? -1 : 1;
         }
         private static void Visit(JObject s,JToken v,string path,string file,string id,List<Diagnostic> errors)
         {
@@ -98,10 +124,11 @@ namespace Echo.Framework.Contracts
             }
             if(v.Type==JTokenType.Integer||v.Type==JTokenType.Float)
             {
-                double number=(double)v;
-                if(double.IsNaN(number)||double.IsInfinity(number))fail("schema.finite","Finite number required");
-                if(s["minimum"]!=null&&number<(double)s["minimum"])fail("schema.minimum","Below minimum");
-                if(s["maximum"]!=null&&number>(double)s["maximum"])fail("schema.maximum","Above maximum");
+                if((v.Type==JTokenType.Float && (double.IsNaN((double)v)||double.IsInfinity((double)v))) ||
+                    (type=="number" && v.Type==JTokenType.Integer && BigInteger.Abs(IntegerValue(v))>new BigInteger(double.MaxValue)))
+                { fail("schema.finite","Finite number required"); return; }
+                if(s["minimum"]!=null&&CompareNumbers(v,s["minimum"])<0)fail("schema.minimum","Below minimum");
+                if(s["maximum"]!=null&&CompareNumbers(v,s["maximum"])>0)fail("schema.maximum","Above maximum");
             }
         }
     }

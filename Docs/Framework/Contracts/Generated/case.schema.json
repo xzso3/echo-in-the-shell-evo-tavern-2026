@@ -20,17 +20,18 @@
       "properties": {
         "package_id": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "^(?!.*\\.\\.)[a-z][a-z0-9_.-]*(?![\\s\\S])"
         },
         "package_version": {
           "type": "string",
           "minLength": 1,
-          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?![\\s\\S])"
         },
         "sha256": {
           "type": "string",
           "minLength": 1,
-          "pattern": "^[a-f0-9]{64}$"
+          "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
         }
       },
       "required": [
@@ -42,12 +43,12 @@
     "entrypoint": {
       "type": "string",
       "minLength": 1,
-      "pattern": "^(?!.*\\.\\.)(?!.*\\/$)[a-z][a-z0-9_.-]*:[a-z][a-z0-9_]*\\/[a-z][a-z0-9_./-]*$"
+      "pattern": "^(?!.*\\.\\.)(?!.*\\/(?![\\s\\S]))[a-z][a-z0-9_.-]*:[a-z][a-z0-9_]*\\/[a-z][a-z0-9_./-]*(?![\\s\\S])"
     },
     "seed": {
       "type": "integer",
       "minimum": 0,
-      "maximum": 9007199254740991
+      "maximum": 2147483647
     },
     "timestep": {
       "type": "number",
@@ -146,7 +147,7 @@
                           "generation": {
                             "type": "integer",
                             "minimum": 1,
-                            "maximum": 9007199254740991
+                            "maximum": 2147483647
                           }
                         },
                         "required": [
@@ -233,7 +234,7 @@
                           "generation": {
                             "type": "integer",
                             "minimum": 1,
-                            "maximum": 9007199254740991
+                            "maximum": 2147483647
                           }
                         },
                         "required": [
@@ -303,7 +304,7 @@
                           "generation": {
                             "type": "integer",
                             "minimum": 1,
-                            "maximum": 9007199254740991
+                            "maximum": 2147483647
                           }
                         },
                         "required": [
@@ -335,7 +336,7 @@
                           "generation": {
                             "type": "integer",
                             "minimum": 1,
-                            "maximum": 9007199254740991
+                            "maximum": 2147483647
                           }
                         },
                         "required": [
@@ -411,7 +412,7 @@
                           "generation": {
                             "type": "integer",
                             "minimum": 1,
-                            "maximum": 9007199254740991
+                            "maximum": 2147483647
                           }
                         },
                         "required": [
@@ -492,7 +493,7 @@
                           "generation": {
                             "type": "integer",
                             "minimum": 1,
-                            "maximum": 9007199254740991
+                            "maximum": 2147483647
                           }
                         },
                         "required": [
@@ -578,7 +579,7 @@
                           "generation": {
                             "type": "integer",
                             "minimum": 1,
-                            "maximum": 9007199254740991
+                            "maximum": 2147483647
                           }
                         },
                         "required": [
@@ -696,7 +697,7 @@
                   "generation": {
                     "type": "integer",
                     "minimum": 1,
-                    "maximum": 9007199254740991
+                    "maximum": 2147483647
                   }
                 },
                 "required": [
@@ -732,7 +733,7 @@
                       "generation": {
                         "type": "integer",
                         "minimum": 1,
-                        "maximum": 9007199254740991
+                        "maximum": 2147483647
                       }
                     },
                     "required": [
@@ -764,7 +765,7 @@
                       "generation": {
                         "type": "integer",
                         "minimum": 1,
-                        "maximum": 9007199254740991
+                        "maximum": 2147483647
                       }
                     },
                     "required": [

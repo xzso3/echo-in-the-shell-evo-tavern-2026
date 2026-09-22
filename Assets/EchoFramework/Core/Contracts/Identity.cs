@@ -12,7 +12,7 @@ namespace Echo.Framework.Contracts
     }
     public readonly struct ContentId : IEquatable<ContentId>
     {
-        public const string Pattern = @"^(?!.*\.\.)(?!.*\/$)[a-z][a-z0-9_.-]*:[a-z][a-z0-9_]*\/[a-z][a-z0-9_./-]*$";
+        public const string Pattern = @"^(?!.*\.\.)(?!.*\/(?![\s\S]))[a-z][a-z0-9_.-]*:[a-z][a-z0-9_]*\/[a-z][a-z0-9_./-]*(?![\s\S])";
         public string Value { get; }
         public string Package => Value.Split(':')[0];
         public string Type => Value.Substring(Value.IndexOf(':')+1).Split('/')[0];
