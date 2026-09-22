@@ -22,7 +22,7 @@
 | P2-04 | scene_wired_dev | 原代码 `54dc362` → 本地 `092f537`，原场景 `f37c632` → 本地 `8f4384e` | ArcSentry 位于北区 `(-8,25)`，Unity batchmode 场景接线/编译正常退出；Prefab、攻击脚本与场景引用静态核对。短 Play Mode 已核对敌人与主线接线；实际交战、死亡/重开及 Windows 未测；`8f4384e` 为独立可回退安全点 |
 | P2-05 | scene_wired_dev | 原代码 `daa7de3` → 本地 `a7dba48`，原场景 `dd0350b` → 本地 `1f6b8a6` | 第一块北区 `(-12,14)` 的线圈拾取、装备组件和状态条已接 NativeDemo；Unity batchmode 接线/编译正常退出。短 Play Mode 已核对 E 拾取、F 装备、Q 超频效果；实际战斗结果、人工节奏及 Windows 未测；`1f6b8a6` 为独立安全点 |
 | P2-06 | scene_wired_dev | 原音频 `484f59d` → 本地 `2f3d731`，原场景 `7422528` → 本地 `b71a911`，补字形 `5d94c0c` → 本地 `c98e037` | NativeDemo 根级唯一 AudioDirector、四段自制 WAV、一个 AudioListener 与运行引用静态核对；Unity batchmode 导入/接线/编译正常退出。短 Play Mode 已核对 BGM AudioSource 循环启动；声音听感、F5—F8 音量操作及 Windows 未测 |
-| P2-07 | in_progress | `codex/p2-07-passage-eca`，工作树 `db8d` | `25e876b`：从终端与北侧开关两条真实链提取具体通路 ECA 规则；Unity 已保存场景接线，聚焦冒烟通过，正在清理无关 YAML 差异后提交；人工键鼠与 Windows 未测 |
+| P2-07 | integrated_dev | `codex/p2-07-passage-eca` 原代码 `25e876b` → 本地 `ca8f40e`，原场景 `048c613` → 本地 `2081d90` | 两项 PassageRule 已保存于 NativeDemo，终端与北侧开关各绑定一次。执行者 Unity batchmode 编译/保存退出 0，聚焦冒烟确认 0/3 记忆阻断、中继 Quest/Map 开门和北侧 Map 门开关；集成端仅静态核对，人工键鼠、Windows、Boss/结局未测 |
 | P2-08 | code_ready | `codex/p2-08-north-memory`，工作树 `b484` | `4bc828e`：北侧定向脉冲的独立代码切片；伤害经 Combat，实际命中后 Narrative 才记同步代价与行为；场景接线/Unity/Windows 未测，等待 P2-07 释放 Unity 槽 |
 | P2-09 | pending | 在线指挥官，等待实际服务条件 | 需真实服务端、凭据与网络连接；未启动，不以本地预设通讯冒称在线 |
 | P2-10 | pending | INT-00 与用户 | 截止前集成/用户手动 Windows 试玩：靠近档案员实际选择并交付一条支线，再确认主线可继续；另一条未玩的支线保持未测。未完成项移交下阶段 |
@@ -31,4 +31,4 @@
 
 ## 检查边界与恢复点
 
-P2-01 证据见 `Assets/NativeGame/README.md`、`/private/tmp/native-npc-connect.log`、`/private/tmp/native-npc-smoke.log`；临时探针已移除。P2-02 只核对集成后的文件和引用，没有把原工作区的运行结果冒称为 de32 重测。A2—A6 的完整人工操作、A8 Windows 路线，以及 Boss/结局全流程仍待用户试玩；P2 整体尚未完成。路线文档已入主目录，旧工作区已安全收束。P2-03 源任务从 `4d64c4c` 起步，先只选择地图 `231a97c` 形成 `fabefdc`；随后按父链精确导入 P2-04 代码/场景、P2-05 代码/场景、P2-06 音频/场景。源场景任务最新短 Play Mode `/private/tmp/p2-integrated-play.log` 报 `NATIVE_INTEGRATED_SMOKE: PASS`，涵盖物理穿越、Map 门、装备拾取/效果、音频启动及敌人与主线接线；集成端只做静态核对，未重跑 Unity 或构建 Windows。后续 P2-07/P2-08 从本文件所在交接提交与集成引用继续。开发期只做必要编译/启动/当前阻断检查，08:00 停止新增功能，11:00 收束，未完成项转后续阶段。
+P2-01 证据见 `Assets/NativeGame/README.md`、`/private/tmp/native-npc-connect.log`、`/private/tmp/native-npc-smoke.log`；临时探针已移除。P2-02 只核对集成后的文件和引用，没有把原工作区的运行结果冒称为 de32 重测。A2—A6 的完整人工操作、A8 Windows 路线，以及 Boss/结局全流程仍待用户试玩；P2 整体尚未完成。路线文档已入主目录，旧工作区已安全收束。P2-03 源任务从 `4d64c4c` 起步，先只选择地图 `231a97c` 形成 `fabefdc`；随后按父链精确导入 P2-04 代码/场景、P2-05 代码/场景、P2-06 音频/场景。源场景任务最新短 Play Mode `/private/tmp/p2-integrated-play.log` 报 `NATIVE_INTEGRATED_SMOKE: PASS`，涵盖物理穿越、Map 门、装备拾取/效果、音频启动及敌人与主线接线；集成端只做静态核对，未重跑 Unity 或构建 Windows。P2-07 从主目录文档 HEAD `27df239` 精确导入代码与场景提交，不引入其他执行分支；P2-08 从本文件所在交接提交与集成引用继续。开发期只做必要编译/启动/当前阻断检查，08:00 停止新增功能，11:00 收束，未完成项转后续阶段。

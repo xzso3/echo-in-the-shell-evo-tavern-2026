@@ -28,6 +28,12 @@ P2-03 原提交 `231a97c75b0c9aba7fd417ccb4003baf1dbe2b23` → 隔离集成 `4c5
 
 执行者的 `/private/tmp/p2-04-connect.log`、`/private/tmp/p2-05-connect.log`、`/private/tmp/p2-06-connect.log` 均显示对应场景引用接线和 Unity batchmode 正常退出。本次隔离集成又静态核对三种 Prefab 场景实例、装备/互动/音频引用、唯一 AudioListener、四个有效 PCM WAV 与唯一启用构建场景，未重复运行 Unity。源场景任务的短 Play Mode `/private/tmp/p2-integrated-play.log` 报 `NATIVE_INTEGRATED_SMOKE: PASS`，覆盖物理穿越、ECA 门、装备 E/F/Q 效果、BGM AudioSource 循环启动及敌人/主线接线；临时探针已从 Assets 移除。集成端未重跑 Unity。ArcSentry 的实际交战及死亡/重开、线圈在人工战斗中的伤害/射速表现、声音听感和音量键、Boss/结局全程及 Windows 构建仍待测，不能把聚焦检查冒称为人工通过。
 
+## P2-07 两处通路 ECA 复用
+
+P2-07 原代码 `25e876b2620ed22b2324c200531ad03be3d97c95` → 本地 `ca8f40e`，原场景 `048c6139fc8cef5f2fda1c59a32682d0ece9f5b1` → 本地 `2081d9035b16206f320b36fcd7014b8432bcf11f`。`NativeDemo` 的现有中继终端和北侧开关分别配置一个 `PassageRule`，共同处理 `Confirmed` 事件；规则只读 Level/Quest/Map 条件，门、任务和叙事结果仍由各自组件提交。旧终端/北侧专用事件处理器不再并行订阅，避免重复结算。场景已保存，无需运行一次性接线菜单。
+
+执行者的 `/private/tmp/p2-07-unity-connect.log` 和 `/private/tmp/p2-07-unity-smoke.log` 显示 Unity 2021.3.27f1c2 batchmode 正常退出；聚焦冒烟以程序交互确认 0/3 记忆时中继阻断、收齐后三记忆的 Quest/Map 结果及北侧 Map 门开启。集成端核对仅五个授权文件的差量、两条规则对现有引用的映射、无重复旧订阅及 NativeDemo 唯一构建入口，没有重跑 Unity。人工移动按 E、Windows、Boss/结局全程仍待测；详见 [P2-07 接线说明](Framework/Phase2/P2-07_PASSAGE_ECA.md)。
+
 ## 既有 U4 路线与证据
 
 以下保留 NPC 合入前的 U4 操作说明。U4 原源码集成提交 `47c487759ee191fdb8b4dc34c947f872d512aacc`；中文差量 `f3bef9d`→`6115f13`、`a8f5910`→`749e0d1`、`e4891ed`→`800242b`，译文原 `8a2cb96` 未重复合入；主控两文档提交 `50f1eeb`→`d6fdc99`。
