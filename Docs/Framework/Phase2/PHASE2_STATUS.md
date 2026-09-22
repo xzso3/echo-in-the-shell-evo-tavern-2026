@@ -22,10 +22,12 @@
 | P2-04 | scene_wired_dev | 原代码 `54dc362` → 本地 `092f537`，原场景 `f37c632` → 本地 `8f4384e` | ArcSentry 位于北区 `(-8,25)`，Unity batchmode 场景接线/编译正常退出；Prefab、攻击脚本与场景引用静态核对。短 Play Mode 已核对敌人与主线接线；实际交战、死亡/重开及 Windows 未测；`8f4384e` 为独立可回退安全点 |
 | P2-05 | scene_wired_dev | 原代码 `daa7de3` → 本地 `a7dba48`，原场景 `dd0350b` → 本地 `1f6b8a6` | 第一块北区 `(-12,14)` 的线圈拾取、装备组件和状态条已接 NativeDemo；Unity batchmode 接线/编译正常退出。短 Play Mode 已核对 E 拾取、F 装备、Q 超频效果；实际战斗结果、人工节奏及 Windows 未测；`1f6b8a6` 为独立安全点 |
 | P2-06 | scene_wired_dev | 原音频 `484f59d` → 本地 `2f3d731`，原场景 `7422528` → 本地 `b71a911`，补字形 `5d94c0c` → 本地 `c98e037` | NativeDemo 根级唯一 AudioDirector、四段自制 WAV、一个 AudioListener 与运行引用静态核对；Unity batchmode 导入/接线/编译正常退出。短 Play Mode 已核对 BGM AudioSource 循环启动；声音听感、F5—F8 音量操作及 Windows 未测 |
-| P2-07—P2-09 | pending | 依 [任务卡](PHASE2_TASKS.md)按序续派 | ECA 复用 → 叙事/支援 → 在线指挥官；前置条件满足后才启动 |
+| P2-07 | in_progress | `codex/p2-07-passage-eca`，工作树 `db8d` | `25e876b`：从终端与北侧开关两条真实链提取具体通路 ECA 规则；Unity 已保存场景接线，聚焦冒烟通过，正在清理无关 YAML 差异后提交；人工键鼠与 Windows 未测 |
+| P2-08 | code_ready | `codex/p2-08-north-memory`，工作树 `b484` | `4bc828e`：北侧定向脉冲的独立代码切片；伤害经 Combat，实际命中后 Narrative 才记同步代价与行为；场景接线/Unity/Windows 未测，等待 P2-07 释放 Unity 槽 |
+| P2-09 | pending | 在线指挥官，等待实际服务条件 | 需真实服务端、凭据与网络连接；未启动，不以本地预设通讯冒称在线 |
 | P2-10 | pending | INT-00 与用户 | 截止前集成/用户手动 Windows 试玩：靠近档案员实际选择并交付一条支线，再确认主线可继续；另一条未玩的支线保持未测。未完成项移交下阶段 |
 
-四个新执行任务均指定 GPT-6 Sol / Extra High；Unity Editor 槽由当前场景接线任务协调。P2-04—P2-06 的代码与场景实例均已接入，但实际交战、装备效果和音频听感尚未通过人工试玩；不能将场景接线等同于 Windows 验收。用户先前要求的暂停已由本次接续指令解除。
+本轮新执行任务均指定 GPT-6 Sol / Extra High；Unity Editor 槽由当前场景接线任务协调。P2-04—P2-06 的代码与场景实例均已接入，但实际交战、装备效果和音频听感尚未通过人工试玩；不能将场景接线等同于 Windows 验收。用户先前要求的暂停已由本次接续指令解除。自动审批拒绝关闭四个已完成工作树，理由是潜在未跟踪材料或历史证据丢失风险；只读审计与非缓存材料归档已完成，工作树原样保留，清单见 `.codex-worktree-audits/2026-09-23-p2-slices/README.md`。
 
 ## 检查边界与恢复点
 
