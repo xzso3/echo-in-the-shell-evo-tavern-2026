@@ -30,6 +30,16 @@ namespace Echo.NativeGame.Editor
             var material = AssetDatabase.LoadAssetAtPath<Material>("Assets/CyberCity/Materials/Actors.mat");
             var font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/NativeGame/Fonts/FusionPixel/FusionPixel12 Bitmap.asset");
             if (!sprite || !material || !font) throw new InvalidOperationException("North pulse artwork or Chinese font is missing.");
+            const string pulseGlyphs = "弧哨兵";
+            var needed = new string(pulseGlyphs.Where(character => !font.HasCharacter(character)).ToArray());
+            if (needed.Length > 0) font.TryAddCharacters(needed);
+            if (!font.HasCharacters(pulseGlyphs)) throw new InvalidOperationException("FusionPixel could not render the north pulse text.");
+            foreach (var atlas in font.atlasTextures)
+            {
+                if (!AssetDatabase.Contains(atlas)) AssetDatabase.AddObjectToAsset(atlas, font);
+                EditorUtility.SetDirty(atlas);
+            }
+            EditorUtility.SetDirty(font);
 
             var terminal = new GameObject("North pulse terminal");
             terminal.transform.SetParent(run.map.transform, false);
