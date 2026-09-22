@@ -1,5 +1,7 @@
 # Unity 原生下一轮：NPC 分支任务与 ECA
 
+本页是 P2-01 的初始派发范围；本阶段的任务依赖、验收与持续调度以 [P2 任务](Framework/Phase2/PHASE2_TASKS.md)、[P2 验收](Framework/Phase2/PHASE2_ACCEPTANCE.md)和[状态台账](Framework/Phase2/PHASE2_STATUS.md)为准。
+
 状态：2026-09-23 已派发实现，尚未集成或验收。目标截止仍为 2026-09-24 11:00（UTC+8）。
 
 ## 基线与边界
