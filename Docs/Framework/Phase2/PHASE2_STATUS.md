@@ -18,14 +18,14 @@
 | P2-00 | complete | 主控文档工作区 | P2 规范、任务、验收、主控规则和台账；阶段范围已确认 |
 | P2-01 | complete | P1-07 `01a0c9bb-fdbe-7f62-a3d1-8a80fd0fb604`，原 4113 分支（工作树已关闭） | `6daddd3`；Unity 2021.3.27f1c2 场景接线/编译命令退出 0，聚焦 Play Mode 21 断言、6 张快照；A/B 事件链、重复结算保护及未完成 B 时三记忆→relay 通过。检查含显式定位和按钮回调，不是人工键鼠通关；未重测 Boss/结局或 Windows |
 | P2-02 | complete | INT-00 `01a0c881-9454-7fa3-a276-cb5756debad3`，原 de32（工作树已关闭） | 指定 NPC 和 P2 文档提交已集成；核对唯一构建场景、Prefab/脚本/按钮/字体/许可引用及交接说明。仅静态核对，未重复启动 Unity |
-| P2-03 | in_progress | 新执行任务，`codex/p2-03-chunk-map`，工作树 `31fa` | 从 `4d64c4c` 起步；独占 Unity Editor、NativeDemo 场景与 Map 接线；实现两块可复用 Chunk 的可走区域 |
-| P2-04 | in_progress | 新执行任务，`codex/p2-04-actor-combat`，工作树 `909d` | 从 `4d64c4c` 起步；只做 Actor/Combat 代码与独立 Prefab，不改共享场景；向主控交接接线需求 |
-| P2-05 | in_progress | 新执行任务，`codex/p2-05-equipment-effect`，工作树 `c398` | 从 `4d64c4c` 起步；先做道具/装备/效果代码与 Prefab，实际场景接线待地图/战斗接口落地 |
-| P2-06 | in_progress | 新执行任务，`codex/p2-06-audio`，工作树 `d7c0` | 从 `4d64c4c` 起步；先做音频资源/组件，场景接线等待 Unity 槽 |
+| P2-03 | in_progress | 新执行任务，`codex/p2-03-chunk-map`，工作树 `31fa` | 从 `4d64c4c` 起步；独占 Unity Editor、NativeDemo 场景与 Map 接线。Chunk/场景改动正在工作树；独立 Editor 无 Pipeline 连接，首次 batchmode 被 Unity License Client IPC 阻断，尚无已保存并验证的提交 |
+| P2-04 | code_ready | `codex/p2-04-actor-combat`，工作树 `909d` | `f6b8580`：ArcSentry Prefab、Actor 绕射移动和预警三连弹；本次三个脚本使用 Unity 2021 程序集离线编译 0 错误/警告、Prefab 静态引用核对；未接 NativeDemo，实际交战及 Windows 未测 |
+| P2-05 | code_ready | `codex/p2-05-equipment-effect`，工作树 `c398` | `bc5a403`：拾取、装备、限时超频、状态条及一次性场景接线器；只做差量与 Prefab 静态核对，Unity 编译/场景/Windows 未测；待 Unity 槽接线 |
+| P2-06 | code_ready | `codex/p2-06-audio`，工作树 `d7c0` | `5db4ab3`：独立音频组件、四段自制 WAV、Prefab；全 NativeGame 非 Editor 源码离线编译 0 错误、PCM/幅度/循环边界及 GUID 检查通过；Unity 导入、场景接线、人工试听与 Windows 未测 |
 | P2-07—P2-09 | pending | 依 [任务卡](PHASE2_TASKS.md)按序续派 | ECA 复用 → 叙事/支援 → 在线指挥官；前置条件满足后才启动 |
 | P2-10 | pending | INT-00 与用户 | 截止前集成/用户手动 Windows 试玩：靠近档案员实际选择并交付一条支线，再确认主线可继续；另一条未玩的支线保持未测。未完成项移交下阶段 |
 
-四个新执行任务均指定 GPT-6 Sol / Extra High；并发 4/5，Unity Editor 槽由 P2-03 独占。任务目前只有启动记录，尚无可集成提交或检查结果。用户先前要求的暂停已由本次接续指令解除。
+四个新执行任务均指定 GPT-6 Sol / Extra High；Unity Editor 槽由 P2-03 独占。P2-04—P2-06 的代码/资源提交已就绪，但均未形成场景内可玩交付；三个原执行任务现已空闲，可供后续修补。用户先前要求的暂停已由本次接续指令解除。
 
 ## 检查边界与恢复点
 
