@@ -49,9 +49,9 @@ namespace Echo.NativeGame
             promptLabel.text = dialogue.HasChoices ? "点击选择 / E 暂不选择" : dialogue.IsOpen ? "E  /  收到" : level.rules.CanInteractBossCore(player) ? "E  /  解除核心封锁" : nearby ? nearby.Prompt : level.Running ? "WASD 移动    Space 自动开火/停火    E 互动    Tab 手机" : "";
         }
         public void ShowResult(string title, string body)
-        { phonePanel.SetActive(false); resultTitle.text = title; resultBody.text = body; resultPanel.SetActive(true); ClearSelection(); }
-        public void TogglePhone() { phonePanel.SetActive(!phonePanel.activeSelf); ClearSelection(); }
-        public void ClosePhone() { phonePanel.SetActive(false); if (phone) phone.CloseDecision(); ClearSelection(); }
+        { if (phone) phone.CancelComposition(); phonePanel.SetActive(false); resultTitle.text = title; resultBody.text = body; resultPanel.SetActive(true); ClearSelection(); }
+        public void TogglePhone() { if (phonePanel.activeSelf && phone) phone.CancelComposition(); phonePanel.SetActive(!phonePanel.activeSelf); ClearSelection(); }
+        public void ClosePhone() { if (phone) phone.CancelComposition(); phonePanel.SetActive(false); if (phone) phone.CloseDecision(); ClearSelection(); }
         static void ClearSelection() { if (EventSystem.current) EventSystem.current.SetSelectedGameObject(null); }
     }
 }

@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 namespace Echo.NativeGame
 {
     // Local phone presentation/selection. Contracts stay in Support; story state stays in Narrative.
@@ -12,6 +13,10 @@ namespace Echo.NativeGame
         public ScrollRect scroll;
         public Button[] tabs, actions;
         public Button restart;
+        public TMP_InputField composer;
+        public Button sendButton;
+        public NativeCommanderSafeNode safeNode;
+        public NativeCommanderProxy proxy;
         public Page SelectedPage { get; private set; }
         NativeSupportKind kind;
         NativeSupportTier tier;
@@ -20,30 +25,50 @@ namespace Echo.NativeGame
         bool finalDecision, pendingWasVisible;
         int pendingFirstVisibleFrame;
         string feedback = "", lastBody;
+        string onlineStatus = "", lastQuestion = "", lastReply = "";
         INativeSupport Service => level.rules.Support;
         void Awake()
         {
             for (int i = 0; i < tabs.Length; i++) { int index = i; tabs[i].onClick.AddListener(() => SelectPage(index)); }
             for (int i = 0; i < actions.Length; i++) { int index = i; actions[i].onClick.AddListener(() => Act(index)); }
             restart.onClick.AddListener(level.Restart);
+            if (sendButton) sendButton.onClick.AddListener(SendMessage);
         }
         public static string PageLabel(Page value) => value == Page.Comms ? "通讯" : value == Page.Support ? "支援" : "网络";
         public void SelectPage(int index)
-        { SelectedPage = (Page)index; finalDecision = false; topic = 0; feedback = ""; lastBody = null; scroll.verticalNormalizedPosition = 1; }
+        { CancelComposition(); SelectedPage = (Page)index; finalDecision = false; topic = 0; feedback = ""; lastBody = null; scroll.verticalNormalizedPosition = 1; }
         public void ShowFinalDecision()
-        { finalDecision = true; feedback = ""; level.hud.phonePanel.SetActive(true); scroll.verticalNormalizedPosition = 1; }
+        { CancelComposition(); finalDecision = true; feedback = ""; level.hud.phonePanel.SetActive(true); scroll.verticalNormalizedPosition = 1; }
         public void CloseDecision() { finalDecision = false; }
         public void ShowContinuation()
-        { finalDecision = false; SelectedPage = Page.Comms; topic = 0; level.hud.phonePanel.SetActive(true); scroll.verticalNormalizedPosition = 1; }
+        { CancelComposition(); finalDecision = false; SelectedPage = Page.Comms; topic = 0; level.hud.phonePanel.SetActive(true); scroll.verticalNormalizedPosition = 1; }
+        public void CancelComposition()
+        {
+            if (proxy && proxy.Busy)
+            { proxy.Cancel(); onlineStatus = "通讯已取消，草稿已保留。预设通讯仍可使用。"; }
+            if (composer && EventSystem.current && EventSystem.current.currentSelectedGameObject == composer.gameObject)
+            { composer.DeactivateInputField(); EventSystem.current.SetSelectedGameObject(null); }
+        }
         void Update()
         {
-            if (!level.hud.phonePanel.activeSelf) return;
+            if (!level.hud.phonePanel.activeSelf) { CancelComposition(); return; }
             var narrative = level.narrative;
+            bool composingPage = !finalDecision && SelectedPage == Page.Comms;
+            string safeReason = "安全通讯节点未接线。";
+            bool safe = safeNode && safeNode.CanCompose(out safeReason);
+            if (!composingPage || !safe) CancelComposition();
+            if (composer)
+            { composer.gameObject.SetActive(composingPage); composer.interactable = safe; }
+            if (sendButton)
+            {
+                sendButton.gameObject.SetActive(composingPage);
+                sendButton.interactable = safe && proxy && proxy.Configured && !proxy.Busy && composer && !string.IsNullOrWhiteSpace(composer.text);
+            }
             bool pendingNow = Service != null && Service.HasPending;
             if (pendingNow && !pendingWasVisible) pendingFirstVisibleFrame = Time.frameCount;
             pendingWasVisible = pendingNow;
             bool contractView = !finalDecision && SelectedPage == Page.Support && pendingNow;
-            scroll.viewport.sizeDelta = new Vector2(scroll.viewport.sizeDelta.x, contractView ? 298 : 190);
+            scroll.viewport.sizeDelta = new Vector2(scroll.viewport.sizeDelta.x, contractView ? 298 : composingPage ? 145 : 190);
             heading.text = "心智连接 / " + (finalDecision ? "最终节点" : PageLabel(SelectedPage)) + " / 滚动阅读";
             foreach (var button in actions) { button.gameObject.SetActive(false); button.interactable = true; }
             restart.gameObject.SetActive(level.Phase == NativeRunController.RunPhase.Completed || level.Phase == NativeRunController.RunPhase.Dead);
@@ -60,6 +85,10 @@ namespace Echo.NativeGame
                 SetAction(0, "任务"); SetAction(1, "记忆"); SetAction(2, "你是谁？"); SetAction(3, "关于授权");
                 SetAction(4, narrative.PreservedAnomaly ? "已保留异议" : "保留异议 · 差异度+35", level.Running && narrative.HasMemory(NativeMemoryKind.Private) && !narrative.PreservedAnomaly);
                 SetAction(5, "本局记录");
+                text += "\n\n自由通讯 / " + safeReason + (proxy && proxy.Configured ? "" : "\n在线代理未配置；草稿和预设主题仍可使用。") +
+                    (proxy && proxy.Busy ? "\n正在等待在线回复，可关闭手机取消。" : "") +
+                    (string.IsNullOrEmpty(onlineStatus) ? "" : "\n" + onlineStatus) +
+                    (string.IsNullOrEmpty(lastReply) ? "" : "\n\n你：" + lastQuestion + "\n指挥官（在线文本）：" + lastReply);
             }
             else if (SelectedPage == Page.Support)
             {
@@ -136,5 +165,23 @@ namespace Echo.NativeGame
         }
         public void ConfirmSupport()
         { if (!finalDecision && SelectedPage == Page.Support && level.Running && Service != null && Service.HasPending && pendingWasVisible && Time.frameCount > pendingFirstVisibleFrame) Service.Confirm(); }
+        void SendMessage()
+        {
+            if (finalDecision || SelectedPage != Page.Comms || !level.hud.phonePanel.activeSelf || !safeNode || !safeNode.CanCompose(out _) || !proxy || !proxy.Configured || proxy.Busy || !composer) return;
+            string message = composer.text.Trim();
+            if (message.Length == 0 || message.Length > 300) return;
+            string objective = level.quest.ObjectiveText;
+            string memories = level.narrative.MemorySummary();
+            if (!proxy.Send(message, objective, memories, (reply, error) =>
+                {
+                    if (!level || !level.hud.phonePanel.activeSelf || finalDecision || SelectedPage != Page.Comms || !safeNode || !safeNode.CanCompose(out _)) return;
+                    if (level.quest.ObjectiveText != objective || level.narrative.MemorySummary() != memories)
+                    { onlineStatus = "局内进度已变化，旧回复已丢弃；草稿已保留。"; return; }
+                    if (error != null) { onlineStatus = error; return; }
+                    lastQuestion = message; lastReply = reply; onlineStatus = "已收到在线文本回复；支援与任务仍须在本地明确操作。";
+                    composer.text = ""; scroll.verticalNormalizedPosition = 0;
+                })) onlineStatus = "在线代理不可用；请使用预设通讯。";
+            else onlineStatus = "";
+        }
     }
 }
