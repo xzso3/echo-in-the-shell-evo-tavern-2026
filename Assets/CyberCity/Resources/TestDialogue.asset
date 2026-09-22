@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b133dfaa4a8385f4a85319e14794fc90, type: 3}
+  m_Name: TestDialogue
+  m_EditorClassIdentifier: 
+  panelImage: {fileID: 21300000, guid: 3073449eb02ee51489a0f59049c4ae44, type: 3}
+  optionImage: {fileID: 21300000, guid: a409df8d645d8a84c981a9169d5f6930, type: 3}
+  defaultPortrait: {fileID: 21300000, guid: af135095128880f479acf80fa7699146, type: 3}
+  font: {fileID: 0}
+  title: DISTRICT 07 / INCOMING TRANSMISSION
+  entryNode: 0
+  nodes:
+  - speaker: DISTRICT CONTACT
+    portrait: {fileID: 0}
+    text: Operator, your signal is clear. The district is under lockdown. What do
+      you need before moving out?
+    nextNode: -1
+    choices:
+    - text: Give me a situation report.
+      nextNode: 1
+    - text: Tell me about equipment.
+      nextNode: 2
+  - speaker: DISTRICT CONTACT
+    portrait: {fileID: 0}
+    text: Security units have gone rogue. Keep moving, break their line of sight,
+      and watch for ranged fire.
+    nextNode: -1
+    choices:
+    - text: I have another question.
+      nextNode: 0
+    - text: Understood. End transmission.
+      nextNode: -1
+  - speaker: DISTRICT CONTACT
+    portrait: {fileID: 0}
+    text: Defeated hostiles may leave equipment. Move close to collect it, then open
+      your backpack with E.
+    nextNode: 3
+    choices: []
+  - speaker: DISTRICT CONTACT
+    portrait: {fileID: 0}
+    text: Weapons increase attack power, boots improve movement speed, and reflex
+      modules speed up firing. Higher quality gives stronger bonuses.
+    nextNode: -1
+    choices:
+    - text: Back to the briefing.
+      nextNode: 0
+    - text: Ready. End transmission.
+      nextNode: -1

@@ -1,0 +1,40 @@
+# Unity generated files and local settings
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Bb]uild/
+/[Bb]uilds/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+
+# IDE generated files
+/.vs/
+/.idea/
+/*.csproj
+/*.sln
+/*.slnx
+/*.suo
+/*.user
+/*.userprefs
+/*.pidb
+/*.booproj
+/*.svd
+/*.pdb
+/*.mdb
+/*.opendb
+/*.VC.db
+
+# OS files and local credentials
+.DS_Store
+Thumbs.db
+.env
+.env.*
+!.env.example
+*.keystore
+*.jks
+
+# Unity crash reports
+sysinfo.txt
+crashlytics-build.properties

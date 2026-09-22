@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c4001303b7c91c4bbb8d67205207fc1, type: 3}
+  m_Name: BossArenaConfig
+  m_EditorClassIdentifier: 
+  halfSize: {x: 9, y: 6}
+  playerSpawn: {x: 0, y: -4.6}
+  startPosition: {x: 0, y: -2.6}
+  startRadius: 0.65
+  playerRadius: 0.38
+  health: 2600
+  bodyRadius: 0.9
+  hitRadius: 1.1
+  startupSeconds: 2
+  transitionSeconds: 2
+  trackSeconds: 0.6
+  lockSeconds: 0.3
+  shotInterval: 0.15
+  shotSpeed: 6
+  shotDamage: 16
+  burstCount: 3
+  muzzleOffset: {x: 1.375, y: 0.28125}
+  bombRadius: 1.3
+  bombWarning: 1.1
+  bombInterval: 0.65
+  bombDamage: 20
+  gridCenter: 3.5
+  gridWidth: 2.2
+  gridWarning: 1.4
+  gridActive: 1
+  gridDamage: 18
+  burstRecovery: 1
+  bombRecovery: 1
+  gridRecovery: 1.5
+  phaseTwoRecovery: 0.8
+  supplyPoints:
+  - {x: -7, y: 0}
+  - {x: 7, y: 0}
+  - {x: 0, y: 4.3}
+  - {x: 0, y: -4.3}
+  supplyWarning: 0.8
+  medicalRadius: 0.8
+  medicalHeal: 25
+  material: {fileID: 2100000, guid: 4e35c415887c22549b72e25568869ff5, type: 2}
+  baseSprite: {fileID: 21300000, guid: c0ef9729fa2f0f9458157cf9e1ec5a3f, type: 3}
+  turret: {fileID: 21300000, guid: 09722ed98cc84fe44bcfff7246031e80, type: 3}
+  core: {fileID: 21300000, guid: ba2afa6c3cf57a24b920dd867ea6b165, type: 3}
+  damageOverlay: {fileID: 21300000, guid: cd58620e67c37a34fa709413f6b4e7f3, type: 3}
+  wreck: {fileID: 21300000, guid: 7ae80b8435a16e4489e90f69a03cdd30, type: 3}
+  projectile: {fileID: 21300000, guid: 755b685c976ddfa43941a3fd5909cc8b, type: 3}
+  bombRing: {fileID: 21300000, guid: cd4afd12292ea0f4aa66e6ae79e9e780, type: 3}
+  gridWarningSprite: {fileID: 21300000, guid: b3ffb615af897b648b98fe9a89b875e2, type: 3}
+  gridActiveSprite: {fileID: 21300000, guid: 5c034b4491ea1934d91958b2b63fd45a, type: 3}
+  aimTracking: {fileID: 21300000, guid: ba4c052b3fc3a0d419c86ceacbae1bbf, type: 3}
+  aimLocked: {fileID: 21300000, guid: ffe8f9648ba5aa2439e3c6f530558034, type: 3}
+  medkit: {fileID: 21300000, guid: 2ee678425de3cf942938027d3383bc95, type: 3}
+  supplyMarker: {fileID: 21300000, guid: bfec63c04988bd5429fe610ae2dfa214, type: 3}
+  startMarker: {fileID: 21300000, guid: c7896dc69ea897e4e802b0fc98a3be59, type: 3}
+  boundary: {fileID: 21300000, guid: d851f2fbeb663c444ad3ffcabbcaa176, type: 3}
+  corner: {fileID: 21300000, guid: f72dd119293ce274fb8156f0d77941f0, type: 3}
+  healthFrame: {fileID: 21300000, guid: c5e803972d8bffa4a82d45bc1ec6c4a9, type: 3}
+  healthFill: {fileID: 21300000, guid: 012234a27816b2e4f8a784b34637811c, type: 3}
+  explosions:
+  - {fileID: 21300000, guid: 5094e97f59a577446a25b3c0f757c054, type: 3}
+  - {fileID: 21300000, guid: 038250f7444c8124594c0177314bbdc8, type: 3}
+  - {fileID: 21300000, guid: 5806d0394ce450e4db42e3e60fe26022, type: 3}
+  - {fileID: 21300000, guid: 3ca7a5c8c78c5104e89d7ae972662c5c, type: 3}

@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77b7103974b1c0e4a9d798aeb4489c6c, type: 3}
+  m_Name: EquipmentCatalog
+  m_EditorClassIdentifier: 
+  tiers:
+  - quality: 0
+    color: {r: 0.52, g: 0.56, b: 0.6, a: 1}
+    weight: 35
+    movePercent: 5
+    attackPercent: 8
+    attackPower: 4
+  - quality: 1
+    color: {r: 0.86, g: 0.91, b: 0.94, a: 1}
+    weight: 40
+    movePercent: 10
+    attackPercent: 15
+    attackPower: 10
+  - quality: 2
+    color: {r: 0.08, g: 0.78, b: 1, a: 1}
+    weight: 18
+    movePercent: 18
+    attackPercent: 25
+    attackPower: 20
+  - quality: 3
+    color: {r: 0.72, g: 0.32, b: 1, a: 1}
+    weight: 6
+    movePercent: 28
+    attackPercent: 40
+    attackPower: 36
+  - quality: 4
+    color: {r: 1, g: 0.64, b: 0.1, a: 1}
+    weight: 1
+    movePercent: 40
+    attackPercent: 60
+    attackPower: 60
+  atlases:
+  - {fileID: 2800000, guid: c29731f82b562ae4ab5dc866075482ae, type: 3}
+  - {fileID: 2800000, guid: 4a94f25ed2274b24ba37f77ce8510845, type: 3}
+  - {fileID: 2800000, guid: 69fd4d2206d9697409315d2b4e9c1d1f, type: 3}
+  worldMaterial: {fileID: 2100000, guid: 8aa0e77fe8e5121449edebe26a8067ef, type: 2}
+  dropChance: 0.3
+  magnetRadius: 2.8
+  pickupRadius: 0.45
+  magnetSpeed: 8
