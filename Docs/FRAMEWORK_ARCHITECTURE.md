@@ -1,4 +1,21 @@
-> **2026-09-23 已替代：** 本文旧架构、P1 派发、验收及恢复要求仅留作历史，不再执行。当前唯一开发流程为 [Unity 原生交付方案](UNITY_NATIVE_PLAN.md)；用户最新决策优先。停止独立引擎、双宿主与 G1/G2/G3 新工作，源码和证据保留。
+# 当前有效架构修订 · 2026-09-23
+
+本次只选择性保留旧架构，**不将下方历史正文整体恢复生效**。当前开发范围与时间检查点见 [Unity 原生交付方案](UNITY_NATIVE_PLAN.md)。
+
+| 保留 | 取消强制要求 | 本轮不恢复 |
+| --- | --- | --- |
+| Unity 内部模块化框架；Entity、Map、Actor、Combat、Interaction、Quest、Dialogue、Level 系统边界与自身状态 | 独立引擎与适配层、强制纯 C#、引擎无关、自建模拟/时钟、快照同步、独立 .NET 与双宿主 | 通用容器、全玩法 JSON、Schema/能力目录工程、第二包、冻结和原 P1/G1/G2/G3 流程 |
+| ECA 的事件、只读条件、调用系统的动作及本关规则编排，实际用于关卡 | 禁止 Unity API、必须经 Host 间接驱动场景 | 把所有移动/物理/逐帧战斗改为 ECA |
+
+具体组件可以直接引用；ECA 和系统允许使用 MonoBehaviour、GameObject、Physics2D、协程、UI 和 Prefab。规则可配 Inspector/ScriptableObject/已有 JSON 或具体代码。旧代码直接复用更快就复用，不为原生化重写。
+
+状态分工：Entity 管对象身份生命周期；Map 管空间与门；Actor 管每个角色移动/生命；Combat 管开火与伤害结算并调用 Actor；Interaction 管候选与有效互动；Quest 管任务目标；Dialogue 管对白会话；Level 管局阶段/终态。叙事与支援数据由其专门组件持有，UI 只读展示。ECA 仅保存规则执行状态，不成为全部业务状态容器。
+
+当前实用链：Interaction/区域事件 → ECA 查询 Quest 和 Level 条件 → Quest 完成目标 → Map 开门 → Dialogue 提示；出口再经 ECA 任务条件调用 Level 通关。普通移动/战斗直跑所属系统。复用已有 NativeDemo/组件，启动时连接系统、初始化各自状态、绑定规则，再开始关卡；重开释放旧规则并重载场景。
+
+以下保留历史决策原文供查阅，冲突处以上方修订及现行方案为准。
+
+---
 
 # 模块化框架与 ECA 架构决策记录
 
