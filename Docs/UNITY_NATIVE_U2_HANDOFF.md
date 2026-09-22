@@ -12,7 +12,13 @@ Build Settings 保留 NativeDemo 首位唯一勾选，四个历史场景未勾�
 
 P2-01 执行者报告 Unity 2021.3.27f1c2 的场景接线/编译命令退出 0；临时 Play Mode 聚焦检查 21 个断言、6 张界面快照：两项均从真实既有证据经 Interaction → ECA → Quest → Dialogue 完成交付，重复交付与改选被拦截，未完成 B 时三段记忆与 relay 仍可继续。新增中文未见缺字或文本高度溢出。证据在 `Assets/NativeGame/README.md`、`/private/tmp/native-npc-connect.log` 和 `/private/tmp/native-npc-smoke.log`；临时探针已从 Assets 移除。检查使用显式定位和按钮回调，并非人工键鼠通关；未重测 Boss／结局全流程，未构建 Windows。
 
-本次静态核对确认场景中 LocalArchivist Prefab、NpcEcaRules、玩家、Quest/Narrative、对白按钮与 HUD 互动表引用存在；FusionPixel 字体及 `Assets/StreamingAssets/ThirdPartyLicenses/FusionPixel/` 许可文件存在。交付后的 Windows 人工试玩请实际靠近 NPC、完成任选一条支线并继续主线；未玩的另一条支线和未走的结局仍标未测。其余 P2 目标与截止时间见 [P2 路线](Framework/Phase2/PHASE2_ROADMAP.md)。本轮后暂停，等待用户再次授权，不启动 P2-03 及后续任务。七个旧开发工作树和 de32 已关闭，分支与 Git 历史保留；非 Git 跟踪的产物及 de32 未提交字体快照在 `/Users/const/Projects/Unity/echo-in-the-shell-evo-tavern-2026/.codex-retired-worktrees/2026-09-23-p2`。
+本次静态核对确认场景中 LocalArchivist Prefab、NpcEcaRules、玩家、Quest/Narrative、对白按钮与 HUD 互动表引用存在；FusionPixel 字体及 `Assets/StreamingAssets/ThirdPartyLicenses/FusionPixel/` 许可文件存在。交付后的 Windows 人工试玩请实际靠近 NPC、完成任选一条支线并继续主线；未玩的另一条支线和未走的结局仍标未测。其余 P2 目标与截止时间见 [P2 路线](Framework/Phase2/PHASE2_ROADMAP.md)。用户现已授权恢复 P2；后续功能按依赖与独立提交继续集成。七个旧开发工作树和 de32 已关闭，分支与 Git 历史保留；非 Git 跟踪的产物及 de32 未提交字体快照在 `/Users/const/Projects/Unity/echo-in-the-shell-evo-tavern-2026/.codex-retired-worktrees/2026-09-23-p2`。
+
+## P2-03 北侧 Chunk / Map
+
+P2-03 原提交 `231a97c75b0c9aba7fd417ccb4003baf1dbe2b23` → 隔离集成 `4c5758280a6830d955186b39b2862c2e2e96696a`，仅导入该提交。出生点往北从 `(-10, 9)` 开口进入第一块；两块同源 `NorthRouteChunk` 在 `(-10, 19)` 连接，靠近 `(-10, 16.5)` 的开关按 E 后，`NativeMap` 关闭实体门阻挡，玩家可进入第二块并原路返回。原东侧三记忆、中继、Boss 路线保留。场景已保存，直接 Play；不要重复执行一次性接线菜单。
+
+执行者在 Unity 2021.3.27f1c2 的 batchmode 保存/编译日志 `/private/tmp/p2-03-build-escalated.log` 显示 `NATIVE_CHUNK_BUILD` 且正常退出；聚焦 Play Mode 日志 `/private/tmp/p2-03-smoke.log` 显示预制体复用、端口对齐、主线引用及实体门阻挡/放行通过并正常退出。本次集成仅静态核对两实例、端口、Map/ECA/HUD 引用和唯一构建场景，没有重跑 Unity。玩家完整键鼠路线、与后续敌人交战、Windows 构建仍待测；P2-04/05/06 未接线代码不属于本交付点。
 
 ## 既有 U4 路线与证据
 
