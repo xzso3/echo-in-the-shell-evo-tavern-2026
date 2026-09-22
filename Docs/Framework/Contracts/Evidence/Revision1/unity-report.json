@@ -1,0 +1,739 @@
+{
+  "report_version": "0.1.0",
+  "content_digest": "91bdce9f9300a6082b7ae4c33d2dabf4279ab3842ddee6aef5e3aec6088d7b8b",
+  "dependency_digests": [],
+  "framework_version": "0.1.0",
+  "framework_digest": "de5a109ce989e235093f10a73b2cccae8e71be5699e2df9a83d3b0d39a2b3f97",
+  "tested_commit": "79ba84db0a62de0d09d828f827af66fc7a9f106c",
+  "catalog_digest": "d345c063ad76ae7b712a19a10f9ca8eb39122b631a89cfdf33e1de44ae751512",
+  "schema_digest": "3c778f1ffbec9b62de3ebb0e1ab52edc938fed019ce713236d649eb3eef35888",
+  "runner_version": "0.1.0",
+  "environment": {
+    "host": "Unity 2021.3.27f1c2",
+    "runtime": "4.0.30319.42000",
+    "os": "Unix 24.6.0.0"
+  },
+  "seed": 1,
+  "cases": [
+    {
+      "case_id": "A02.case_protocol",
+      "status": "passed",
+      "duration_ms": 7.6236000000000006,
+      "expected": "Schema fixture: accept",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A02.empty_resources",
+      "status": "passed",
+      "duration_ms": 0.4726,
+      "expected": "Schema fixture: accept",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A02.move_intent",
+      "status": "passed",
+      "duration_ms": 1.9093,
+      "expected": "Schema fixture: accept",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A02.valid_fixture_action",
+      "status": "passed",
+      "duration_ms": 0.39530000000000004,
+      "expected": "Schema fixture: accept",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A02.valid_manifest",
+      "status": "passed",
+      "duration_ms": 0.78070000000000006,
+      "expected": "Schema fixture: accept",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A03.forbidden_case_step",
+      "status": "passed",
+      "duration_ms": 4.6261,
+      "expected": "Schema fixture: schema.one_of",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A03.missing_field",
+      "status": "passed",
+      "duration_ms": 0.7662,
+      "expected": "Schema fixture: schema.required",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A03.resource_path_escape",
+      "status": "passed",
+      "duration_ms": 0.5773,
+      "expected": "Schema fixture: schema.pattern",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A03.unknown_field",
+      "status": "passed",
+      "duration_ms": 0.5434,
+      "expected": "Schema fixture: schema.unknown_field",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A03.unsupported_version",
+      "status": "passed",
+      "duration_ms": 0.5721,
+      "expected": "Schema fixture: schema.enum",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A03.wrong_type",
+      "status": "passed",
+      "duration_ms": 0.6227,
+      "expected": "Schema fixture: schema.type",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A04.resource_id_type",
+      "status": "passed",
+      "duration_ms": 1.1949,
+      "expected": "Schema fixture: schema.pattern",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A04.resource_type",
+      "status": "passed",
+      "duration_ms": 0.3088,
+      "expected": "Schema fixture: schema.enum",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A05.bad_clock",
+      "status": "passed",
+      "duration_ms": 0.42360000000000003,
+      "expected": "Schema fixture: schema.enum",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A05.negative_duration",
+      "status": "passed",
+      "duration_ms": 0.1715,
+      "expected": "Schema fixture: schema.minimum",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A05.reference_shape",
+      "status": "passed",
+      "duration_ms": 0.1232,
+      "expected": "Schema fixture: schema.minimum",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A05.variable_type",
+      "status": "passed",
+      "duration_ms": 0.43160000000000004,
+      "expected": "Schema fixture: schema.one_of",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A01.no_engine_dependency",
+      "status": "passed",
+      "duration_ms": 0.8426,
+      "expected": "Core and Gameplay contain no engine or prototype assembly reference",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A01.json_version",
+      "status": "passed",
+      "duration_ms": 0.36060000000000003,
+      "expected": "Newtonsoft.Json 13.0.2",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A03.unsupported_schema_$ref",
+      "status": "passed",
+      "duration_ms": 0.25020000000000003,
+      "expected": "Reject unsupported schema keyword",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A03.unsupported_schema_allOf",
+      "status": "passed",
+      "duration_ms": 0.028,
+      "expected": "Reject unsupported schema keyword",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A03.unsupported_schema_anyOf",
+      "status": "passed",
+      "duration_ms": 0.031200000000000002,
+      "expected": "Reject unsupported schema keyword",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A03.unsupported_schema_not",
+      "status": "passed",
+      "duration_ms": 0.015300000000000001,
+      "expected": "Reject unsupported schema keyword",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A03.unsupported_schema_if",
+      "status": "passed",
+      "duration_ms": 0.0199,
+      "expected": "Reject unsupported schema keyword",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A03.unsupported_schema_format",
+      "status": "passed",
+      "duration_ms": 0.0218,
+      "expected": "Reject unsupported schema keyword",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A03.unsupported_schema_patternProperties",
+      "status": "passed",
+      "duration_ms": 0.0146,
+      "expected": "Reject unsupported schema keyword",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A03.unsupported_schema_unevaluatedProperties",
+      "status": "passed",
+      "duration_ms": 0.037700000000000004,
+      "expected": "Reject unsupported schema keyword",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A03.json_duplicate",
+      "status": "passed",
+      "duration_ms": 1.3079,
+      "expected": "Reject nonstandard or ambiguous JSON",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A03.json_comment",
+      "status": "passed",
+      "duration_ms": 0.061000000000000006,
+      "expected": "Reject nonstandard or ambiguous JSON",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A03.json_trailing_comma",
+      "status": "passed",
+      "duration_ms": 0.0341,
+      "expected": "Reject nonstandard or ambiguous JSON",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A03.json_nonfinite",
+      "status": "passed",
+      "duration_ms": 0.024,
+      "expected": "Reject nonstandard or ambiguous JSON",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A03.json_single_quote",
+      "status": "passed",
+      "duration_ms": 0.0262,
+      "expected": "Reject nonstandard or ambiguous JSON",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A03.json_extra_value",
+      "status": "passed",
+      "duration_ms": 0.1474,
+      "expected": "Reject nonstandard or ambiguous JSON",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A03.json_overflow",
+      "status": "passed",
+      "duration_ms": 0.3159,
+      "expected": "Reject nonstandard or ambiguous JSON",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A01.json_numeric_forms",
+      "status": "passed",
+      "duration_ms": 0.5585,
+      "expected": "JSON decimal and exponent forms accepted; leading zero rejected",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A03.unsupported_nested_schema",
+      "status": "passed",
+      "duration_ms": 0.4138,
+      "expected": "Reject unsupported schema keyword even in unselected branch",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A01.unicode_schema_length",
+      "status": "passed",
+      "duration_ms": 0.1287,
+      "expected": "Length uses Unicode scalar count",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A02.descriptor_generation",
+      "status": "passed",
+      "duration_ms": 34.1423,
+      "expected": "Descriptor produces same schema and fixture designation",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A03.fixture_not_production",
+      "status": "passed",
+      "duration_ms": 0.2748,
+      "expected": "Fixture is unavailable to production",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A03.unknown_capability",
+      "status": "passed",
+      "duration_ms": 0.12010000000000001,
+      "expected": "Only actual fixture descriptor available to fixture probe",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A05.scope",
+      "status": "passed",
+      "duration_ms": 0.5963,
+      "expected": "Reject wrong scope",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A05.context",
+      "status": "passed",
+      "duration_ms": 0.4506,
+      "expected": "Reject wrong execution context",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A05.attack_only_contract_context",
+      "status": "passed",
+      "duration_ms": 0.076800000000000007,
+      "expected": "Contract fixture for attack-only command rejects ordinary context",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A05.hook_sustained",
+      "status": "passed",
+      "duration_ms": 0.0736,
+      "expected": "Sustained hook rejected",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A05.identity_generation",
+      "status": "passed",
+      "duration_ms": 0.2701,
+      "expected": "Generation and run participate in equality",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A05.invalid_ids",
+      "status": "passed",
+      "duration_ms": 0.669,
+      "expected": "Reject malformed content, nonfinite value and scope mismatch",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A02.immutable_event",
+      "status": "passed",
+      "duration_ms": 1.3760000000000001,
+      "expected": "Envelope copies submitted payload",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A05.actor_flow_contract_double",
+      "status": "passed",
+      "duration_ms": 2.2047000000000003,
+      "expected": "06-style consumer compiles against shared 05 services; double verifies lease, stale and death expectations only",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A04.marker_instance_context",
+      "status": "passed",
+      "duration_ms": 0.2384,
+      "expected": "Map/Chunk context is explicit and same-run",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A02.metadata_reference",
+      "status": "passed",
+      "duration_ms": 4.0156,
+      "expected": "Valid dependency/export/type resolves using metadata",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A04.duplicate_package",
+      "status": "passed",
+      "duration_ms": 0.1897,
+      "expected": "Reject duplicate package ID",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A04.missing_dependency",
+      "status": "passed",
+      "duration_ms": 0.1487,
+      "expected": "Reject missing dependency",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A04.dependency_version",
+      "status": "passed",
+      "duration_ms": 0.1247,
+      "expected": "Reject wrong exact dependency version",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A04.dependency_cycle",
+      "status": "passed",
+      "duration_ms": 0.15030000000000002,
+      "expected": "Reject metadata dependency cycle",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A04.private_reference",
+      "status": "passed",
+      "duration_ms": 0.12440000000000001,
+      "expected": "Reject unexported reference",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A04.wrong_reference_type",
+      "status": "passed",
+      "duration_ms": 0.068100000000000008,
+      "expected": "Reject reference type mismatch",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "A04.undeclared_dependency",
+      "status": "passed",
+      "duration_ms": 0.0625,
+      "expected": "Reject undeclared cross-package reference",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "R1.full_string.content_id",
+      "status": "passed",
+      "duration_ms": 0.8335,
+      "expected": "Accept valid lexical value; reject leading/trailing control characters and whitespace",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "R1.full_string.resource_id",
+      "status": "passed",
+      "duration_ms": 0.75940000000000007,
+      "expected": "Accept valid lexical value; reject leading/trailing control characters and whitespace",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "R1.full_string.package_id",
+      "status": "passed",
+      "duration_ms": 0.58300000000000007,
+      "expected": "Accept valid lexical value; reject leading/trailing control characters and whitespace",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "R1.full_string.resource_path",
+      "status": "passed",
+      "duration_ms": 1.1053,
+      "expected": "Accept valid lexical value; reject leading/trailing control characters and whitespace",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "R1.full_string.version",
+      "status": "passed",
+      "duration_ms": 1.4212,
+      "expected": "Accept valid lexical value; reject leading/trailing control characters and whitespace",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "R1.full_string.digest",
+      "status": "passed",
+      "duration_ms": 1.3245,
+      "expected": "Accept valid lexical value; reject leading/trailing control characters and whitespace",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "R1.content_id_constructor",
+      "status": "passed",
+      "duration_ms": 0.47140000000000004,
+      "expected": "Runtime ContentId matches strict schema boundary",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "R2.limit_range.minLength",
+      "status": "passed",
+      "duration_ms": 6.9627000000000008,
+      "expected": "Count bounds must be 0..Int32.MaxValue; schema rejection is FormatException, never overflow",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "R2.limit_range.maxLength",
+      "status": "passed",
+      "duration_ms": 0.60820000000000007,
+      "expected": "Count bounds must be 0..Int32.MaxValue; schema rejection is FormatException, never overflow",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "R2.limit_range.minItems",
+      "status": "passed",
+      "duration_ms": 0.67780000000000007,
+      "expected": "Count bounds must be 0..Int32.MaxValue; schema rejection is FormatException, never overflow",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "R2.limit_range.maxItems",
+      "status": "passed",
+      "duration_ms": 10.7367,
+      "expected": "Count bounds must be 0..Int32.MaxValue; schema rejection is FormatException, never overflow",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "R2.finite_schema.minimum",
+      "status": "passed",
+      "duration_ms": 36.832100000000004,
+      "expected": "Reject NaN and both infinities in schema bounds; accept finite extrema",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "R2.finite_schema.maximum",
+      "status": "passed",
+      "duration_ms": 0.1188,
+      "expected": "Reject NaN and both infinities in schema bounds; accept finite extrema",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "R2.inverted_bounds",
+      "status": "passed",
+      "duration_ms": 0.36310000000000003,
+      "expected": "Reject inverted numeric and count ranges before validating content",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "R2.nonfinite_nested_annotation",
+      "status": "passed",
+      "duration_ms": 0.1385,
+      "expected": "Programmatic schema trees must also contain finite JSON numbers",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "R2.exact_integer_comparison",
+      "status": "passed",
+      "duration_ms": 2.1318,
+      "expected": "Compare integer tokens exactly, including BigInteger and adjacent values beyond double precision",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "R2.mixed_number_comparison",
+      "status": "passed",
+      "duration_ms": 0.85400000000000009,
+      "expected": "Mixed integer/float comparisons preserve boundary and fractional sign",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "R2.nonfinite_content",
+      "status": "passed",
+      "duration_ms": 0.7499,
+      "expected": "Programmatic nonfinite content produces a diagnostic",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "R3.int32.generation",
+      "status": "passed",
+      "duration_ms": 0.36160000000000003,
+      "expected": "Wire integer fits DTO Int32; legal endpoints accepted, neighboring and huge values rejected",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "R3.int32.case_seed",
+      "status": "passed",
+      "duration_ms": 0.15360000000000001,
+      "expected": "Wire integer fits DTO Int32; legal endpoints accepted, neighboring and huge values rejected",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "R3.int32.report_seed",
+      "status": "passed",
+      "duration_ms": 0.16790000000000002,
+      "expected": "Wire integer fits DTO Int32; legal endpoints accepted, neighboring and huge values rejected",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "R3.int32.module_order",
+      "status": "passed",
+      "duration_ms": 0.14,
+      "expected": "Wire integer fits DTO Int32; legal endpoints accepted, neighboring and huge values rejected",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    },
+    {
+      "case_id": "R3.wire_int64_safe_range",
+      "status": "passed",
+      "duration_ms": 0.28040000000000004,
+      "expected": "Existing Int64 wire fields remain within exact JSON safe integer policy",
+      "actual": "Expected assertions observed",
+      "diagnostics": [],
+      "artifacts": []
+    }
+  ]
+}

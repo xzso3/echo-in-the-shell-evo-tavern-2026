@@ -1,0 +1,79 @@
+{
+  "task_id": "P1-01",
+  "attempt": 1,
+  "revision": 1,
+  "result": "ready_for_review",
+  "base_commit": "94ccceff3d00e3e929161e2024ca0a2728aa3067",
+  "revision_start": "f96e9728eab53252ca705831b29d9ee72af063bb",
+  "tested_source_commit": "79ba84db0a62de0d09d828f827af66fc7a9f106c",
+  "worktree": "/Users/const/.codex/worktrees/1e89/echo-in-the-shell-evo-tavern-2026",
+  "branch": "codex/p1-01-contracts",
+  "contract_version": "0.1.0 (pre-acceptance correction; no public signature change)",
+  "digest_changes": {
+    "framework_digest": {
+      "previous": "520455a480edf30b557fba7a08c8b48f28c61e1137576307a1d558d7a51f3237",
+      "revision1": "de5a109ce989e235093f10a73b2cccae8e71be5699e2df9a83d3b0d39a2b3f97",
+      "changed": true
+    },
+    "content_digest": {
+      "previous": "91bdce9f9300a6082b7ae4c33d2dabf4279ab3842ddee6aef5e3aec6088d7b8b",
+      "revision1": "91bdce9f9300a6082b7ae4c33d2dabf4279ab3842ddee6aef5e3aec6088d7b8b",
+      "changed": false
+    },
+    "schema_digest": {
+      "previous": "2df46d5949ad376903098d944bd97d3c3b8cf01c030d3942e0eddf494a7107c0",
+      "revision1": "3c778f1ffbec9b62de3ebb0e1ab52edc938fed019ce713236d649eb3eef35888",
+      "changed": true
+    },
+    "catalog_digest": {
+      "previous": "d345c063ad76ae7b712a19a10f9ca8eb39122b631a89cfdf33e1de44ae751512",
+      "revision1": "d345c063ad76ae7b712a19a10f9ca8eb39122b631a89cfdf33e1de44ae751512",
+      "changed": false
+    }
+  },
+  "probe_source_sha256": "11e63dd4d6e85540f633d6d204490808c11607881f18a98009e836a56c8ead72",
+  "probe_matches_INT00_bytes": true,
+  "checks": [
+    {
+      "command": "ECHO_EVIDENCE_DIR=Docs/Framework/Contracts/Evidence/Revision1 sh Tests/EchoFramework/Contracts/verify.sh",
+      "environment": {
+        "host": "dotnet",
+        "runtime": "8.0.19",
+        "os": "Unix 15.7.2"
+      },
+      "exit_code": 0,
+      "status": "passed",
+      "detail": "80/80 shared checks, 13/13 static checks; SDK 8.0.413; 0 build warnings/errors"
+    },
+    {
+      "command": "ECHO_EVIDENCE_DIR=Docs/Framework/Contracts/Evidence/Revision1 ECHO_TESTED_COMMIT=79ba84db0a62de0d09d828f827af66fc7a9f106c /Applications/Unity/Hub/Editor/2021.3.27f1c2/Unity.app/Contents/MacOS/Unity -batchmode -nographics -projectPath /Users/const/.codex/worktrees/1e89/echo-in-the-shell-evo-tavern-2026 -executeMethod Echo.Editor.Contracts.ContractSmokeEntry.Run -logFile /Users/const/.codex/worktrees/1e89/echo-in-the-shell-evo-tavern-2026/Docs/Framework/Contracts/Evidence/Revision1/unity.log",
+      "environment": {
+        "host": "Unity 2021.3.27f1c2",
+        "runtime": "4.0.30319.42000",
+        "os": "Unix 24.6.0.0"
+      },
+      "exit_code": 0,
+      "status": "passed",
+      "detail": "80/80 shared checks; actual engine 2021.3.27f1c2 (3b3d9646cb47)"
+    },
+    {
+      "command": "dotnet build Tests/EchoFramework/Host/Echo.ReviewProbe.csproj --disable-build-servers -p:EchoJsonAssembly=/Users/const/.codex/worktrees/1e89/echo-in-the-shell-evo-tavern-2026/Library/PackageCache/com.unity.nuget.newtonsoft-json@3.2.1/Runtime/Newtonsoft.Json.dll -p:RestoreSources=/Users/const/.codex/worktrees/1e89/echo-in-the-shell-evo-tavern-2026/Tests/EchoFramework/Contracts/Fixtures -p:NuGetAudit=false --nologo && dotnet Tests/EchoFramework/Host/bin/Debug/net8.0/Echo.ReviewProbe.dll",
+      "exit_code": 0,
+      "status": "passed",
+      "detail": "Unmodified INT-00 probe: 11/11 passed"
+    },
+    {
+      "command": "compare report tested_commit/framework_digest/content_digest/schema_digest/catalog_digest; git diff --exit-code; git diff --check",
+      "exit_code": 0,
+      "status": "passed",
+      "detail": "Same tested source in both hosts; no tracked changes after tests"
+    }
+  ],
+  "unity_slot": "released; own batch editor exited 0; saved-project editor untouched",
+  "not_run": [
+    "Full A02-A05 production package/runtime/resource acceptance",
+    "A06-A26 gameplay, Play Mode, standalone build, visual/resolution and prototype gameplay checks",
+    "G1/G2/G3 acceptance"
+  ],
+  "evidence_commit_policy": "Following commit adds Revision1 evidence only; tested source and generated Schema unchanged."
+}

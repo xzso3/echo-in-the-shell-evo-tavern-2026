@@ -1,0 +1,46 @@
+[
+  {
+    "id": "control.valid_content_id",
+    "status": "passed"
+  },
+  {
+    "id": "control.valid_resource_path",
+    "status": "passed"
+  },
+  {
+    "id": "control.unknown_nested_keyword",
+    "status": "passed"
+  },
+  {
+    "id": "R1.content_id_terminal_LF",
+    "status": "passed"
+  },
+  {
+    "id": "R1.resource_path_terminal_LF",
+    "status": "passed"
+  },
+  {
+    "id": "R1.version_terminal_LF",
+    "status": "passed"
+  },
+  {
+    "id": "R1.digest_terminal_LF",
+    "status": "passed"
+  },
+  {
+    "id": "R2.schema_limit_validate_without_overflow",
+    "status": "passed"
+  },
+  {
+    "id": "R2.nonfinite_schema_limit_rejected",
+    "status": "passed"
+  },
+  {
+    "id": "R3.generation_fits_runtime_Int32",
+    "status": "passed"
+  },
+  {
+    "id": "R3.case_seed_fits_runtime_Int32",
+    "status": "passed"
+  }
+]
