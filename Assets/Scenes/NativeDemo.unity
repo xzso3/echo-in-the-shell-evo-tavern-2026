@@ -241,8 +241,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 7}
-  m_SizeDelta: {x: 1160, y: 25}
+  m_AnchoredPosition: {x: 0, y: 3}
+  m_SizeDelta: {x: 1160, y: 33}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &16414567
 MonoBehaviour:
@@ -722,7 +722,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -24, y: -57}
-  m_SizeDelta: {x: 380, y: 30}
+  m_SizeDelta: {x: 380, y: 33}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &114108659
 MonoBehaviour:
@@ -744,7 +744,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: AUTO FIRE
+  m_text: "\u81EA\u52A8\u5F00\u706B / Space \u505C\u706B"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -879,7 +879,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: FINAL ARCHIVE
+  m_text: "\u6700\u7EC8\u6863\u6848"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -1029,7 +1029,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 492, y: 190}
+  m_SizeDelta: {x: 552, y: 190}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &117270912
 MonoBehaviour:
@@ -1166,7 +1166,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 18, y: 166}
-  m_SizeDelta: {x: 248, y: 32}
+  m_SizeDelta: {x: 278, y: 32}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &128320207
 MonoBehaviour:
@@ -1286,7 +1286,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 248, y: 32}
+  m_SizeDelta: {x: 278, y: 32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &130023083
 MonoBehaviour:
@@ -1308,7 +1308,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ACTION 2
+  m_text: "\u64CD\u4F5C 2"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -1458,7 +1458,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 248, y: 32}
+  m_SizeDelta: {x: 278, y: 32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &154390082
 MonoBehaviour:
@@ -1480,7 +1480,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: RESTART RUN
+  m_text: "\u91CD\u65B0\u5F00\u59CB"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -1594,8 +1594,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 272, y: 130}
-  m_SizeDelta: {x: 248, y: 32}
+  m_AnchoredPosition: {x: 304, y: 130}
+  m_SizeDelta: {x: 278, y: 32}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &154973289
 MonoBehaviour:
@@ -1737,7 +1737,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: TERMINAL
+  m_text: "\u4E2D\u7EE7\u7EC8\u7AEF"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -1887,7 +1887,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 18, y: -14}
-  m_SizeDelta: {x: 504, y: 30}
+  m_SizeDelta: {x: 564, y: 32}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &218119489
 MonoBehaviour:
@@ -1909,7 +1909,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 
+  m_text: "\u5FC3\u667A\u8FDE\u63A5 / \u901A\u8BAF / \u6EDA\u52A8\u9605\u8BFB"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -2022,7 +2022,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 248, y: 32}
+  m_SizeDelta: {x: 278, y: 32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &223445368
 MonoBehaviour:
@@ -2044,7 +2044,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ACTION 1
+  m_text: "\u64CD\u4F5C 1"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -2172,7 +2172,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: -24, y: -12}
-  m_SizeDelta: {x: 540, y: 500}
+  m_SizeDelta: {x: 600, y: 500}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &224312568
 MonoBehaviour:
@@ -2249,8 +2249,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 272, y: 94}
-  m_SizeDelta: {x: 248, y: 32}
+  m_AnchoredPosition: {x: 304, y: 94}
+  m_SizeDelta: {x: 278, y: 32}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &245966361
 MonoBehaviour:
@@ -2494,7 +2494,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 248, y: 32}
+  m_SizeDelta: {x: 278, y: 32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &293509590
 MonoBehaviour:
@@ -2516,7 +2516,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ACTION 6
+  m_text: "\u64CD\u4F5C 6"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -2629,7 +2629,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 248, y: 32}
+  m_SizeDelta: {x: 278, y: 32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &335881364
 MonoBehaviour:
@@ -2651,7 +2651,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: CLOSE / TAB
+  m_text: "\u5173\u95ED / Tab"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -2824,14 +2824,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   narrative: {fileID: 1410152068}
-  initialObjective: '01 / RECOVER YOUR SIGNAL
-
-    Find the three memory records
-    in this sector.'
-  completedObjective: '05 / FINAL NODE
-
-    Reach the eastern archive. E opens the
-    final choice.'
+  initialObjective: "01 / \u627E\u56DE\u4FE1\u53F7\n\u6536\u96C6\u8FD9\u7247\u533A\u57DF\u4E2D\u7684\u4E09\u6BB5\u8BB0\u5FC6\u3002"
+  completedObjective: "05 / \u6700\u7EC8\u8282\u70B9\n\u524D\u5F80\u4E1C\u4FA7\u6863\u6848\u8282\u70B9\uFF0C\u6309
+    E \u4F5C\u51FA\u6700\u540E\u7684\u9009\u62E9\u3002"
 --- !u!4 &394963353
 Transform:
   m_ObjectHideFlags: 0
@@ -2905,7 +2900,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: SYSTEM RECORD
+  m_text: "\u7CFB\u7EDF\u8BB0\u5F55"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -3055,7 +3050,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 248, y: 32}
+  m_SizeDelta: {x: 278, y: 32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &428897038
 MonoBehaviour:
@@ -3077,7 +3072,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ACTION 0
+  m_text: "\u64CD\u4F5C 0"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -3190,7 +3185,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 24, y: -16}
-  m_SizeDelta: {x: 600, y: 28}
+  m_SizeDelta: {x: 600, y: 33}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &435994419
 MonoBehaviour:
@@ -3212,7 +3207,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ECHO IN THE SHELL  /  SIGNAL 01
+  m_text: "\u58F3\u4E2D\u56DE\u54CD / \u4FE1\u53F7 01"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -3472,7 +3467,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 18, y: 94}
-  m_SizeDelta: {x: 248, y: 32}
+  m_SizeDelta: {x: 278, y: 32}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &520735694
 MonoBehaviour:
@@ -3785,8 +3780,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 272, y: 14}
-  m_SizeDelta: {x: 248, y: 32}
+  m_AnchoredPosition: {x: 304, y: 14}
+  m_SizeDelta: {x: 278, y: 32}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &557462053
 MonoBehaviour:
@@ -3908,7 +3903,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 18, y: 58}
-  m_SizeDelta: {x: 248, y: 32}
+  m_SizeDelta: {x: 278, y: 32}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &579518823
 MonoBehaviour:
@@ -4030,7 +4025,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
   m_AnchoredPosition: {x: 0, y: 90}
-  m_SizeDelta: {x: 780, y: 250}
+  m_SizeDelta: {x: 780, y: 310}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &613783768
 MonoBehaviour:
@@ -4205,7 +4200,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: WASD  MOVE     SPACE  FIRE / HOLD     E  INTERACT     TAB  PHONE
+  m_text: "WASD \u79FB\u52A8    Space \u81EA\u52A8\u5F00\u706B/\u505C\u706B    E
+    \u4E92\u52A8    Tab \u624B\u673A"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -4520,8 +4516,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 272, y: 58}
-  m_SizeDelta: {x: 248, y: 32}
+  m_AnchoredPosition: {x: 304, y: 58}
+  m_SizeDelta: {x: 278, y: 32}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &744626560
 MonoBehaviour:
@@ -4640,8 +4636,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 24, y: -53}
-  m_SizeDelta: {x: 730, y: 56}
+  m_AnchoredPosition: {x: 24, y: -52}
+  m_SizeDelta: {x: 750, y: 64}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &764869159
 MonoBehaviour:
@@ -4663,10 +4659,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '01 / RECONNECT
-
-    Reach the cyan terminal. Press E nearby to open the
-    exit.'
+  m_text: "01 / \u627E\u56DE\u4FE1\u53F7\n\u6536\u96C6\u8FD9\u7247\u533A\u57DF\u4E2D\u7684\u4E09\u6BB5\u8BB0\u5FC6\u3002"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -4788,11 +4781,8 @@ MonoBehaviour:
   map: {fileID: 504567131}
   dialogue: {fileID: 99691251}
   narrative: {fileID: 1410152068}
-  terminalMessage: 'COMMANDER / Three sources, none erased.
-
-    The eastern passage
-    is open. Support can help, but review its authorization first. Tab opens your
-    local phone. The combat shell ahead remains a development placeholder.'
+  terminalMessage: "\u6307\u6325\u5B98 / \u4E09\u6BB5\u8BB0\u5FC6\u90FD\u4FDD\u7559\u4E0B\u6765\u4E86\u3002\n\u4E1C\u4FA7\u901A\u8DEF\u5DF2\u5F00\u542F\u3002\u652F\u63F4\u80FD\u5E2E\u4E0A\u5FD9\uFF0C\u4F46\u8BF7\u5148\u770B\u6E05\u6388\u6743\u8303\u56F4\u3002\u6309
+    Tab \u6253\u5F00\u624B\u673A\u3002\u524D\u65B9\u673A\u4F53\u4ECD\u4E3A\u6D4B\u8BD5\u5F62\u8C61\uFF0C\u6B63\u5F0F\u8EAB\u4EFD\u5C1A\u672A\u786E\u5B9A\u3002"
 --- !u!4 &771702667
 Transform:
   m_ObjectHideFlags: 0
@@ -5096,7 +5086,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 248, y: 32}
+  m_SizeDelta: {x: 278, y: 32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &851206361
 MonoBehaviour:
@@ -5118,7 +5108,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ACTION 5
+  m_text: "\u64CD\u4F5C 5"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -5231,7 +5221,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 164, y: 34}
+  m_SizeDelta: {x: 184, y: 34}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &863866742
 MonoBehaviour:
@@ -5253,7 +5243,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: SUPPORT
+  m_text: "\u652F\u63F4"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -5443,7 +5433,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 164, y: 34}
+  m_SizeDelta: {x: 184, y: 34}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &961443396
 MonoBehaviour:
@@ -5465,7 +5455,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: COMMS
+  m_text: "\u901A\u8BAF"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -5724,7 +5714,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: SERVICE PATH
+  m_text: "\u68C0\u4FEE\u901A\u9053"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -6146,7 +6136,7 @@ MonoBehaviour:
   map: {fileID: 504567131}
   isExit: 0
   radius: 1.65
-  promptOverride: E  /  RECONNECT WITH THREE MEMORIES
+  promptOverride: "E / \u91CD\u65B0\u8FDE\u63A5\u4E09\u6BB5\u8BB0\u5FC6"
   indicator: {fileID: 1082482460}
 --- !u!1 &1089428812
 GameObject:
@@ -6693,7 +6683,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 150}
-  m_SizeDelta: {x: 800, y: 140}
+  m_SizeDelta: {x: 800, y: 160}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1206396795
 MonoBehaviour:
@@ -6715,7 +6705,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 
+  m_text: "\u4E16\u754C\u7684\u6307\u4EE4\u6D88\u5931\u4E86\u3002\n\nE / \u6325\u51FA\u7B2C\u4E00\u62F3"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -6828,7 +6818,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 24, y: -20}
-  m_SizeDelta: {x: 732, y: 174}
+  m_SizeDelta: {x: 732, y: 234}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &1208726787
 CanvasRenderer:
@@ -6985,7 +6975,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: DEVELOPMENT ENCOUNTER
+  m_text: "\u6D4B\u8BD5\u6218\u6597\u533A"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -7421,7 +7411,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 18, y: 14}
-  m_SizeDelta: {x: 248, y: 32}
+  m_SizeDelta: {x: 278, y: 32}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &1265571093
 MonoBehaviour:
@@ -7858,7 +7848,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 248, y: 32}
+  m_SizeDelta: {x: 278, y: 32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1315088932
 MonoBehaviour:
@@ -7880,7 +7870,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ACTION 3
+  m_text: "\u64CD\u4F5C 3"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -8429,7 +8419,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 18, y: -54}
-  m_SizeDelta: {x: 164, y: 34}
+  m_SizeDelta: {x: 184, y: 34}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1381572145
 MonoBehaviour:
@@ -9012,7 +9002,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -24, y: -18}
-  m_SizeDelta: {x: 350, y: 30}
+  m_SizeDelta: {x: 350, y: 33}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1440687636
 MonoBehaviour:
@@ -9034,7 +9024,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: SHELL 100 / 100
+  m_text: "\u751F\u547D 100 / 100"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -9149,7 +9139,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 18, y: 130}
-  m_SizeDelta: {x: 248, y: 32}
+  m_SizeDelta: {x: 278, y: 32}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &1454965307
 MonoBehaviour:
@@ -9569,7 +9559,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: RESTART RUN
+  m_text: "\u91CD\u65B0\u5F00\u59CB"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -9868,8 +9858,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 188, y: -54}
-  m_SizeDelta: {x: 164, y: 34}
+  m_AnchoredPosition: {x: 208, y: -54}
+  m_SizeDelta: {x: 184, y: 34}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1533765305
 MonoBehaviour:
@@ -9989,7 +9979,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 248, y: 32}
+  m_SizeDelta: {x: 278, y: 32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1547277298
 MonoBehaviour:
@@ -10011,7 +10001,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ACTION 7
+  m_text: "\u64CD\u4F5C 7"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -10201,8 +10191,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 358, y: -54}
-  m_SizeDelta: {x: 164, y: 34}
+  m_AnchoredPosition: {x: 398, y: -54}
+  m_SizeDelta: {x: 184, y: 34}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1579592537
 MonoBehaviour:
@@ -10447,8 +10437,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 272, y: 166}
-  m_SizeDelta: {x: 248, y: 32}
+  m_AnchoredPosition: {x: 304, y: 166}
+  m_SizeDelta: {x: 278, y: 32}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &1629651769
 MonoBehaviour:
@@ -10539,6 +10529,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 132522763}
     m_Modifications:
+    - target: {fileID: 1007431249214226235, guid: 43fcc83df28a94c0ea9386a0f679ad78, type: 3}
+      propertyPath: m_text
+      value: "\u6218\u6597\u673A\u4F53"
+      objectReference: {fileID: 0}
+    - target: {fileID: 2704413787598257694, guid: 43fcc83df28a94c0ea9386a0f679ad78, type: 3}
+      propertyPath: m_text
+      value: "\u51FB\u7834\u5916\u58F3"
+      objectReference: {fileID: 0}
     - target: {fileID: 3286074531037451397, guid: 43fcc83df28a94c0ea9386a0f679ad78, type: 3}
       propertyPath: m_Name
       value: DevelopmentBoss
@@ -10667,7 +10665,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: PRIVATE MEMORY
+  m_text: "\u79C1\u4EBA\u8BB0\u5FC6"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -11007,7 +11005,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: SHELL OFFLINE
+  m_text: "\u8EAF\u58F3\u5931\u8054"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -11120,7 +11118,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 164, y: 34}
+  m_SizeDelta: {x: 184, y: 34}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1772190918
 MonoBehaviour:
@@ -11142,7 +11140,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: NETWORK
+  m_text: "\u7F51\u7EDC"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -11277,7 +11275,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: GUARDED CHECKPOINT
+  m_text: "\u5B88\u536B\u68C0\u67E5\u70B9"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -11646,7 +11644,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 248, y: 32}
+  m_SizeDelta: {x: 278, y: 32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1803337265
 MonoBehaviour:
@@ -11668,7 +11666,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ACTION 4
+  m_text: "\u64CD\u4F5C 4"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -11919,7 +11917,7 @@ MonoBehaviour:
   map: {fileID: 504567131}
   isExit: 0
   radius: 1.65
-  promptOverride: E  /  RECOVER SYSTEM RECORD
+  promptOverride: "E / \u627E\u56DE\u7CFB\u7EDF\u8BB0\u5F55"
   indicator: {fileID: 1810783012}
 --- !u!212 &1810783012
 SpriteRenderer:
@@ -11987,14 +11985,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   kind: 1
   interaction: {fileID: 1810783011}
-  title: A transfer without consent
-  body: 'SYSTEM RECORD / Institutional archive
-
-    Shell transfer accepted. Personal
-    attachments marked as noise. The subject''s objection was removed from the summary.
-
-    COMMANDER:
-    The log says the transfer succeeded. It does not say who agreed.'
+  title: "\u672A\u7ECF\u540C\u610F\u7684\u8F6C\u79FB"
+  body: "\u7CFB\u7EDF\u8BB0\u5F55 / \u673A\u6784\u6863\u6848\n\u8EAF\u58F3\u8F6C\u79FB\u5DF2\u83B7\u6279\u51C6\u3002\u79C1\u4EBA\u60C5\u611F\u88AB\u6807\u8BB0\u4E3A\u566A\u58F0\u3002\u53D7\u8BD5\u8005\u7684\u53CD\u5BF9\u610F\u89C1\u5DF2\u4ECE\u6458\u8981\u4E2D\u5220\u9664\u3002\n\u6307\u6325\u5B98\uFF1A\u65E5\u5FD7\u5199\u7740\u8F6C\u79FB\u6210\u529F\uFF0C\u5374\u6CA1\u6709\u5199\u662F\u8C01\u540C\u610F\u7684\u3002"
 --- !u!1 &1821267966
 GameObject:
   m_ObjectHideFlags: 0
@@ -12442,7 +12434,7 @@ MonoBehaviour:
   map: {fileID: 504567131}
   isExit: 1
   radius: 1.65
-  promptOverride: E / CHOOSE DESTROY OR UPLOAD
+  promptOverride: "E / \u9009\u62E9\u5199\u5165\u6216\u9500\u6BC1"
   indicator: {fileID: 1882288247}
 --- !u!1 &1883435552
 GameObject:
@@ -12502,7 +12494,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ACKNOWLEDGE  /  E
+  m_text: "\u6536\u5230 / E"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
@@ -12629,7 +12621,7 @@ MonoBehaviour:
   map: {fileID: 504567131}
   isExit: 0
   radius: 1.65
-  promptOverride: E  /  RECOVER INITIAL ECHO
+  promptOverride: "E / \u627E\u56DE\u521D\u59CB\u56DE\u58F0"
   indicator: {fileID: 1917638187}
 --- !u!212 &1917638187
 SpriteRenderer:
@@ -12697,14 +12689,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   kind: 2
   interaction: {fileID: 1917638186}
-  title: You may keep the contradiction
-  body: 'SYSTEM INITIAL ECHO / Offline seed
-
-    You do not need a consistent past
-    to choose what you carry forward.
-
-    This is a system-provided starting message.
-    It is not a live message or a record left by another player.'
+  title: "\u4F60\u53EF\u4EE5\u7559\u4E0B\u8FD9\u4E9B\u77DB\u76FE"
+  body: "\u521D\u59CB\u56DE\u58F0 / \u7CFB\u7EDF\u9884\u7F6E\n\u8FC7\u53BB\u4E0D\u5FC5\u6BEB\u65E0\u77DB\u76FE\uFF0C\u4F60\u4ECD\u53EF\u4EE5\u9009\u62E9\u5E26\u7740\u4EC0\u4E48\u7EE7\u7EED\u524D\u884C\u3002\n\u8FD9\u662F\u7CFB\u7EDF\u63D0\u4F9B\u7684\u521D\u59CB\u7559\u8A00\uFF0C\u5E76\u975E\u5B9E\u65F6\u6D88\u606F\uFF0C\u4E5F\u4E0D\u662F\u5176\u4ED6\u73A9\u5BB6\u7559\u4E0B\u7684\u8BB0\u5F55\u3002"
 --- !u!1 &1941137837
 GameObject:
   m_ObjectHideFlags: 0
@@ -12744,7 +12730,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 18, y: -104}
-  m_SizeDelta: {x: 504, y: 190}
+  m_SizeDelta: {x: 564, y: 190}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1941137839
 MonoBehaviour:
@@ -12954,7 +12940,7 @@ MonoBehaviour:
   map: {fileID: 504567131}
   isExit: 0
   radius: 1.65
-  promptOverride: E  /  RECOVER PRIVATE MEMORY
+  promptOverride: "E / \u627E\u56DE\u79C1\u4EBA\u8BB0\u5FC6"
   indicator: {fileID: 2004508534}
 --- !u!212 &2004508534
 SpriteRenderer:
@@ -13022,15 +13008,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   kind: 0
   interaction: {fileID: 2004508533}
-  title: A hand at the window
-  body: 'PRIVATE MEMORY / Unverified personal fragment
-
-    Rain on warm glass. Someone
-    holds your hand and says: if they ask what you remember, tell them the light.
-    You remember the hand instead.
-
-    COMMANDER: The record carries no name. Keep
-    it anyway.'
+  title: "\u7A97\u8FB9\u7684\u90A3\u53EA\u624B"
+  body: "\u79C1\u4EBA\u8BB0\u5FC6 / \u672A\u7ECF\u8BC1\u5B9E\u7684\u4E2A\u4EBA\u7247\u6BB5\n\u96E8\u6C34\u843D\u5728\u6E29\u70ED\u7684\u73BB\u7483\u4E0A\u3002\u6709\u4EBA\u63E1\u7740\u4F60\u7684\u624B\u8BF4\uFF1A\u5982\u679C\u4ED6\u4EEC\u95EE\u4F60\u8BB0\u5F97\u4EC0\u4E48\uFF0C\u5C31\u8BF4\u90A3\u9053\u5149\u3002\u53EF\u4F60\u8BB0\u4F4F\u7684\uFF0C\u662F\u90A3\u53EA\u624B\u3002\n\u6307\u6325\u5B98\uFF1A\u8BB0\u5F55\u91CC\u6CA1\u6709\u540D\u5B57\u3002\u4ECD\u7136\u628A\u5B83\u7559\u4E0B\u5427\u3002"
 --- !u!1 &2051415471
 GameObject:
   m_ObjectHideFlags: 0
@@ -13252,7 +13231,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: INITIAL ECHO
+  m_text: "\u521D\u59CB\u56DE\u58F0"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
   m_sharedMaterial: {fileID: 3294757548176221088, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
