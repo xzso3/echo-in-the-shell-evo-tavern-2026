@@ -34,6 +34,14 @@ P2-07 原代码 `25e876b2620ed22b2324c200531ad03be3d97c95` → 本地 `ca8f40e`�
 
 执行者的 `/private/tmp/p2-07-unity-connect.log` 和 `/private/tmp/p2-07-unity-smoke.log` 显示 Unity 2021.3.27f1c2 batchmode 正常退出；聚焦冒烟以程序交互确认 0/3 记忆时中继阻断、收齐后三记忆的 Quest/Map 结果及北侧 Map 门开启。集成端核对仅五个授权文件的差量、两条规则对现有引用的映射、无重复旧订阅及 NativeDemo 唯一构建入口，没有重跑 Unity。人工移动按 E、Windows、Boss/结局全程仍待测；详见 [P2-07 接线说明](Framework/Phase2/P2-07_PASSAGE_ECA.md)。
 
+## P2-08 北侧定向脉冲
+
+P2-08 从 P2-07 交接点 `a99f8e296657eae45cff6aacbae4c891368b6e85` 顺序导入原代码 `cf01980c121fc73364685ba9c4c9493790e10eae` → 本地 `d001bce`、字形预热 `fb6711f8cafcafa3e4b7fbd29728d1399ec7f67d` → `974180a`、场景 `c44fceec0b6cf46393463123dd6f247ba3062313` → `192e99e`，未导入旧祖先或临时测试探针。
+
+走进第二块北侧区块，在 `(-12,22)` 的紫色终端旁按 E，选择 **执行脉冲** 或 **拒绝**。执行通过 Combat 对仍存活的 ArcSentry 造成最多 48 点伤害；只有实际降低目标生命后，Narrative 才记录一次行为并使同步度 +20，不共享记忆。拒绝或离开终端后确认不扣费，成功后手机的通讯／本局记录可查看结果。原手机医疗、弱点解析与四结局阈值保持；终端已保存于场景，不要重复执行接线菜单。
+
+源任务 `/private/tmp/p2-08-compile.log` 离线编译 0 错误，`/private/tmp/p2-08-connect.log` 的 Unity batch 保存/编译正常退出；`/private/tmp/p2-08-smoke.log` 报 `P2_08_SMOKE_PASS`，覆盖拒绝、离距失败、真实 Combat 命中后一次性代价、重复保护、手机记录及旧支援/阈值。该聚焦检查使用显式定位和按钮回调。集成端仅静态核对终端、ArcSentry、HUD、Narrative、手机与字体引用及 NativeDemo 唯一构建场景，未重跑 Unity。敌人已死／关卡结束分支、人工键鼠、四结局完整路线和 Windows 仍待测。
+
 ## 既有 U4 路线与证据
 
 以下保留 NPC 合入前的 U4 操作说明。U4 原源码集成提交 `47c487759ee191fdb8b4dc34c947f872d512aacc`；中文差量 `f3bef9d`→`6115f13`、`a8f5910`→`749e0d1`、`e4891ed`→`800242b`，译文原 `8a2cb96` 未重复合入；主控两文档提交 `50f1eeb`→`d6fdc99`。
