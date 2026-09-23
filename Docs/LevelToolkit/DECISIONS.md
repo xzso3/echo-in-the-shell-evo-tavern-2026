@@ -4,7 +4,7 @@
 
 | 项 | 当前结论／实现约束 | 证据与状态 |
 | --- | --- | --- |
-| 格子与 1 格净空 | 保留需求候选 **1 格＝1 世界单位、默认 1 格道路接口**；地图数据用整数格，世界格尺寸在宿主显式配置，暂不硬编码为已验证可通行。若 S2 实体角色失败，先报告对 N=3、素材比例、相机和战斗手感的影响，再请用户决定是否改规格。 | W0-A/B 读取保存 Player 半径 0.32、速度 4.5；理论 1 格通道两侧总余量 0.36，居中每侧 0.18。W0-B 隔离 Unity 探针在 LicenseClient IPC 阶段退出 199，无 Play/XML 结果；直角和混合接缝**未验证**。 |
+| 格子与 1 格净空 | 本轮采用 **1 格＝1 世界单位、默认 1 格道路接口**；地图数据用整数格，世界格尺寸在宿主显式配置。标准半径 0.32 的角色已在代表样例实体通过一格 L 弯及 3→5→6 混合接缝；该证据只覆盖这条 S2 路线，不代表所有几何组合。 | W0-A/B 读取保存 Player 半径 0.32、速度 4.5；理论 1 格通道两侧总余量 0.36，居中每侧 0.18。W0-B 旧探针因 LicenseClient IPC 失败，无结果；随后 INT-LT 隔离 Unity Play `/private/tmp/int-lt-s2-fulllevel-66e5a49.log` 记录 `INT_LT_S2_SEAM_3_TO_5`、`INT_LT_S2_SEAM_5_TO_6_CLEAR_SEALED`、`INT_LT_S2_ONE_CELL_L_TURN`，KT-04 场景报告 0 issues。 |
 | 标准角色和模板 | 标准角色从保存资产快照追踪，不允许作品改其能力。普通敌人首版为 Chase 接触与 Orbit/FanAttack 远程，Boss 保留既有破壳→核心 E 机制；共享战斗行为唯一来源，Native 留兼容组件与 GUID。 | W0-A 已读取 Player/Combat、SecurityDrone、ArcSentry、DevelopmentBoss Prefab 真实数值和 GUID；KT-02 应从资产提取，不取代码默认字段。Boss 依赖旧 BossArenaConfig/Visual，提取前检查独立依赖和美术许可。 |
 | 程序集与依赖 | 公共 `Echo.LevelToolkit.Runtime` asmdef 不依赖默认 NativeGame、PlagueSurvivor、CyberCity 或 UnityEditor；Editor asmdef 单向引用 Runtime。Native 适配器依赖 Runtime，保持原组件 GUID，禁止整个 NativeGame 一次性转 asmdef。 | KT-01 `0343e59` 已给出 Foundation v0 与无额外引用的 Runtime asmdef，静态依赖/meta/GUID 核对通过；Unity 编译 S1 尚未运行。仓库版本为 Unity 2021.3.27f1c2、URP 12.1.12、Tilemap 1.0.0、Tilemap Extras 2.2.5、TMP 3.0.6；独立工程 UPM 可用性待 S3。 |
 | 地图与区域 | Chunk 正方形 3～32，四边端口按北南左→右、东西下→上使用半开区间 `[offset,end)`，整数格摆放，Prefab 不旋转/镜像。区域默认 PolygonCollider2D trigger，矩形是创建捷径；互不重叠。 | 需求和开发方案；KT-01 v0 已实现端口与内容元数据。W0-B 确认旧 NorthRouteChunk 是 SpriteRenderer/BoxCollider 原型，不能代替 Tilemap。区域几何是工程默认，待首个纵向切片核对。 |
@@ -20,6 +20,6 @@
 ## 未完成的必要证据与下一关口
 
 1. KT-01 原 `0343e59` 已集成为 `7dde3ae`；KT-02、KT-03、KT-06 代码随后按精确提交链集成到 `c1a995e`。Native 兼容、地图样例生成与正式绑定仍未完成，代码存在不等于工具包或本体目标达成。
-2. W0-B 的 Unity 探针因 LicenseClient IPC 失败，1 格转角／混合接缝的实体通行仍未核验。不得把静态 0.36 净空当 S2 通过。
+2. W0-B 的早期探针因 LicenseClient IPC 失败，不能作为实体证据。后续 S2 在隔离 Unity 中用标准半径 0.32 角色实走代表性一格转角／混合接缝并通过，证据见上表；完整几何矩阵仍后置。
 3. INT-LT 在隔离工程对 `c1a995e` 做了一次 Unity 2021 batch 编译并打开两个 Combat Preview 场景，exit 0、无 Missing Script；日志 `/private/tmp/int-lt-wave2-c1a995e.log`。未跑 Play、KT-03 样例尚未生成，不将此记录扩大为 S2 或交付版全项通过。
 4. KT-02/03/06 已消费冻结的身份／Chunk 元数据 v0，后续场景、Native 适配、公共 Prefab 与最终依赖仍由 INT-LT 串行保存；必要签名变更须先通知消费者。S1～S4 在最终可交付会合点最少各做一次；G4 与完整 A/B、第二作者体验后置。
