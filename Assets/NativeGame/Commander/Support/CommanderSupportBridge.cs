@@ -86,6 +86,21 @@ namespace Echo.NativeGame.Commander
             currentSession = Guid.Empty;
         }
 
+        // A configuration edit invalidates only work that has not executed. Keep
+        // terminal cards and this run's chat/authorization history intact.
+        public void ExpireUnexecuted(string reason)
+        {
+            string text = string.IsNullOrWhiteSpace(reason)
+                ? "AI 设置已更新，请重新询问。" : reason;
+            foreach (var entry in new List<Proposal>(proposals.Values))
+            {
+                if (IsTerminal(entry.State)) continue;
+                CancelOwnedContract(entry);
+                Change(entry, CommanderProposalState.Expired, text);
+            }
+            snapshots.Clear();
+        }
+
         void OnDisable() { Reset(); }
 
         public IReadOnlyList<CommanderSupportOption> GetAvailableOptions(Guid sessionId, Guid snapshotId)
