@@ -1,6 +1,6 @@
 # 关卡工具包技术决定与证据
 
-更新：2026-09-23 12:16（UTC+8）。本文件汇总 W0 只读核验、KT-01 v0 和当前工程决策。**部分技术路线已冻结供实现，实体通行与包往返仍待必要检查。** 需求文档的产品参数未被擅自更改；用户已要求直接放行实现任务，故未验证项以可配置实现继续，不冒称检查通过。当前波次已按用户要求落安全点并暂停后续派发。
+更新：2026-09-23（UTC+8）。本文件汇总 W0 只读核验与当前工程决策。代表性实体通行已在 S2 通过；包往返仍未通过。用户已把本轮交付介质从 `.unitypackage` 改为手工文件夹 ZIP，以下记录其影响；未验证项不冒称通过。
 
 | 项 | 当前结论／实现约束 | 证据与状态 |
 | --- | --- | --- |
@@ -12,9 +12,9 @@
 | 门状态与激活顺序 | **Map 是门的唯一状态拥有者**；首版同一门只由一个遭遇封门，剧情许可不得绕过未解除的战斗锁。先验证并取得 Boss/遭遇实际激活成功，再提交 Active 与封门；失败不提交已开始，门保持原状态或回滚。目标完成只来自真实死亡/核心 E 事件，销毁、禁用、卸载不算击杀。 | 需求、开发方案；W0-A 静态确认旧 ECA 先记 Boss 开始/关门再调用 `void ActivateEncounter`，缺依赖可能锁死；NativeEnemy 仅 Destroy，无死亡事件。KT-02/05 必须修正共享成功契约。 |
 | 稳定内容与运行身份 | 持久 ID 为 `author/work/local`，端点移动或重导入不自动换 ID；每局独立 RunId、每次挂载独立 LevelInstanceId，事件和动作均携带 Run＋实例＋端点，内容 ID 不用于单独寻址。运行 ID 不写回 ScriptableObject 或作品包。 | KT-01 Foundation v0 `0343e59`：`ContentIdentity`、`RunId`、`LevelInstanceId`、`RuntimeScope`、显式 `ILevelRunContext`；W0-C 确认当前 ECA 仅具体引用，无跨实例路由。此小段 API 已准许消费者使用，后续破坏性改动先协调。 |
 | 最小事件、动作与模式 | 首批事件采用 `RegionEntered`、`InteractionConfirmed`、`EncounterCompleted`、`ExitReached`；动作采用 `ActivateEncounter`、`SetDoorOpen`、`SetInteractionEnabled`、`UnlockExit`。动作结果至少区分成功、已满足、条件不满足、目标缺失、模式禁止。开局前固定 Sandbox 或 Integrated，仅安装一套绑定；Integrated 缺必需绑定须失败，不回落 Sandbox；预览／导入不写 Native Quest/Narrative。 | W0-C 对 NativeRun/Quest/Narrative/ECA 的只读追踪及开发方案 8.1；这是 KT-06 v0 消费契约，具体方法签名由 KT-06 提案、INT-LT 最终冻结。当前 Native Quest 固定单 Boss，Narrative `boss`／`bypass` 键不能用于任意外来关卡。 |
-| 作品依赖、版本与导入 | 工具版本先使用工程迭代号 `0.1.0-dev.1`、内容格式 `1`，首版精确匹配。作品根资源递归依赖分类为作品自有、工具公共、UPM/引擎、外部未声明；只打包作品自有，外部未声明阻止导出。导入**前**对路径、GUID、内容摘要、公共覆盖与同作品更新作冲突检查；导入/预览不自动接正式主线。 | KT-01 有 `ToolkitVersion` 精确声明模型；W0-C 确认仓库当前没有 Manifest/导出器，Unity GetDependencies 会遍历引用，不能用无过滤 IncludeDependencies。S3 一次真实包往返才可验证清单和版本。版本号是本轮工程标识，可在发布前由 INT-LT 统一升版，不改变产品行为。 |
-| 人工精修保护 | 后续 AI 编辑以“上次 AI 基线、当前内容、新提案”三方比较；人工改格、端口、装饰与属性默认保留，冲突预览/局部应用/Undo，缺基线时不得推断可覆盖。内容指纹和工具版本绑定人工验收记录；本轮内部候选包可用于 S3，不伪造正式人工验收。 | 需求 3.5/6.2 与开发方案 6.4/10.2；KT-03/08 实现功能，S3 检查一次往返，其余矩阵后置。 |
-| Skill 分发 | 五个实际 `SKILL.md` 作为工具包源码分发；Unity 包中采用可保留的 `Assets/EchoLevelToolkit/SkillSources/` 文本载体，显式安装器预览覆盖差异后输出到目标工程 `.agents/skills/<name>/SKILL.md`，不在打开 Unity 时自动改全局 Codex 设置。若 Markdown 原文件在 `.unitypackage` 内保留性不可靠，安装器从 `.txt` TextAsset 还原；以 S3 包往返验证，不靠目录名猜测。 | W0-C 确认当前仓库没有项目 Skill；Codex 项目 Skill 发现位置为 `.agents/skills`，仅在 Unity Assets 中出现文件不等于可发现。`Documentation~`/Markdown 导出行为未实测，KT-09/08 需以实际包和安装结果决定最终载体。 |
+| 作品依赖、版本与导入 | 版本仍为 `0.1.0-dev.1`、内容格式 `1`，首版精确匹配。用户改为手工 ZIP：工具包仅交 `Assets/EchoLevelToolkit/`，作品仅交 `Assets/EchoUserContent/<author>/<work>/`，均须连同自身及祖先 Unity `.meta` 放在 ZIP 内的 `Assets/` 层级；不得夹主线/公共外部资源。复制**前**只读核对路径穿越、符号链接、GUID、摘要、版本和覆盖冲突；冲突时停止，不自动解压/覆盖/接主线。现有 `.unitypackage` 代码保留但不作为本轮交付。 | 用户 2026-09-23 明确改为手工文件夹压缩包互交；此前 Unity batch AssetImportWorker IPC 多次超时，未产 `.unitypackage`。KT-08-ZIP 在独立任务实现最小预检与一页操作说明；S3 改为一次 ZIP 文件夹往返，尚未执行。 |
+| 人工精修保护 | 后续 AI 编辑以“上次 AI 基线、当前内容、新提案”三方比较；人工改格、端口、装饰与属性默认保留，冲突预览/局部应用/Undo，缺基线时不得推断可覆盖。内容指纹和工具版本绑定人工验收记录；本轮内部候选 ZIP 可用于 S3，不伪造正式人工验收。 | 需求 3.5/6.2 与开发方案 6.4/10.2；KT-03/08 功能保留，ZIP 预检不得因改介质删除精修保护。 |
+| Skill 分发 | 五个实际 `SKILL.md` 作为工具包源码分发；ZIP 内保留 `Assets/EchoLevelToolkit/SkillSources/` 文本载体，显式安装器预览覆盖差异后输出到目标工程 `.agents/skills/<name>/SKILL.md`，不在打开 Unity 时自动改全局 Codex 设置。以 S3 ZIP 往返验证总入口可发现。 | KT-09 已实现五 Skill 和安装器；`.agents/skills` 在 Unity Assets 之外，单把 ZIP 解到 Assets 不等于 Skill 已安装。 |
 | 素材与许可 | 先以可运行占位素材完成纵向切片。FusionPixel 有随包许可；旧 CyberCity Sprite 和 Generated Boss 美术只有项目内引用证据，分发权限不足时不得未经核实纳入对外包，改用自制/许可明确占位并列清单。 | W0-A 保存引用与许可目录只读检查；KT-02/03/08 打包时分类并记录，S3 检查实际依赖。 |
 
 ## 未完成的必要证据与下一关口

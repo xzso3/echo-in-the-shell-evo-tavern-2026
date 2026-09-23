@@ -1,6 +1,6 @@
 # 关卡工具包主控台账
 
-更新：2026-09-23（UTC+8）。用户已明确恢复开发，并把独立 Sol 执行任务并行上限从 5 提到 **15**，INT-LT 占一个；Unity 同时仍只归一个任务。P2 继续暂缓。需求文档定义产品范围，[DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) 为工程基线；本轮只要求 [ACCEPTANCE.md](ACCEPTANCE.md) 的 S1～S4，完整 A/B 和第二作者验收后置。本轮输入基线和用户改动见 [BASELINE.md](BASELINE.md)。
+更新：2026-09-23（UTC+8）。用户已明确恢复开发，并把独立 Sol 执行任务并行上限从 5 提到 **15**，INT-LT 占一个；Unity 同时仍只归一个任务。P2 继续暂缓。需求文档定义产品范围，[DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) 为工程基线；本轮只要求 S1～S4，完整 A/B 和第二作者验收后置。用户已将 S3 的交付介质从 `.unitypackage` 改为手工文件夹 ZIP，具体覆盖见 [DECISIONS.md](DECISIONS.md) 与待交的 `ZIP_HANDOFF.md`；本轮输入基线和用户改动见 [BASELINE.md](BASELINE.md)。
 
 ## 全局锁与派发规则
 
@@ -18,7 +18,7 @@
 | W0-A 战斗／宿主 | 已完成只读 | `01a0cc56-cc48-73d2-bfa0-f94175cf217e` / local | `e8fd`／detached／`7e274fa` | Sol/xhigh/priority 已核 | 保存 Player/Combat/Chase/Orbit/Boss 参数与依赖、真实死亡/激活失败风险已回报；无文件改动 | 未使用 | KT-00 战斗决定 |
 | W0-B 地图／物理 | 静态完成，物理未测 | `01a0cc57-09a0-7831-b75a-d32d0d7286db` / local | `f014`／detached／`7e274fa` | Sol/xhigh/priority 已核 | 玩家半径、Tilemap/UPM/障碍层级已回报；独立 Editor LicenseClient IPC 失败 exit 199，无 Play/XML，探针移出 Assets，证据 `/private/tmp/echo-g0-w0b-probe` | 已释放 | S2 实体通行 |
 | W0-C 叙事／打包／Skill | 已完成只读 | `01a0cc57-4453-7320-b8a9-9e0479b0d337` / local | `a0b2`／detached／`7e274fa` | Sol/xhigh/priority 已核 | 稳定 ID、事件动作、模式隔离和包/Skill 风险已回报；无文件改动 | 未使用 | KT-00 接口决定 |
-| INT-LT | S2 已通过；S3 转用户手工；S4 待包 | `01a0cc5c-97c1-7070-9f78-e5036a812954` / local | `8003`／`codex/level-toolkit-integration`；隔离 HEAD `66e5a49`，主目录 `629b60b` | Sol/xhigh/priority 已核 | NativeDemo 受影响短 Play 已通过；KT-01～10、NB-01～04/KT-07 源码已导入。S2 实体接缝/1格转角/真实清敌/Boss/终点、两次重开新 RunId 均有日志。S3 自动 batch 因 AssetImportWorker IPC 超时未生成包，用户决定手工执行；INT-LT 不再重试。正式场景待真实接收包 | 唯一使用者 | 等用户 S3 结果→S4、包与主目录交付 |
+| INT-LT | S2 已通过；S3 改 ZIP；S4 待接收作品 | `01a0cc5c-97c1-7070-9f78-e5036a812954` / local | `8003`／`codex/level-toolkit-integration`；隔离 HEAD `66e5a49`，主目录 `c078296` | Sol/xhigh/priority 已核 | NativeDemo 受影响短 Play 已通过；KT-01～10、NB-01～04/KT-07 源码已导入。S2 实体接缝/1格转角/真实清敌/Boss/终点、两次重开新 RunId 均有日志。Unity 包 batch 因 AssetImportWorker IPC 超时未生成包；用户决定改手工文件夹 ZIP，旧 S3 菜单清单作废。正式场景待真实接收作品 | 唯一使用者 | KT-08-ZIP 集成→S3 ZIP→S4 |
 
 ## 功能任务
 
@@ -33,7 +33,7 @@
 | KT-05 | 代码及重开修复已集成，S2 通过 | `01a0cc80-3fb9-75d1-aaf9-8c953b450389` / local | `8dfc`／`codex/kt-05-level-encounters`／`c1a995e`；`e187f1a`→`d3aa921`→`fd9428e`→`d97c59f`，返修 `02fce88`→集成 `66e5a49` | Sol/xhigh；本次返修 **default**，早前 priority | 三遭遇模式、MapDoorSet、真实死亡/Boss完成、Sandbox终点与配置；重开只从可重载场景或实际 Prefab 资产建新局；S2 连续两次新 RunId | 已释放 | S3 打包 |
 | KT-06 | 代码已集成，正式绑定未接 | `01a0cc60-f383-7861-b92c-5ce0c9dc18d6` / local | `8573`／`codex/kt-06-binding`／`7dde3ae`；原 `5fd9a71`→`cae7611`、`52b1a7a`→`c7f56fd` | Sol/xhigh/priority 已核 | 局部端点、Run/实例路由、Sandbox/Integrated 互斥与失败完成事件重送；未从真实组件发事实，NB-03 正式绑定未实现 | 已释放 | KT-05／NB-03／S4 |
 | KT-07 | 代码已集成，S4 待跑 | `01a0cc8e-79ca-78e0-b53d-080c093a3fbe` / local | `136f`／`codex/kt-07-formal-binding`／`c1a995e`；原 `6eae90e`、`bfb9f39`，集成 `cf3be0f`、`c3f86f6` | Sol/xhigh/priority 已核 | 真实 InteractionConfirmed→正式配方→NB-03 scoped 目标/叙事→KT-06 动作；失败 Mount 后 pending objective 清理已由 NB-03 补齐 | 不占 | NB-04/S4 |
-| KT-08 | 代码已集成，S3 待跑 | `01a0cc80-8b2e-7e70-b63e-16c724d63b40` / local | `d36a`／`codex/kt-08-packaging`／`c1a995e`；`56e79ef`→`8286660`→`809991d`、文档 `0d56e14` | Sol/xhigh/priority 已核 | 白名单、Manifest/指纹、工具包/单项/完整关卡导出与路径/GUID/哈希/版本冲突预检；正式导出 KT-05/04 回调 fail-closed；Unity 包未产 | 已释放 | S3 实际包往返 |
+| KT-08 | 原 Unity 包代码已集成；ZIP 补位中 | `01a0cc80-8b2e-7e70-b63e-16c724d63b40` / local | `d36a`／`codex/kt-08-packaging`／`c1a995e`；原 `56e79ef`→`8286660`→`809991d`、文档 `0d56e14`；KT-08-ZIP 续派中 | Sol/xhigh/priority 初次已核；续派待核 | 原 Manifest/指纹、导入前路径/GUID/哈希/版本冲突保护保留；本轮以最小只读 ZIP 预检和手工目录复制取代 Unity 包收发，不自动覆盖 | 不占 Unity | ZIP guard/手册→S3 |
 | KT-09 | 五 Skill 已集成，S3 发现待跑 | `01a0cc85-90c6-7fc1-9d4a-7d65c6fbaa0b` / local | `0aaa`／`codex/kt-09-level-skills`／`c1a995e`；`0805ec8`，集成 `69b514a` | Sol/xhigh/priority 已核 | 五份 SKILL.md、同内容 TextAsset 载体、显式安装器/覆盖预览；离线验证通过，干净工程发现待 S3 | 已释放 | S3 |
 | KT-10 | 完整示例已重建，S2 通过 | `01a0cc95-219f-7603-a653-eddc5b85f248` / local | `33e8`／`codex/kt10-full-level-sample`／`eed5376`；源 `657b7cd`→`0b877fa`→`d8bebac`→`fe5defc`，返修 `0ef4412`→集成 `71c2384`，资产 `ccde0be` | Sol/xhigh/priority 请求已核 | 5 混合 Chunk、FreeCombat/清场/Boss、门/终点；互引两份独立根 Prefab，Boss32 单格 L 弯；KT-04 报 0 问题，S2 实体通过 | INT-LT 唯一使用 | S3 包往返 |
 | KT-11 | 未执行 | — / — | 待建／待核／待集成 SHA | 待核 | RELEASE、包清单／交接；KT-10／NB-04 | 排队 | S1～S4 快速交付 |
@@ -48,8 +48,8 @@
 | --- | --- | --- |
 | S1 编译启动 | 受影响子项通过，最终未放行 | KT-01/02/03/06 合并后 Unity 编译及两个 Combat Preview 场景打开无 Missing Script；NativeDemo 受影响短链已过；完整示例可加载且无 Missing Script，KT-05/04 报 0 问题。NB-04 与最终包导入后仍须一次会合检查 |
 | S2 核心短流程 | 已通过，键盘 E 未直接注入 | 修复后隔离 Play `/private/tmp/int-lt-s2-fulllevel-66e5a49.log`：Rigidbody 到 x2.91/x7.91 混合接缝、Boss 区一格 L 弯到 x16.38/y5.49，两次真实 EnemyDied 开门，Boss 封门/破壳/核心交互解锁，x46.56 实体进 Finish；两次重开均 Running、新 RunId 与初态恢复，日志 `INT_LT_S2_SHORT_FLOW_OK`。核心使用宿主调用的真实 `InteractCore` 校验入口，未直接注入物理键盘 E |
-| S3 一次包往返 | 用户手工执行中，未通过 | 自动 batch 的 AssetImportWorker IPC 连接超时，未到导出方法；无成功 `.unitypackage`。隔离工作树 `66e5a49` 干净，已向用户交菜单导出、干净工程接收、Skill 安装的具体步骤；等真实包、preflight、编译/启动和 Skill 证据 |
-| S4 一次正式接入 | 未执行，等 S3 接收作品 | NB-04 新场景装配 helper 源 `20bfa36` 已交；收到用户 S3 接收结果后由 INT-LT 精确导入、保存新增场景并实跑正式事实链 |
+| S3 一次 ZIP 文件夹往返 | 未执行 | 用户明确放弃 `.unitypackage` 交付；原 batch 没有成功包，原手工 Unity 包菜单清单作废。待 KT-08-ZIP 只读预检完成，手工压缩含 `.meta` 的 toolkit/完整作品目录，在干净匹配 Unity 工程复制、编译/启动、安装五 Skill；不将仅 ZIP 生成写成通过 |
+| S4 一次正式接入 | 未执行，等 S3 接收作品 | NB-04 新场景装配 helper 源 `20bfa36` 已交；收到实际 ZIP 接收作品后由 INT-LT 精确导入、保存新增场景并实跑正式事实链 |
 
 ## 配置与并发证据
 
@@ -57,6 +57,6 @@
 
 ## 当前依赖与恢复入口
 
-- 用户后续顺序：在隔离工作树 GUI Editor 手工导出工具包/完整作品/单项 Chunk；在干净 Unity 2021.3.27f1c2 工程经 KT-08 preflight 接收完整作品、编译/启动并安装 Skill，回传路径与错误/成功证据。INT-LT 此时不操作该 Editor。INT-LT 收到 S3 结果后保存新增正式场景、执行 S4，再形成可交付包与主目录安全点。源分支各自保留，不能带旧祖先或覆盖用户脏文件。
-- 最大剩余产品缺口：NB-01～04 正式多实例输入/叙事尚未在新增场景实跑；真实 `.unitypackage` 未产生，五 Skill 未在干净工程发现；S3/S4 尚未完成。S2 的物理键盘 E 未直接测。不得把当前安全点称为工具包快速版交付。
+- 后续顺序：KT-08-ZIP 交只读预检及手册 → INT-LT 精确集成 → 用户手工压缩含 `.meta` 的 toolkit 和完整作品目录，先在目标工程复制前预检，再做一次干净 Unity 2021.3.27f1c2 工程接收、编译/启动和 Skill 安装 → INT-LT 从实际接收作品保存新增正式场景、执行 S4 → 形成可交付 ZIP 与主目录安全点。源分支各自保留，不能带旧祖先或覆盖用户脏文件。
+- 最大剩余产品缺口：NB-01～04 正式多实例输入/叙事尚未在新增场景实跑；工具包/作品 ZIP 尚未产生和接收，五 Skill 未在干净工程发现；S3/S4 尚未完成。S2 的物理键盘 E 未直接测。不得把当前安全点称为工具包快速版交付。
 - 不新建定时任务，不清理用户或旧工作树；S1～S4 只在可交付会合点做必要检查，实际通过范围与未测范围分开。后续再获进度时更新本表，继续保持单 Unity 时段和精确文件租约。
