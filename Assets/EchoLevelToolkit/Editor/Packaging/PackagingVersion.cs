@@ -15,6 +15,8 @@ namespace Echo.LevelToolkit.Editor.Packaging
             if (guids.Length != 1) { errors.Add("Exactly one ToolkitVersion asset is required in Assets/EchoLevelToolkit."); return null; }
             ToolkitVersion profile = AssetDatabase.LoadAssetAtPath<ToolkitVersion>(AssetDatabase.GUIDToAssetPath(guids[0]));
             if (profile == null || !profile.IsComplete) { errors.Add("ToolkitVersion profile is incomplete."); return null; }
+            if (!profile.Packages.Any(x => x.PackageId == "com.unity.render-pipelines.universal" && x.ExactVersion == profile.UrpVersion))
+            { errors.Add("ToolkitVersion URP field must match the URP package whitelist."); return null; }
             return profile;
         }
 

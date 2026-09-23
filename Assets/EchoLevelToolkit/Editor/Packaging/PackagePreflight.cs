@@ -6,7 +6,7 @@ using System.Text;
 using Echo.LevelToolkit.Foundation;
 using Echo.LevelToolkit.Packaging;
 using UnityEditor;
-using UnityEditor.PackageManager;
+using UpmPackageInfo = UnityEditor.PackageManager.PackageInfo;
 using UnityEngine;
 
 namespace Echo.LevelToolkit.Editor.Packaging
@@ -98,13 +98,47 @@ namespace Echo.LevelToolkit.Editor.Packaging
                     || !sharedPaths.Add(asset.path) || archivePaths.Contains(asset.path))
                     result.errors.Add("Invalid shared dependency declaration: " + asset?.path);
             }
-            if (PackagePolicy.Fingerprint(owned.Concat(shared)) != m.contentFingerprint) result.errors.Add("Content fingerprint differs from asset records.");
+            ValidateSerializedReferences(m, archive, result);
+            if (m.kind == WorkPackageKind.Level && string.IsNullOrWhiteSpace(m.endpointManifestJson))
+                result.errors.Add("Level endpoint manifest is missing.");
+            if (PackagePolicy.ContentFingerprint(owned, shared, m.endpointManifestJson) != m.contentFingerprint)
+                result.errors.Add("Content fingerprint differs from asset records.");
             string versionFingerprint = PackagePolicy.VersionFingerprint(m);
             if (m.acceptance == null || (m.acceptance.kind == AcceptanceKind.HumanApproved
                 && !m.acceptance.Matches(m.contentFingerprint, versionFingerprint)))
                 result.errors.Add("Human acceptance is absent or stale.");
+            else if (m.acceptance.kind == AcceptanceKind.InternalCandidate
+                && (m.acceptance.contentFingerprint != m.contentFingerprint
+                    || m.acceptance.versionFingerprint != versionFingerprint
+                    || string.IsNullOrWhiteSpace(m.acceptance.note)))
+                result.errors.Add("Internal candidate evidence is stale or incomplete.");
             else if (m.acceptance.kind != AcceptanceKind.HumanApproved && m.acceptance.kind != AcceptanceKind.InternalCandidate)
                 result.errors.Add("Acceptance status is invalid.");
+        }
+
+        private static void ValidateSerializedReferences(WorkPackageManifest m,
+            Dictionary<string, UnityPackageArchive.Asset> archive, PackagePreflightResult result)
+        {
+            var allowed = new HashSet<string>((m.ownedAssets ?? Array.Empty<PackageAsset>()).Where(x => x != null).Select(x => x.guid), StringComparer.OrdinalIgnoreCase);
+            allowed.UnionWith((m.sharedAssets ?? Array.Empty<PackageAsset>()).Where(x => x != null).Select(x => x.guid));
+            allowed.Add(PackagePolicy.StableManifestGuid(m.authorId, m.workId));
+            var used = new HashSet<string>((m.usedPackages ?? Array.Empty<PackageRequirement>()).Where(x => x != null).Select(x => x.packageId), StringComparer.Ordinal);
+            foreach (UnityPackageArchive.Asset asset in archive.Values.Where(x => !x.isFolder))
+            {
+                foreach (string guid in asset.content.referenceGuids.Concat(asset.meta.referenceGuids).Distinct(StringComparer.OrdinalIgnoreCase))
+                {
+                    if (allowed.Contains(guid) || guid.StartsWith("0000000000000000", StringComparison.Ordinal)) continue;
+                    string resolved = AssetDatabase.GUIDToAssetPath(guid);
+                    if (resolved.StartsWith("Packages/", StringComparison.Ordinal))
+                    {
+                        UpmPackageInfo info = UpmPackageInfo.FindForAssetPath(resolved);
+                        if (info != null && used.Contains(info.name)) continue;
+                    }
+                    if (resolved.StartsWith("Resources/unity_builtin_extra", StringComparison.Ordinal)
+                        || resolved.StartsWith("Library/unity default resources", StringComparison.Ordinal)) continue;
+                    result.errors.Add("Undeclared serialized GUID reference " + guid + " in " + asset.path);
+                }
+            }
         }
 
         private static void ValidateVersions(WorkPackageManifest m, PackagePreflightResult result)
@@ -126,13 +160,18 @@ namespace Echo.LevelToolkit.Editor.Packaging
             var expected = local.Packages.ToDictionary(x => x.PackageId, x => x.ExactVersion, StringComparer.Ordinal);
             if (declared.Count != expected.Count || expected.Any(x => !declared.TryGetValue(x.Key, out string v) || v != x.Value))
                 result.errors.Add("Package whitelist does not match installed toolkit profile.");
-            var installed = PackageInfo.GetAllRegisteredPackages().ToDictionary(x => x.name, x => x.version, StringComparer.Ordinal);
+            var installed = UpmPackageInfo.GetAllRegisteredPackages().ToDictionary(x => x.name, x => x.version, StringComparer.Ordinal);
             foreach (var requirement in declared)
                 if (!installed.TryGetValue(requirement.Key, out string version) || version != requirement.Value)
                     result.errors.Add("UPM version missing/mismatched: " + requirement.Key + "@" + requirement.Value);
+            var usedIds = new HashSet<string>(StringComparer.Ordinal);
             foreach (PackageRequirement p in m.usedPackages ?? Array.Empty<PackageRequirement>())
+            {
+                if (p == null || string.IsNullOrWhiteSpace(p.packageId) || !usedIds.Add(p.packageId))
+                { result.errors.Add("Duplicate or invalid used UPM package."); continue; }
                 if (p == null || !declared.TryGetValue(p.packageId ?? "", out string version) || version != p.exactVersion)
                     result.errors.Add("Used UPM dependency is outside version whitelist: " + p?.packageId);
+            }
         }
 
         private static void ValidateExisting(WorkPackageManifest m, Dictionary<string, UnityPackageArchive.Asset> archive, PackagePreflightResult result)

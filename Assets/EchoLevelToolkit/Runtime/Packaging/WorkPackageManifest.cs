@@ -23,6 +23,7 @@ namespace Echo.LevelToolkit.Packaging
         public PackageAsset[] ownedAssets = Array.Empty<PackageAsset>();
         public PackageAsset[] sharedAssets = Array.Empty<PackageAsset>();
         public PackageRequirement[] usedPackages = Array.Empty<PackageRequirement>();
+        public string endpointManifestJson;
         public string contentFingerprint;
         public AcceptanceEvidence acceptance = new AcceptanceEvidence();
 

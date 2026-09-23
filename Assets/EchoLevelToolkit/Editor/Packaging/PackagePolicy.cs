@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Echo.LevelToolkit.Packaging;
 using UnityEditor;
-using UnityEditor.PackageManager;
+using UpmPackageInfo = UnityEditor.PackageManager.PackageInfo;
 using UnityEngine;
 
 namespace Echo.LevelToolkit.Editor.Packaging
@@ -93,7 +93,7 @@ namespace Echo.LevelToolkit.Editor.Packaging
             if (rootPaths.Length == 0) result.errors.Add("Select at least one root asset.");
             foreach (string root in rootPaths)
                 if (!IsSafeAssetPath(root) || !root.StartsWith(workDirectory, StringComparison.Ordinal)
-                    || AssetDatabase.LoadMainAssetAtPath(root) == null)
+                    || AssetDatabase.IsValidFolder(root) || AssetDatabase.LoadMainAssetAtPath(root) == null)
                     result.errors.Add("Root is missing or outside the work directory: " + root);
             if (result.errors.Count != 0) return result;
 
@@ -109,10 +109,13 @@ namespace Echo.LevelToolkit.Editor.Packaging
                 else if (path.StartsWith("Packages/", StringComparison.Ordinal))
                 {
                     item.category = DependencyClass.UnityOrUpm;
-                    PackageInfo info = PackageInfo.FindForAssetPath(path);
-                    if (info == null || string.IsNullOrWhiteSpace(info.name) || string.IsNullOrWhiteSpace(info.version))
-                        result.errors.Add("Cannot resolve UPM package/version: " + path);
-                    else { item.packageId = info.name; item.packageVersion = info.version; }
+                    if (!path.StartsWith("Packages/com.unity.modules.", StringComparison.Ordinal))
+                    {
+                        UpmPackageInfo info = UpmPackageInfo.FindForAssetPath(path);
+                        if (info == null || string.IsNullOrWhiteSpace(info.name) || string.IsNullOrWhiteSpace(info.version))
+                            result.errors.Add("Cannot resolve UPM package/version: " + path);
+                        else { item.packageId = info.name; item.packageVersion = info.version; }
+                    }
                 }
                 else if (path.StartsWith("Resources/unity_builtin_extra", StringComparison.Ordinal)
                     || path.StartsWith("Library/unity default resources", StringComparison.Ordinal)) item.category = DependencyClass.UnityOrUpm;
@@ -163,6 +166,11 @@ namespace Echo.LevelToolkit.Editor.Packaging
             foreach (PackageAsset a in assets.OrderBy(x => x.path, StringComparer.Ordinal))
                 data.Append(a.path).Append('\n').Append(a.guid).Append('\n').Append(a.assetSha256).Append('\n').Append(a.metaSha256).Append('\n');
             return Sha256(Encoding.UTF8.GetBytes(data.ToString()));
+        }
+
+        public static string ContentFingerprint(IEnumerable<PackageAsset> owned, IEnumerable<PackageAsset> shared, string endpointManifestJson)
+        {
+            return Sha256(Encoding.UTF8.GetBytes(Fingerprint(owned.Concat(shared)) + "\n" + (endpointManifestJson ?? string.Empty)));
         }
 
         public static string VersionFingerprint(WorkPackageManifest manifest)

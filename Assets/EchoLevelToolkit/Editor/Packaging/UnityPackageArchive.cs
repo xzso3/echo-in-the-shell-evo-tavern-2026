@@ -16,6 +16,7 @@ namespace Echo.LevelToolkit.Editor.Packaging
             internal string path;
             internal string sha256;
             internal byte[] smallContent;
+            internal readonly HashSet<string> referenceGuids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
         internal sealed class Asset
@@ -108,6 +109,7 @@ namespace Echo.LevelToolkit.Editor.Packaging
             {
                 var buffer = new byte[65536];
                 long remaining = length;
+                string tail = string.Empty;
                 while (remaining > 0)
                 {
                     int take = (int)Math.Min(buffer.Length, remaining);
@@ -115,6 +117,10 @@ namespace Echo.LevelToolkit.Editor.Packaging
                     if (n <= 0) throw new EndOfStreamException("Truncated unitypackage.");
                     sha.TransformBlock(buffer, 0, n, buffer, 0);
                     if (keep) output.Write(buffer, 0, n);
+                    string text = tail + Encoding.ASCII.GetString(buffer, 0, n);
+                    foreach (Match match in Regex.Matches(text, @"guid:\s*([0-9a-fA-F]{32})"))
+                        entry.referenceGuids.Add(match.Groups[1].Value.ToLowerInvariant());
+                    tail = text.Length > 128 ? text.Substring(text.Length - 128) : text;
                     remaining -= n;
                 }
                 sha.TransformFinalBlock(Array.Empty<byte>(), 0, 0);
