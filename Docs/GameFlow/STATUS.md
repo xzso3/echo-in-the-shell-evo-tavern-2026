@@ -1,6 +1,6 @@
 # GF01 独立批次状态台账
 
-批次：整体游戏流程与全流程 UI/UX。状态：**已启动；接口冻结及视觉设计进行中**。更新日期：2026-09-23。
+批次：整体游戏流程与全流程 UI/UX。状态：**开发交付完成，待人工校验；末次平板修复尚无编译／Play 复验证据**。更新日期：2026-09-23。
 
 ## 输入与执行边界
 
@@ -22,8 +22,8 @@
 | GF01-04 | 全流程 UI/UX 与 ImageGen 资产 | 已提交两张草图与四张最终 Sprite，待实际 UI 绑定 | `01a0cd9f-3e76-7cb2-bdb4-8f13efa2e144`／`local` | `3a7390f`；`/Users/const/.codex/worktrees/8098/echo-in-the-shell-evo-tavern-2026`；最终源 `315e2939aebd7190a4b4b7832c8ecff9b0e3a80c`；INT 已接等价资源 `6308463` | INT/05/06 引用最终资源；prompt 在 `GF01_04_ASSETS.md` |
 | GF01-05 | 主菜单／开局／暂停 UI | 已提交并导入，INT 接线中 | `01a0cda2-fd9b-7c20-b205-90e60e8e4de3`／`local` | `3a7390f`；`/Users/const/.codex/worktrees/910d/echo-in-the-shell-evo-tavern-2026`；`b144ba781be213edb6d63ebab26bd9bdcd6295a7`；INT 接入 `26ca7d1` | 同一设置 View 两场景复用，INT 绑定资源 |
 | GF01-06 | HUD／结局／结算 UI | 已提交，待 INT 接线 | `01a0cda3-56a0-7cf2-96f6-ce47aecf7322`／`local` | `3a7390f`；`/Users/const/.codex/worktrees/5144/echo-in-the-shell-evo-tavern-2026`；`f8e8a620e04925aa15497bd8580ed6dcdfc776df` | INT 接线／资源绑定，说明在 `GameUI/Results/INT_WIRING.md` |
-| GF01-INT | 独立集成与批次交付 | 共享接线已提交；实际运行阻断定点修复已提交 | `01a0cda3-de98-7a11-9d58-b69a5929cc11`／`local` | `3a7390f`；`/Users/const/.codex/worktrees/3f6d/echo-in-the-shell-evo-tavern-2026`；分支 `codex/gf01-integration`；00=`1e57e83`、01=`64f67a4`、03=`c53cd73`、04等价资源=`6308463`、02=`e75cdc8`、03击杀修正=`b78870b`、06=`51cf596`、05=`26ca7d1`、共享=`8688c9b`、平板刷新修复=`27b8ed8dd4b4097925a32fbe9cc3599d1d298a62` | 文档纳入提交；修复后编译／Play 无证据 |
+| GF01-INT | 独立集成与批次交付 | 集成代码、资源与交付文档已提交 | `01a0cda3-de98-7a11-9d58-b69a5929cc11`／`local` | `3a7390f`；`/Users/const/.codex/worktrees/3f6d/echo-in-the-shell-evo-tavern-2026`；分支 `codex/gf01-integration`；00=`1e57e83`、01=`64f67a4`、03=`c53cd73`、04等价资源=`6308463`、02=`e75cdc8`、03击杀修正=`b78870b`、06=`51cf596`、05=`26ca7d1`、共享=`8688c9b`、平板刷新修复=`27b8ed8dd4b4097925a32fbe9cc3599d1d298a62`；交付文档已纳入分支 | 最终人工检查待做；修复后编译／Play 无证据 |
 
 ## 批次交付
 
-统一版本已在独立分支提交。GF01-INT 使用 Unity 2021.3.27f1c2 完成 `8688c9b` 版本的正常导入和 C# 编译，退出码 0，日志无 C# 编译错误或 Sprite 目录加载错误；四张新 Sprite 的引用资产已由 Unity 保存。其后现有 GUI Editor 中观察到返回菜单时隐藏平板刷新空引用，INT 已以 `27b8ed8` 定点修复；该 Editor 仍持有项目锁，修复后的编译与 Play 复验**尚无证据**。未由本批次执行自动测试、完整 Play、真实联网或最终人工视觉检查。最终人工校验：**待用户或指定操作者执行**。主控正在写 `FINAL_HANDOFF.md`，包含代码／资源提交、场景入口、实际行为、ImageGen 资产与 prompt、一页人工清单和未测范围。旧 AI／Toolkit 记录仅作输入参考。
+统一版本与 `FINAL_HANDOFF.md` 已在独立分支提交。GF01-INT 使用 Unity 2021.3.27f1c2 完成 `8688c9b` 版本的正常导入和 C# 编译，退出码 0，日志无 C# 编译错误或 Sprite 目录加载错误；四张新 Sprite 的引用资产已由 Unity 保存。其后现有 GUI Editor 中观察到返回菜单时隐藏平板刷新空引用，INT 已以 `27b8ed8` 定点修复；该 Editor 仍持有项目锁，修复后的编译与 Play 复验**尚无证据**。未由本批次执行自动测试、完整 Play、真实联网或最终人工视觉检查。最终人工校验：**待用户或指定操作者执行**。`FINAL_HANDOFF.md` 列出代码／资源提交、场景入口、实际行为、ImageGen 资产与 prompt、一页人工清单和未测范围。旧 AI／Toolkit 记录仅作输入参考。集成工作树尚有 Unity 导入生成的字体资产修改及 `.vscode/`，二者未纳入 GF01 提交；主目录用户未提交文件未覆盖。
