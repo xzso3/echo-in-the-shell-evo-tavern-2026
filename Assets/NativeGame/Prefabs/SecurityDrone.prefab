@@ -96,6 +96,7 @@ GameObject:
   - component: {fileID: 8177817169529015639}
   - component: {fileID: 5382330646561657417}
   - component: {fileID: 6227656691323379692}
+  - component: {fileID: 4600036168372016220}
   m_Layer: 0
   m_Name: SecurityDrone
   m_TagString: Untagged
@@ -174,3 +175,26 @@ MonoBehaviour:
   health: 72
   contactDamage: 15
   detectionRange: 9
+  movementStyle: 0
+  preferredRange: 4.5
+  orbitClockwise: 1
+--- !u!114 &4600036168372016220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8084388157523371000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 835fc3f8d9d24e86914b49b320aba070, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  view: {fileID: 0}
+  speed: 1.65
+  health: 72
+  contactDamage: 15
+  detectionRange: 9
+  movementStyle: 0
+  preferredRange: 4.5
+  orbitClockwise: 1

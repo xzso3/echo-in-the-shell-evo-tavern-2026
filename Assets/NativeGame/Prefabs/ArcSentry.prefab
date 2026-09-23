@@ -97,6 +97,8 @@ GameObject:
   - component: {fileID: 5382330646561657417}
   - component: {fileID: 6227656691323379692}
   - component: {fileID: 7118836035078652390}
+  - component: {fileID: 7952217104358098439}
+  - component: {fileID: 5249324601280996210}
   m_Layer: 0
   m_Name: ArcSentry
   m_TagString: Untagged
@@ -188,9 +190,48 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0d145076b01848c9965e67960d3d1a04, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   projectilePrefab: {fileID: 2931246860444212869, guid: 5fa855fc8330e4bc59ce6b44ca0471bf, type: 3}
+  range: 6.5
+  warmupSeconds: 0.75
+  cooldownSeconds: 2.4
+  shotSpeed: 7.5
+  shotDamage: 11
+  spreadDegrees: 18
+--- !u!114 &7952217104358098439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8084388157523371000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 835fc3f8d9d24e86914b49b320aba070, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  view: {fileID: 0}
+  speed: 1.65
+  health: 72
+  contactDamage: 15
+  detectionRange: 9
+  movementStyle: 0
+  preferredRange: 4.5
+  orbitClockwise: 1
+--- !u!114 &5249324601280996210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8084388157523371000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9356e90f485425e813143821fedacaa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  projectilePrefab: {fileID: 0}
   range: 6.5
   warmupSeconds: 0.75
   cooldownSeconds: 2.4

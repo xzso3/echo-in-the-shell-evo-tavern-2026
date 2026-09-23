@@ -231,6 +231,7 @@ GameObject:
   - component: {fileID: 5117853671411365525}
   - component: {fileID: 6480202466023102955}
   - component: {fileID: 6791384801311264434}
+  - component: {fileID: 2055515592010342096}
   m_Layer: 0
   m_Name: DevelopmentBoss
   m_TagString: Untagged
@@ -308,6 +309,43 @@ MonoBehaviour:
   coreView: {fileID: 2216557561061730817}
   damageView: {fileID: 4536900386338930744}
   turretPivot: {fileID: 5190636923968642760}
+  trackingSeconds: 0.9
+  lockSeconds: 0.55
+  shotInterval: 0.22
+  burstCount: 3
+  shotSpeed: 8
+  shotDamage: 12
+  bombWarning: 1.25
+  bombInterval: 0.7
+  bombRadius: 1.05
+  bombDamage: 18
+  coreWindowSeconds: 6
+  retryWindowDelay: 8
+  coreInteractionRadius: 1.9
+  muzzleOffset: {x: 1.05, y: 0.18}
+--- !u!114 &2055515592010342096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3286074531037451397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e052894cfe294ac287a7c8da3d37e3a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hostileProjectilePrefab: {fileID: 0}
+  baseView: {fileID: 0}
+  turretView: {fileID: 0}
+  coreView: {fileID: 0}
+  damageView: {fileID: 0}
+  turretPivot: {fileID: 0}
+  wreckSprite: {fileID: 0}
+  burstSprite: {fileID: 0}
+  explosionSprites: []
+  maxArmor: 1400
+  armorDamageScale: 0.45
   trackingSeconds: 0.9
   lockSeconds: 0.55
   shotInterval: 0.22
