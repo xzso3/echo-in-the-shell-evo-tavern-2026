@@ -42,7 +42,13 @@ namespace Echo.NativeGame.Commander
             level.hud.BindCommanderSession(Session);
         }
 
-        void OnSettingsChanged() { Session?.ConfigurationChanged(); }
+        void OnSettingsChanged()
+        {
+            Session?.ConfigurationChanged();
+            if (level && level.rules && level.rules.Support != null)
+                level.rules.Support.Cancel();
+            SupportBridge?.ExpireUnexecuted("AI 设置已更新，请重新询问。");
+        }
 
         void OnDestroy()
         {
