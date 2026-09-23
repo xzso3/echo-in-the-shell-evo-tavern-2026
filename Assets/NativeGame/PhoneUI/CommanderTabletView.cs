@@ -15,13 +15,37 @@ namespace Echo.NativeGame.PhoneUI
         public string Label { get; }
         public bool Enabled { get; }
         public Action Invoke { get; }
+        public bool Selected { get; }
 
-        public CommanderTabletAction(string label, Action invoke, bool enabled = true)
+        public CommanderTabletAction(string label, Action invoke, bool enabled = true, bool selected = false)
         {
             Label = label ?? string.Empty;
             Invoke = invoke;
             Enabled = enabled;
+            Selected = selected;
         }
+    }
+
+    // Presentation-only data: no UI code interprets prose to decide game rules.
+    public sealed class CommanderTabletEntry
+    {
+        public string Title, Status, Preview;
+        public Action Open;
+    }
+
+    public sealed class CommanderTabletGroup
+    {
+        public string Label;
+        public IReadOnlyList<CommanderTabletAction> Options;
+    }
+
+    public sealed class CommanderTabletReading
+    {
+        public string Key, Title, Source, Body, Footer;
+        public Action Back;
+        public IReadOnlyList<CommanderTabletEntry> Entries;
+        public IReadOnlyList<CommanderTabletGroup> Groups;
+        public IReadOnlyList<CommanderTabletAction> Actions;
     }
 
     public sealed class CommanderTabletBindings
@@ -35,10 +59,10 @@ namespace Echo.NativeGame.PhoneUI
         public Func<Guid, NativeSupportKind?> ProposalKind;
         public Func<Guid, string> ProposalTitle;
         public Func<IReadOnlyList<CommanderTabletAction>> CommunicationsActions;
-        public Func<string> SupportText;
-        public Func<IReadOnlyList<CommanderTabletAction>> SupportActions;
-        public Func<string> RecordsText;
-        public Func<IReadOnlyList<CommanderTabletAction>> RecordsActions;
+        public Func<bool> OnlineAvailable;
+        public Func<CommanderTabletReading> LocalPage, SupportPage, RecordsPage;
+        public Func<bool> TryBack;
+        public Action ResetPresentation;
         public Action CloseRequested;
     }
 
@@ -86,11 +110,26 @@ namespace Echo.NativeGame.PhoneUI
         TMP_Text connectionLabel, healthLabel, locationLabel, waitLabel;
         TMP_Text contractText, contractStatus;
         GameObject commsPanel, supportPanel, recordsPanel, contractOverlay;
-        RectTransform supportContent, recordsContent;
+        RectTransform supportContent, recordsContent, localContent;
+        UnityEngine.UI.ScrollRect localScroll;
+        GameObject localPanel, onlinePanel, modeBar;
+        UnityEngine.UI.Button localModeButton, onlineModeButton;
+        bool onlineMode;
+        string localPresentation;
+        sealed class ReadingState
+        {
+            public UnityEngine.UI.ScrollRect Scroll;
+            public RectTransform Body, Footer, Back;
+            public bool HasBack, HasActions;
+            public string Key;
+            public readonly Dictionary<string, float> Positions = new Dictionary<string, float>();
+        }
+        readonly Dictionary<RectTransform, ReadingState> readingStates = new Dictionary<RectTransform, ReadingState>();
         Guid? openProposal;
         Action manualAccept, manualReject;
         string notice;
         bool refreshing, built, decisionMode;
+        int contractOpenedFrame;
         float nextPassiveRefresh;
         string supportPresentation, recordsPresentation;
         int renderedMessageCount = -1;
@@ -119,19 +158,16 @@ namespace Echo.NativeGame.PhoneUI
             tablet.sizeDelta = new Vector2(1088, 612);
             Image(Box("Tablet Base", tablet, 0, 0, 1088, 612), new Color32(29, 39, 40, 255));
             Image(Box("Screen", tablet, 151, 104, 786, 388), Screen);
-            Image(Box("Status Bar", tablet, 159, 112, 770, 27), Ink);
-            connectionLabel = Text(Box("AI Connection", tablet, 171, 115, 500, 22),
-                "AI 通讯 / 待接线", 15, Jade);
-            healthLabel = Text(Box("Health", tablet, 673, 115, 242, 22), "", 15, Pale,
+            Image(Box("Status Bar", tablet, 159, 112, 770, 30), Ink);
+            avatarImage = Image(Box("Commander Signal", tablet, 168, 116, 22, 22), Color.clear, false);
+            connectionLabel = Text(Box("AI Connection", tablet, 198, 115, 510, 24),
+                "SHELL-LINK / 本地模式", 18, Pale);
+            healthLabel = Text(Box("Health", tablet, 710, 115, 207, 24), "", 16, Pale,
                 TextAlignmentOptions.MidlineRight);
-            Image(Box("Identity Divider", tablet, 159, 188, 770, 2), Edge);
-            avatarImage = Image(Box("Commander Avatar", tablet, 166, 139, 54, 49), Color.clear, false);
-            Text(Box("Identity", tablet, 224, 141, 400, 24), "指挥官 / SHELL-LINK", 21, Pale);
-            waitLabel = Text(Box("Wait State", tablet, 646, 143, 273, 21), "", 15, Amber,
-                TextAlignmentOptions.MidlineRight);
+            Image(Box("Header Divider", tablet, 159, 145, 770, 1), Edge);
 
             commsPanel = new GameObject("Communications", typeof(RectTransform));
-            SetupBox(commsPanel.GetComponent<RectTransform>(), tablet, 159, 192, 770, 249);
+            SetupBox(commsPanel.GetComponent<RectTransform>(), tablet, 159, 148, 770, 292);
             BuildComms();
             supportPanel = BuildReadingPage("Support", out supportContent);
             recordsPanel = BuildReadingPage("Records", out recordsContent);
@@ -168,13 +204,18 @@ namespace Echo.NativeGame.PhoneUI
             if (ContractOpen) CloseContract();
             if (bindings?.Session != null) bindings.Session.Changed -= Refresh;
             if (bindings?.Support != null) bindings.Support.ProposalChanged -= OnProposalChanged;
+            if (input && input.isFocused) input.DeactivateInputField();
+            onlineMode = false;
             bindings = value;
             if (bindings?.Session != null) bindings.Session.Changed += Refresh;
             if (bindings?.Support != null) bindings.Support.ProposalChanged += OnProposalChanged;
             renderedMessageCount = -1;
             if (value?.Session == null && chatContent) Clear(chatContent);
-            supportPresentation = recordsPresentation = null;
-            if (built) Refresh();
+            ResetReadingState();
+            bindings?.ResetPresentation?.Invoke();
+            decisionMode = false;
+            renderedSessionId = Guid.Empty;
+            if (built) SelectPage(CommanderTabletPage.Communications);
         }
 
         public void ApplySprites()
@@ -193,6 +234,8 @@ namespace Echo.NativeGame.PhoneUI
             SelectedPage = page;
             notice = null;
             if (!built) return;
+            if (page != CommanderTabletPage.Communications && input && input.isFocused)
+                input.DeactivateInputField();
             commsPanel.SetActive(page == CommanderTabletPage.Communications);
             supportPanel.SetActive(page == CommanderTabletPage.Support);
             recordsPanel.SetActive(page == CommanderTabletPage.Records);
@@ -202,8 +245,6 @@ namespace Echo.NativeGame.PhoneUI
                 tabButtons[i].GetComponent<UnityEngine.UI.Image>().color = i == (int)page
                     ? new Color32(58, 102, 72, 255) : new Color32(35, 62, 48, 255);
             }
-            if (page != CommanderTabletPage.Communications && input && input.isFocused)
-                input.DeactivateInputField();
             // Reading another page deliberately leaves the session and HTTP request alive.
             Refresh();
         }
@@ -218,6 +259,8 @@ namespace Echo.NativeGame.PhoneUI
         public void HandleBack()
         {
             if (ContractOpen) { CloseContract(); return; }
+            if (!decisionMode && !(SelectedPage == CommanderTabletPage.Communications && onlineMode) &&
+                bindings?.TryBack?.Invoke() == true) { Refresh(); return; }
             if (bindings?.CloseRequested != null) bindings.CloseRequested();
             else gameObject.SetActive(false);
         }
@@ -235,6 +278,7 @@ namespace Echo.NativeGame.PhoneUI
             contractStatus.text = "请核对效果、记忆、授权范围与同步度变化。";
             contractStatus.color = Amber;
             acceptButton.interactable = true;
+            contractOpenedFrame = Time.frameCount;
             contractOverlay.SetActive(true);
         }
 
@@ -244,27 +288,42 @@ namespace Echo.NativeGame.PhoneUI
         void BuildComms()
         {
             var root = commsPanel.transform;
-            Image(Box("Chat Background", root, 0, 0, 770, 127), Ink);
-            chatScroll = Scroll(Box("Chat Scroll", root, 4, 4, 762, 119), out chatContent);
+            modeBar = new GameObject("Communication Mode", typeof(RectTransform));
+            SetupBox(modeBar.GetComponent<RectTransform>(), root, 0, 0, 770, 32);
+            localModeButton = Button(Box("Local Briefing", modeBar.transform, 0, 0, 381, 32),
+                "本地简报", Edge, Pale, 17);
+            onlineModeButton = Button(Box("Online Conversation", modeBar.transform, 389, 0, 381, 32),
+                "在线通讯", Edge, Pale, 17);
+            localModeButton.onClick.AddListener(() => { onlineMode = false; Refresh(); });
+            onlineModeButton.onClick.AddListener(() => { onlineMode = true; Refresh(); });
+            localPanel = new GameObject("Local Briefing", typeof(RectTransform));
+            SetupBox(localPanel.GetComponent<RectTransform>(), root, 0, 0, 770, 292);
             for (int i = 0; i < localTopicButtons.Length; i++)
             {
                 int slot = i;
-                localTopicButtons[i] = Button(Box("Local Topic " + i, root,
-                    (i % 2) * 389, 130 + (i / 2) * 27, 381, 24),
-                    "预设主题", new Color32(35, 62, 48, 255), Pale, 14);
+                localTopicButtons[i] = Button(Box("Local Topic " + i, localPanel.transform,
+                    i * 194, 0, 188, 32), "预设主题", Edge, Pale, 18);
                 localTopicButtons[i].onClick.AddListener(() => InvokeLocalTopic(slot));
             }
-            locationLabel = Text(Box("Location Reason", root, 0, 184, 770, 18), "", 14, Muted);
-            input = Input(Box("Composer", root, 0, 202, 558, 44), "输入消息；离线时仅有本地反馈…");
+            localScroll = Scroll(Box("Local Reading", localPanel.transform, 0, 40, 770, 252), out localContent);
+            RegisterReading(localContent, localScroll, localPanel.transform);
+
+            onlinePanel = new GameObject("Online Conversation", typeof(RectTransform));
+            SetupBox(onlinePanel.GetComponent<RectTransform>(), root, 0, 40, 770, 252);
+            chatScroll = Scroll(Box("Chat Scroll", onlinePanel.transform, 0, 0, 770, 154), out chatContent);
+            waitLabel = Text(Box("Request State", onlinePanel.transform, 0, 158, 770, 22), "", 16, Amber);
+            locationLabel = Text(Box("Location Reason", onlinePanel.transform, 0, 183, 770, 22), "", 16, Muted);
+            input = Input(Box("Composer", onlinePanel.transform, 0, 210, 558, 42), "输入在线消息…");
             input.onValueChanged.AddListener(value =>
             {
                 if (!refreshing && bindings?.Session != null) bindings.Session.Draft = value;
                 RefreshControls();
             });
-            sendButton = Button(Box("Send", root, 564, 202, 98, 44), "发送", Jade, Ink, 17);
-            cancelButton = Button(Box("Cancel", root, 668, 202, 102, 44), "取消", Edge, Pale, 17);
+            sendButton = Button(Box("Send", onlinePanel.transform, 564, 210, 98, 42), "发送", Jade, Ink, 17);
+            cancelButton = Button(Box("Cancel", onlinePanel.transform, 668, 210, 102, 42), "取消", Edge, Pale, 17);
             sendButton.onClick.AddListener(Send);
             cancelButton.onClick.AddListener(() => bindings?.Session?.Cancel());
+            onlinePanel.SetActive(false);
         }
 
         void InvokeLocalTopic(int slot)
@@ -279,10 +338,21 @@ namespace Echo.NativeGame.PhoneUI
         GameObject BuildReadingPage(string name, out RectTransform content)
         {
             var page = new GameObject(name, typeof(RectTransform));
-            SetupBox(page.GetComponent<RectTransform>(), tablet, 159, 192, 770, 249);
-            Image(Box("Reading Background", page.transform, 0, 0, 770, 249), Ink);
-            Scroll(Box("Reading Scroll", page.transform, 5, 5, 760, 239), out content);
+            SetupBox(page.GetComponent<RectTransform>(), tablet, 159, 148, 770, 292);
+            var scroll = Scroll(Box("Reading Scroll", page.transform, 0, 0, 770, 292), out content);
+            RegisterReading(content, scroll, page.transform);
             return page;
+        }
+
+        void RegisterReading(RectTransform content, UnityEngine.UI.ScrollRect scroll, Transform parent)
+        {
+            var footer = Box("Fixed Actions", parent, 0, 244, 770, 48);
+            Image(footer, Ink);
+            footer.gameObject.SetActive(false);
+            readingStates[content] = new ReadingState { Scroll = scroll,
+                Body = scroll.GetComponent<RectTransform>(), Footer = footer,
+                Back = Box("Fixed Back", parent, 0, 0, 770, 32) };
+            readingStates[content].Back.gameObject.SetActive(false);
         }
 
         void BuildContract()
@@ -297,14 +367,14 @@ namespace Echo.NativeGame.PhoneUI
             var close = Button(Box("Close Contract", contractOverlay.transform, 683, 31, 65, 40),
                 "关闭", Edge, Pale, 15);
             close.onClick.AddListener(CloseContract);
-            var body = Scroll(Box("Contract Scroll", contractOverlay.transform, 38, 83, 710, 203),
+            var body = Scroll(Box("Contract Scroll", contractOverlay.transform, 38, 83, 710, 176),
                 out var bodyContent);
             body.scrollSensitivity = 30;
             contractText = Text(StretchRow("Contract Text", bodyContent, 0), "", 19, Pale);
             var textLayout = contractText.gameObject.AddComponent<UnityEngine.UI.LayoutElement>();
             textLayout.minHeight = 190;
-            contractStatus = Text(Box("Contract Status", contractOverlay.transform, 40, 291, 690, 20),
-                "", 14, Amber);
+            contractStatus = Text(Box("Contract Status", contractOverlay.transform, 40, 264, 690, 46),
+                "", 16, Amber);
             acceptButton = Button(Box("Accept", contractOverlay.transform, 40, 316, 286, 44),
                 "接受并执行", Amber, Ink, 19);
             acceptButton.onClick.AddListener(AcceptContract);
@@ -316,7 +386,8 @@ namespace Echo.NativeGame.PhoneUI
 
         void Send()
         {
-            if (bindings?.Session == null || bindings.CanCompose?.Invoke() != true ||
+            if (!onlineMode || bindings?.OnlineAvailable?.Invoke() != true ||
+                bindings.Session == null || bindings.CanCompose?.Invoke() != true ||
                 bindings.Session.Busy) return;
             string message = input.text.Trim();
             if (message.Length == 0) return;
@@ -342,12 +413,14 @@ namespace Echo.NativeGame.PhoneUI
             contractStatus.text = "合同由当前游戏状态生成；接受前将再次核对。";
             contractStatus.color = Amber;
             acceptButton.interactable = true;
+            contractOpenedFrame = Time.frameCount;
             contractOverlay.SetActive(true);
         }
 
         void AcceptContract()
         {
-            if (!ContractOpen) return;
+            if (!ContractOpen || !acceptButton.interactable || Time.frameCount <= contractOpenedFrame) return;
+            acceptButton.interactable = false; // Block reentrant and repeated confirmation before invoking game rules.
             if (openProposal.HasValue)
             {
                 string result = null;
@@ -408,9 +481,19 @@ namespace Echo.NativeGame.PhoneUI
             try
             {
                 var session = bindings?.Session;
+                if (session != null && renderedSessionId != Guid.Empty && renderedSessionId != session.SessionId)
+                {
+                    if (ContractOpen) CloseContract();
+                    bindings.ResetPresentation?.Invoke();
+                    ResetReadingState();
+                    decisionMode = false;
+                    SelectPage(CommanderTabletPage.Communications);
+                }
                 if (input && session != null && input.text != session.Draft)
                     input.SetTextWithoutNotify(session.Draft ?? string.Empty);
-                connectionLabel.text = bindings?.ConnectionStatus?.Invoke() ?? "AI 通讯 / 未接线";
+                connectionLabel.text = SelectedPage == CommanderTabletPage.Support ? "SHELL-LINK / 支援" :
+                    SelectedPage == CommanderTabletPage.Records ? "SHELL-LINK / 记录" :
+                    bindings?.ConnectionStatus?.Invoke() ?? "SHELL-LINK / 本地模式";
                 healthLabel.text = bindings?.HealthStatus?.Invoke() ?? string.Empty;
                 waitLabel.text = session?.Busy == true ? "正在等待在线服务" : string.Empty;
                 if (session != null && (renderedMessageCount != session.Messages.Count ||
@@ -418,14 +501,22 @@ namespace Echo.NativeGame.PhoneUI
                 RefreshProposalStates();
                 RefreshControls();
                 RefreshLocalTopics();
-                if (SelectedPage == CommanderTabletPage.Support)
-                    RenderReading(supportContent, bindings?.SupportText?.Invoke() ?? "手动支援尚未接线。",
-                        bindings?.SupportActions?.Invoke(), ref supportPresentation);
+                if (SelectedPage == CommanderTabletPage.Communications && !onlineMode)
+                    RenderReading(localContent, bindings?.LocalPage?.Invoke(), ref localPresentation);
+                else if (SelectedPage == CommanderTabletPage.Support)
+                    RenderReading(supportContent, bindings?.SupportPage?.Invoke(), ref supportPresentation);
                 else if (SelectedPage == CommanderTabletPage.Records)
-                    RenderReading(recordsContent, bindings?.RecordsText?.Invoke() ?? "本局记录尚未接线。",
-                        bindings?.RecordsActions?.Invoke(), ref recordsPresentation);
+                    RenderReading(recordsContent, bindings?.RecordsPage?.Invoke(), ref recordsPresentation);
             }
             finally { refreshing = false; }
+        }
+
+        void ResetReadingState()
+        {
+            if (input && input.isFocused) input.DeactivateInputField();
+            onlineMode = false;
+            supportPresentation = recordsPresentation = localPresentation = null;
+            foreach (var state in readingStates.Values) { state.Key = null; state.Positions.Clear(); }
         }
 
         void RefreshLocalTopics()
@@ -441,21 +532,38 @@ namespace Echo.NativeGame.PhoneUI
                 button.interactable = action.Enabled && action.Invoke != null;
                 var label = button.GetComponentInChildren<TMP_Text>();
                 if (label) label.text = action.Label;
+                button.GetComponent<UnityEngine.UI.Image>().color = action.Selected ? Edge : Ink;
             }
         }
 
         void RefreshControls()
         {
             if (!built || input == null) return;
-            bool allowed = bindings?.CanCompose?.Invoke() == true;
+            bool available = bindings?.OnlineAvailable?.Invoke() == true;
+            if (!available) onlineMode = false;
+            if ((!onlineMode || !available) && input.isFocused) input.DeactivateInputField();
+            modeBar.SetActive(available);
+            onlinePanel.SetActive(onlineMode && available);
+            localPanel.SetActive(!onlineMode);
+            localModeButton.GetComponent<UnityEngine.UI.Image>().color = !onlineMode ? Edge : Ink;
+            onlineModeButton.GetComponent<UnityEngine.UI.Image>().color = onlineMode ? Edge : Ink;
+            var localRect = localPanel.GetComponent<RectTransform>();
+            localRect.anchoredPosition = new Vector2(0, available ? -40 : 0);
+            localRect.sizeDelta = new Vector2(770, available ? 252 : 292);
+            LayoutReading(localContent, readingStates[localContent]);
+            bool allowed = onlineMode && available && bindings?.CanCompose?.Invoke() == true;
             bool busy = bindings?.Session?.Busy == true;
+            // Never expose a local free-form/fallback path. Keep the draft in Session.
+            if (!allowed && input.isFocused) input.DeactivateInputField();
+            input.gameObject.SetActive(allowed);
+            sendButton.gameObject.SetActive(allowed);
             input.interactable = allowed && !busy;
             sendButton.interactable = allowed && !busy && !string.IsNullOrWhiteSpace(input.text);
-            cancelButton.gameObject.SetActive(busy);
+            cancelButton.gameObject.SetActive(onlineMode && busy);
             locationLabel.color = string.IsNullOrWhiteSpace(notice) ? Muted : Error;
             locationLabel.text = !string.IsNullOrWhiteSpace(notice) ? notice :
-                (bindings?.ComposeReason?.Invoke() ??
-                    (allowed ? "安全节点内可发送。" : "请到安全通讯节点输入；支援与记录仍可使用。"));
+                bindings?.ComposeReason?.Invoke() ?? "请到安全通讯节点输入。";
+            waitLabel.text = bindings?.ConnectionStatus?.Invoke() ?? string.Empty;
         }
 
         void RenderMessages(ICommanderSession session)
@@ -485,8 +593,8 @@ namespace Echo.NativeGame.PhoneUI
                 if (item.ProposalId.HasValue)
                 {
                     Guid id = item.ProposalId.Value;
-                    Image(Box("Proposal Edge", row, 11, totalHeight, 739, 61), Amber);
-                    Image(Box("Proposal Card", row, 13, totalHeight + 2, 735, 57), Ink);
+                    Image(Box("Proposal Edge", row, 11, totalHeight, 728, 61), Amber);
+                    Image(Box("Proposal Card", row, 13, totalHeight + 2, 724, 57), Ink);
                     NativeSupportKind? kind = bindings?.ProposalKind?.Invoke(id);
                     if (kind == NativeSupportKind.Medical)
                     {
@@ -532,36 +640,159 @@ namespace Echo.NativeGame.PhoneUI
             }
         }
 
-        void RenderReading(RectTransform content, string body,
-            IReadOnlyList<CommanderTabletAction> actions, ref string presentation)
+        void RenderReading(RectTransform content, CommanderTabletReading page, ref string presentation)
         {
-            if (!content) return;
-            if (string.IsNullOrWhiteSpace(body)) body = "本局尚无可显示的记录。";
-            string next = body;
-            if (actions != null)
-                foreach (var action in actions)
-                    if (action != null) next += "\n" + action.Label + ":" + action.Enabled;
+            if (!content || page == null) return;
+            var state = readingStates[content];
+            string next = page.Key + "|" + page.Title + "|" + page.Source + "|" + page.Body + "|" + page.Footer;
+            if (page.Entries != null)
+                foreach (var entry in page.Entries) next += "|" + entry.Title + entry.Status + entry.Preview;
+            if (page.Groups != null)
+                foreach (var group in page.Groups)
+                {
+                    next += "|" + group.Label;
+                    foreach (var action in group.Options) next += "|" + action.Label + action.Enabled + action.Selected;
+                }
+            if (page.Actions != null)
+                foreach (var action in page.Actions) next += "|" + action.Label + action.Enabled;
             if (presentation == next) return;
             presentation = next;
-            var scroll = content.parent
-                ? content.parent.GetComponentInParent<UnityEngine.UI.ScrollRect>() : null;
-            float position = scroll ? scroll.verticalNormalizedPosition : 1f;
+            var eventSystem = UnityEngine.EventSystems.EventSystem.current;
+            string selectedPath = null;
+            if (state.Key == page.Key && eventSystem && eventSystem.currentSelectedGameObject)
+                selectedPath = RelativePath(eventSystem.currentSelectedGameObject.transform, content.parent.parent.parent);
+            if (state.Key != null) state.Positions[state.Key] = state.Scroll.verticalNormalizedPosition;
+            state.Key = page.Key;
+            float position = state.Positions.TryGetValue(page.Key, out float saved) ? saved : 1f;
             Clear(content);
-            var text = Text(StretchRow("Body", content, 0), body, 18, Pale);
-            text.gameObject.AddComponent<UnityEngine.UI.LayoutElement>().preferredHeight =
-                Mathf.Max(60, text.GetPreferredValues(body, 720, 0).y + 18);
-            if (actions != null)
-                foreach (var action in actions)
+            Clear(state.Footer);
+            Clear(state.Back);
+            bool footer = page.Actions != null && page.Actions.Count > 0;
+            state.HasBack = page.Back != null;
+            state.HasActions = footer;
+            state.Footer.gameObject.SetActive(footer);
+            state.Back.gameObject.SetActive(state.HasBack);
+            LayoutReading(content, state);
+            if (page.Back != null)
+            {
+                var back = Button(Fill("Back to List", state.Back),
+                    content == localContent ? "‹ 返回任务列表" : "‹ 返回记录目录", Ink, Jade, 17);
+                var backLabel = back.GetComponentInChildren<TMP_Text>();
+                backLabel.alignment = TextAlignmentOptions.MidlineLeft;
+                backLabel.rectTransform.offsetMin = new Vector2(12, 0);
+                back.onClick.AddListener(() => { page.Back(); RefreshExternal(); });
+            }
+            if (!string.IsNullOrEmpty(page.Title)) ReadingText(content, "Heading", page.Title, 22, Pale);
+            if (!string.IsNullOrEmpty(page.Source)) ReadingText(content, "Source", page.Source, 16, Muted);
+            if (page.Entries != null)
+                foreach (var entry in page.Entries)
                 {
-                    if (action == null) continue;
-                    var button = Button(StretchRow("Action", content, 42), action.Label,
-                        new Color32(44, 80, 59, 255), Pale, 17);
-                    button.interactable = action.Enabled && action.Invoke != null;
-                    var captured = action;
-                    button.onClick.AddListener(() => { captured.Invoke?.Invoke(); RefreshExternal(); });
+                    bool preview = !string.IsNullOrEmpty(entry.Preview);
+                    float height = preview ? 88 : 40;
+                    var row = StretchRow("Entry " + entry.Title, content, height);
+                    var button = Button(row, "", new Color32(24, 49, 39, 255), Pale, 20);
+                    RowHeight(row.gameObject, height);
+                    Image(Box("Accent", row, 0, 0, 3, height), Edge, false);
+                    var title = Text(Box("Title", row, 16, preview ? 6 : 5, preview ? 335 : 690, 26), entry.Title, 20, Pale);
+                    title.enableWordWrapping = false;
+                    title.overflowMode = TextOverflowModes.Ellipsis;
+                    if (preview)
+                    {
+                        Text(Box("Status", row, 358, 7, 335, 26), entry.Status, 16, Jade);
+                        var summary = Text(Box("Preview", row, 16, 32, 680, 48), entry.Preview, 18, Pale);
+                        summary.overflowMode = TextOverflowModes.Ellipsis;
+                    }
+                    Text(Box("Chevron", row, 707, 5, 30, height - 10), "›", 24, Jade, TextAlignmentOptions.Center);
+                    button.onClick.AddListener(() => { entry.Open?.Invoke(); RefreshExternal(); });
                 }
+            if (page.Groups != null)
+                foreach (var group in page.Groups)
+                {
+                    var row = StretchRow("Selection " + group.Label, content, 46);
+                    RowHeight(row.gameObject, 46);
+                    Text(Box("Group Label", row, 4, 4, 145, 38), group.Label, 20, Pale);
+                    int count = group.Options.Count;
+                    float width = (588f - (count - 1) * 8) / Mathf.Max(1, count);
+                    for (int i = 0; i < count; i++)
+                    {
+                        var action = group.Options[i];
+                        var button = Button(Box("Option " + i, row, 153 + i * (width + 8), 2, width, 42),
+                            (action.Selected ? "✓ " : "") + action.Label, action.Selected ? Edge : Ink, Pale, 18);
+                        WireAction(button, action);
+                    }
+                }
+            if (!string.IsNullOrWhiteSpace(page.Body)) ReadingText(content, "Body", page.Body, 18, Pale);
+            if (footer)
+            {
+                Image(Box("Divider", state.Footer, 0, 0, 770, 1), Edge, false);
+                float start = string.IsNullOrEmpty(page.Footer) ? 0 : 400;
+                if (start > 0) Text(Box("Action Note", state.Footer, 7, 6, 385, 38), page.Footer, 16, Amber);
+                float width = (770 - start - (page.Actions.Count - 1) * 8) / page.Actions.Count;
+                for (int i = 0; i < page.Actions.Count; i++)
+                {
+                    var action = page.Actions[i];
+                    var button = Button(Box("Fixed Action " + i, state.Footer, start + i * (width + 8), 6, width, 42),
+                        action.Label, Edge, Pale, 18);
+                    WireAction(button, action);
+                }
+            }
             Canvas.ForceUpdateCanvases();
-            if (scroll) scroll.verticalNormalizedPosition = position;
+            state.Scroll.StopMovement();
+            state.Scroll.verticalNormalizedPosition = position;
+            if (selectedPath != null && eventSystem)
+            {
+                var selected = content.parent.parent.parent.Find(selectedPath);
+                var selectable = selected ? selected.GetComponent<UnityEngine.UI.Selectable>() : null;
+                eventSystem.SetSelectedGameObject(selectable && selectable.IsInteractable() ? selected.gameObject : null);
+            }
+        }
+
+        static string RelativePath(Transform selected, Transform root)
+        {
+            if (!selected.IsChildOf(root)) return null;
+            string path = selected.name;
+            while (selected.parent != root)
+            {
+                selected = selected.parent;
+                if (!selected) return null;
+                path = selected.name + "/" + path;
+            }
+            return path;
+        }
+
+        void LayoutReading(RectTransform content, ReadingState state)
+        {
+            float top = content == localContent ? 40 : 0;
+            float height = content == localContent ? (bindings?.OnlineAvailable?.Invoke() == true ? 212 : 252) : 292;
+            state.Back.anchoredPosition = new Vector2(0, -top);
+            state.Body.anchoredPosition = new Vector2(0, -top - (state.HasBack ? 36 : 0));
+            state.Body.sizeDelta = new Vector2(770, height - (state.HasBack ? 36 : 0) - (state.HasActions ? 48 : 0));
+        }
+
+        void ReadingText(Transform parent, string name, string value, int size, Color color)
+        {
+            var text = Text(StretchRow(name, parent, 0), value, size, color);
+            text.alignment = TextAlignmentOptions.TopLeft;
+            text.lineSpacing = 4;
+            RowHeight(text.gameObject, Mathf.Max(size + 6, text.GetPreferredValues(value, 736, 0).y + 4));
+        }
+
+        static void RowHeight(GameObject target, float height)
+        {
+            var layout = target.AddComponent<UnityEngine.UI.LayoutElement>();
+            layout.minHeight = layout.preferredHeight = height;
+            layout.flexibleHeight = 0;
+        }
+
+        void WireAction(UnityEngine.UI.Button button, CommanderTabletAction action)
+        {
+            button.interactable = action.Enabled && action.Invoke != null;
+            if (!button.interactable)
+            {
+                button.GetComponent<UnityEngine.UI.Image>().color = Ink;
+                button.GetComponentInChildren<TMP_Text>().color = Muted;
+            }
+            button.onClick.AddListener(() => { if (action.Enabled) action.Invoke?.Invoke(); RefreshExternal(); });
         }
 
         void OnProposalChanged(Guid id, CommanderProposalState state, string reason)
@@ -653,7 +884,7 @@ namespace Echo.NativeGame.PhoneUI
             label.text = value ?? string.Empty;
             label.alignment = alignment;
             label.enableWordWrapping = true;
-            label.overflowMode = TextOverflowModes.Overflow;
+            label.overflowMode = TextOverflowModes.Truncate;
             label.richText = false;
             label.raycastTarget = false;
             return label;
@@ -665,6 +896,11 @@ namespace Echo.NativeGame.PhoneUI
             var image = Image(rect, background);
             var button = rect.gameObject.AddComponent<UnityEngine.UI.Button>();
             button.targetGraphic = image;
+            var colors = button.colors;
+            colors.disabledColor = Color.white;
+            colors.highlightedColor = new Color(1.15f, 1.15f, 1.15f, 1f);
+            colors.selectedColor = new Color(1.2f, 1.2f, 1.2f, 1f);
+            button.colors = colors;
             Text(Fill("Label", rect), label, size, foreground, TextAlignmentOptions.Center);
             return button;
         }
@@ -698,8 +934,8 @@ namespace Echo.NativeGame.PhoneUI
             content.anchorMax = Vector2.one;
             content.pivot = new Vector2(.5f, 1);
             var group = content.gameObject.AddComponent<UnityEngine.UI.VerticalLayoutGroup>();
-            group.padding = new RectOffset(7, 7, 7, 7);
-            group.spacing = 8;
+            group.padding = new RectOffset(8, 8, 8, 8);
+            group.spacing = 4;
             group.childControlWidth = true;
             group.childControlHeight = true;
             group.childForceExpandWidth = true;
@@ -719,6 +955,7 @@ namespace Echo.NativeGame.PhoneUI
         {
             if (!image) return;
             image.sprite = sprite;
+            image.preserveAspect = true;
             image.color = sprite ? Color.white : fallback ?? Color.clear;
             image.raycastTarget = image.name == "Physical Return";
         }
@@ -729,6 +966,8 @@ namespace Echo.NativeGame.PhoneUI
             {
                 var child = parent.GetChild(i);
                 child.gameObject.SetActive(false);
+                // Destroy is deferred; detach now so focus-path lookup cannot select a retired node.
+                child.SetParent(null, false);
                 Destroy(child.gameObject);
             }
         }
