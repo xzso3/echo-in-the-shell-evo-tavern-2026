@@ -10,7 +10,7 @@ namespace Echo.NativeGame.Commander
         sealed class Turn
         {
             internal string Question;
-            internal string Answer;
+            internal string WireAnswer;
             internal readonly List<string> Feedback = new List<string>();
         }
 
@@ -39,7 +39,8 @@ namespace Echo.NativeGame.Commander
             "{\"reply\":\"对白\",\"proposal\":{\"kind\":\"medical\",\"option_id\":\"本次合法ID\"}}。" +
             "kind还可为weakpoint。" +
             "只能选择本次状态列出的option_id，kind须匹配。无合适选项时proposal为null，并用对白说明原因。" +
-            "不要输出伤害、回血、同步分、会话ID或其他字段。";
+            "不要输出伤害、回血、同步分、会话ID或其他字段。" +
+            "不要输出思考过程或think标签。历史提案只供对话理解，旧option_id不可复用；当前支援只能使用本次状态列出的ID。";
 
         readonly CommanderSnapshotSource source;
         readonly ICommanderTransport transport;
@@ -264,7 +265,18 @@ namespace Echo.NativeGame.Commander
                 request.Trace.Log("support.registered", "proposal=" + proposalId + "; contract confirmation still required; not executed");
             }
             request.Trace.Log("ui.online", "fallback=false; proposal=" + proposalId + " reply=" + parsed.Reply);
-            var turn = new Turn { Question = request.Question, Answer = parsed.Reply };
+            // Keep assistant history in the same protocol as the requested response.
+            // Only validated fields enter history; reasoning prefixes never do.
+            string wireAnswer = JsonConvert.SerializeObject(new
+            {
+                reply = parsed.Reply,
+                proposal = parsed.Kind.HasValue ? new
+                {
+                    kind = parsed.Kind.Value == NativeSupportKind.Medical ? "medical" : "weakpoint",
+                    option_id = parsed.OptionId
+                } : null
+            });
+            var turn = new Turn { Question = request.Question, WireAnswer = wireAnswer };
             turns.Add(turn);
             if (turns.Count > 6) turns.RemoveAt(0);
             if (proposalId.HasValue) proposalTurns.Add(proposalId.Value, turn);
@@ -330,7 +342,7 @@ namespace Echo.NativeGame.Commander
             foreach (var turn in turns)
             {
                 result.Add(new CommanderMessage(CommanderMessageRole.User, turn.Question));
-                result.Add(new CommanderMessage(CommanderMessageRole.Assistant, turn.Answer));
+                result.Add(new CommanderMessage(CommanderMessageRole.Assistant, turn.WireAnswer));
                 foreach (var feedback in turn.Feedback)
                     result.Add(new CommanderMessage(CommanderMessageRole.System,
                         "Unity已确认的支援结果：" + feedback));
