@@ -16,7 +16,7 @@
 
 ## 显示与共享接线
 
-- 平板自身 `Scroll` 的 Viewport 原先使用 alpha 0.001 的 Image 加 `Mask`；改用 `RectMask2D`，避免透明图形被剔除时连带裁掉子内容。菜单/设置使用的共享工厂属 UI 文件归属；UI 已独立修其相同组合，CHAT 不修改该文件。
+- 平板自身 `Scroll` 的 Viewport 原先使用 alpha 0.001 的 Image 加 `Mask`；改用 `RectMask2D` 与平板原有暗色不透明底图，既避免透明图形被剔除时连带裁掉子内容，又保留拖动滚动的射线目标。菜单/设置使用的共享工厂属 UI 文件归属；UI 已独立修其相同组合，CHAT 不修改该文件。
 - `NativePhone.Start` 已创建 `CommanderTabletRunAdapter`；`NativeHud.OpenPhone` 已调用 `RefreshExternal`。共享 Native/Host 文件不由 CHAT 修改。
 - `CommanderRuntimeHost` 已订阅 `CommanderSettings.Changed` 并通知会话；INT 可在集成时核对变更先后顺序及失效提案处理。
 - `NativeHud.ClosePhone` 已取消 `ICommanderSession`，`PrepareForRestart` 已重置会话和提案桥；旧 `NativePhone.CancelComposition` 只处理旧代理。平板 `OnDisable` 也关闭合同并取消会话请求。

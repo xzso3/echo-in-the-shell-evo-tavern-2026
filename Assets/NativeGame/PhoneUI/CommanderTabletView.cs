@@ -691,6 +691,7 @@ namespace Echo.NativeGame.PhoneUI
         {
             var scroll = root.gameObject.AddComponent<UnityEngine.UI.ScrollRect>();
             var viewport = Fill("Viewport", root);
+            Image(viewport, Ink);
             viewport.gameObject.AddComponent<UnityEngine.UI.RectMask2D>();
             content = Fill("Content", viewport);
             content.anchorMin = new Vector2(0, 1);
