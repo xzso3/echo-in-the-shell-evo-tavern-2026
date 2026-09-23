@@ -46,7 +46,7 @@ namespace Echo.NativeGame.Commander
                 SupportActions = SupportActions,
                 RecordsText = RecordsText,
                 RecordsActions = RecordsActions,
-                CloseRequested = level.hud.ClosePhone
+                CloseRequested = phone.HandleTabletCloseRequested
             });
         }
 

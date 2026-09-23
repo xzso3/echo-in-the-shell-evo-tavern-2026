@@ -1,8 +1,7 @@
-using System;
-using Echo.NativeGame.PhoneUI;
+using Echo.NativeGame.GameFlow;
+using Echo.NativeGame.GameUI;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Echo.NativeGame.Commander
 {
@@ -20,39 +19,33 @@ namespace Echo.NativeGame.Commander
     {
         public TMP_FontAsset chineseFont;
         public string gameSceneName = "NativeDemoTilemap";
+        GameMenuView view;
 
         void Start()
         {
-            var settings = CommanderSettings.Instance;
-            var transport = CommanderHttpClient.GetOrCreate();
-            var view = CommanderUiFactory.CreateHome(transform, chineseFont);
-            view.Bind(new CommanderHomeBindings
+            var navigation = GetComponent<FlowNavigation>();
+            if (!navigation) navigation = gameObject.AddComponent<FlowNavigation>();
+            navigation.PreferredGameSceneName = gameSceneName;
+            var art = Resources.Load<GameUiArtCatalog>("GF01Art");
+            view = GameFlowUiFactory.CreateMenu(transform, chineseFont, art);
+            view.Bind(new GameMenuBindings
             {
-                BaseUrl = () => settings.BaseUrl,
-                ModelId = () => settings.ModelId,
-                TimeoutSeconds = () => settings.TimeoutSeconds,
-                HasKey = () => settings.HasKey,
-                EndpointUrl = () => settings.EndpointUrl,
-                SetEndpoint = (baseUrl, modelId, timeout) =>
-                {
-                    if (!CommanderSettings.TryNormalizeEndpoint(baseUrl, out _))
-                        throw new ArgumentException("Invalid commander endpoint.");
-                    settings.SetEndpoint(baseUrl, modelId, timeout);
-                },
-                SetApiKey = settings.SetApiKey,
-                ClearKey = settings.ClearKey,
-                SendAsync = transport.SendAsync,
-                CancelTransport = transport.Cancel,
-                TransportBusy = () => transport.Busy,
-                EnterGame = offline =>
-                {
-                    CommanderLaunchState.OfflineForCurrentRun = offline;
-                    // Keep the committed Native scene playable when an optional
-                    // Tilemap scene is absent from this checkout's Build Settings.
-                    SceneManager.LoadScene(Application.CanStreamedLevelBeLoaded(gameSceneName)
-                        ? gameSceneName : "NativeDemo");
-                }
+                HasConfiguration = () => navigation.AiConfigured,
+                StartGame = navigation.StartGame,
+                QuitGame = navigation.QuitApplication,
+                OpenSettings = navigation.OpenAiSettings,
+                Settings = GameFlowSettingsAdapter.Create(null)
             });
+            navigation.NavigatingChanged += busy => view.SetLoading(busy);
+            navigation.ErrorChanged += view.SetError;
+            navigation.AiConfigurationChanged += view.RefreshConfiguration;
+            view.SettingsView.ConnectionTestCompleted += result =>
+                view.SetTestStatus(result.Message, result.Success);
+        }
+
+        void Update()
+        {
+            if (view && Input.GetKeyDown(KeyCode.Escape)) view.HandleBack();
         }
     }
 }
