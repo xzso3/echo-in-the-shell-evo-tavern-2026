@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e0f10c2191d41f0bbb1598534498e09, type: 3}
+  m_Name: ChaseEnemy
+  m_EditorClassIdentifier:
+  kind: 1
+  sourceRevision: 7dde3aec8cf7060b825be4464e7ad18ebfdcb91a
+  sourceFingerprint: 8879872d90dd4c34c94b7342c3b93a1d5301d55dcc6c37df9e1a30d5922c90ed
+  speed: 1.65
+  health: 72
+  colliderRadius: 0.4
+  hurtCooldown: 0
+  contactDamage: 15
+  detectionRange: 9
+  range: 0
+  shotInterval: 0
+  damage: 0
+  projectileSpeed: 0
+  projectileLifetime: 0
+  projectileRadius: 0
+  preferredRange: 0
+  fanWarmup: 0
+  fanCooldown: 0
+  fanShotSpeed: 0
+  fanShotDamage: 0
+  fanSpreadDegrees: 0
+  armorDamageScale: 0
+  trackingSeconds: 0
+  lockSeconds: 0
+  bossShotInterval: 0
+  burstCount: 0
+  bossShotSpeed: 0
+  bossShotDamage: 0
+  bombWarning: 0
+  bombInterval: 0
+  bombRadius: 0
+  bombDamage: 0
+  coreWindowSeconds: 0
+  retryWindowDelay: 0
+  coreInteractionRadius: 0
+  muzzleOffset: {x: 0, y: 0}
