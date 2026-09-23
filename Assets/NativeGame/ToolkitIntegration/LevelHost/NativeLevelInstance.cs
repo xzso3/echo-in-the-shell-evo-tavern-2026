@@ -13,12 +13,14 @@ namespace Echo.NativeGame.ToolkitIntegration.LevelHost
     public sealed class NativeLevelInstance
     {
         private readonly NativeLevelHost host;
+        private readonly NativeLevelInstanceRunContext runContext;
         private bool disposed;
 
         internal NativeLevelInstance(NativeLevelHost host, NativeLevelPlacement placement,
-            RuntimeScope scope, LevelBindingSession session)
+            RuntimeScope scope, LevelBindingSession session, NativeLevelInstanceRunContext runContext)
         {
             this.host = host;
+            this.runContext = runContext;
             Placement = placement;
             Scope = scope;
             Session = session;
@@ -32,7 +34,10 @@ namespace Echo.NativeGame.ToolkitIntegration.LevelHost
         public MapDoorSet Doors => Placement ? Placement.Doors : null;
         public CombatWorld World => Placement ? Placement.World : null;
         public CombatPlayer Player => Placement ? Placement.Player : null;
-        public bool IsRunning => !disposed && host && host.IsRunning && Placement && Placement.gameObject.activeInHierarchy;
+        public bool IsMounted => !disposed && host && host.IsRunning && Placement
+            && Placement.gameObject.activeInHierarchy;
+        public bool IsFocused => IsMounted && host.FocusedInstanceId == Scope.InstanceId;
+        public bool IsRunning => IsMounted && runContext.IsRunning;
 
         internal void Dispose()
         {
@@ -52,19 +57,24 @@ namespace Echo.NativeGame.ToolkitIntegration.LevelHost
     {
         private readonly NativeLevelHost host;
         private readonly NativeLevelPlacement placement;
+        private readonly RuntimeScope scope;
+        private bool initializing = true;
         private bool stopped;
 
-        internal NativeLevelInstanceRunContext(NativeLevelHost host, NativeLevelPlacement placement)
-        { this.host = host; this.placement = placement; }
+        internal NativeLevelInstanceRunContext(NativeLevelHost host, NativeLevelPlacement placement,
+            RuntimeScope scope)
+        { this.host = host; this.placement = placement; this.scope = scope; }
 
-        public RunId RunId => host ? host.RunId : default;
-        public bool IsRunning => !stopped && host && host.IsRunning && placement
-            && placement.gameObject.activeInHierarchy;
+        public RunId RunId => scope.RunId;
+        public bool IsRunning => !stopped && host && host.IsRunning && host.RunId == scope.RunId && placement
+            && placement.gameObject.activeInHierarchy
+            && (initializing || host.FocusedInstanceId == scope.InstanceId);
         public Transform Player => placement && placement.Player ? placement.Player.transform : null;
         public void ReportPlayerDeath()
         {
-            if (IsRunning) host.ReportPlayerDeath();
+            if (IsRunning && !initializing) host.ReportPlayerDeath(scope);
         }
+        internal void FinishInitialization() { initializing = false; }
         internal void Stop() { stopped = true; }
     }
 }

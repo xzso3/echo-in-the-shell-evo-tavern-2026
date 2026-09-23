@@ -93,7 +93,7 @@ namespace Echo.NativeGame.ToolkitIntegration.LevelHost
                 placed.transform.position = worldOrigin;
                 if (!placed.Validate(out diagnostic)) return false;
                 RuntimeScope scope = RuntimeScope.New(RunId, placed.Stage.LevelId);
-                runContext = new NativeLevelInstanceRunContext(this, placed);
+                runContext = new NativeLevelInstanceRunContext(this, placed, scope);
                 var context = new LevelInstanceContext(runContext, scope);
                 placed.Player.transform.position = placed.Stage.PlayerSpawn.position;
                 if (!placed.World.Initialize(context, placed.Player))
@@ -110,11 +110,12 @@ namespace Echo.NativeGame.ToolkitIntegration.LevelHost
                 { diagnostic = "A LevelEventEmitter could not bind to this instance scope."; return false; }
                 if (!placed.Stage.StartBound())
                 { diagnostic = "LevelStage binding start failed."; return false; }
-                var mounted = new NativeLevelInstance(this, placed, scope, session);
+                var mounted = new NativeLevelInstance(this, placed, scope, session, runContext);
                 instances.Add(scope.InstanceId, mounted);
                 contexts.Add(scope.InstanceId, runContext);
                 if (!focused.IsValid && !Focus(scope))
                 { diagnostic = "Could not focus the mounted level camera."; return false; }
+                runContext.FinishInitialization();
                 instance = mounted;
                 Notify(Mounted, mounted);
                 diagnostic = string.Empty;
@@ -152,7 +153,7 @@ namespace Echo.NativeGame.ToolkitIntegration.LevelHost
         public bool TryGet(RuntimeScope scope, out NativeLevelInstance instance)
         {
             if (scope.RunId == RunId && instances.TryGetValue(scope.InstanceId, out instance)
-                && instance.Scope == scope && instance.IsRunning) return true;
+                && instance.Scope == scope && instance.IsMounted) return true;
             instance = null;
             return false;
         }
@@ -221,9 +222,11 @@ namespace Echo.NativeGame.ToolkitIntegration.LevelHost
             finally { unmountingAll = false; }
         }
 
-        public void ReportPlayerDeath()
+        internal void ReportPlayerDeath(RuntimeScope scope)
         {
-            if (!IsRunning) return;
+            if (!IsRunning || scope.RunId != RunId || scope.InstanceId != focused
+                || !instances.TryGetValue(scope.InstanceId, out var instance)
+                || instance.Scope != scope) return;
             run.PlayerDied();
             UnmountAll();
         }

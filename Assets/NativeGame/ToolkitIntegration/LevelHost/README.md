@@ -10,6 +10,16 @@ Put `NativeLevelPlacement` on the root of the work prefab and assign its `LevelS
 
 `TryGet(scope, out instance)` and `Focus(scope)` require the exact RunId and LevelInstanceId. `instance.Session` carries the same scope and rejects foreign events/actions. `Focus` selects one instance for the Native camera and restores the prior target/bounds after the last focused instance is removed. The first mount is focused automatically. A later mount is not focused until the caller chooses it. `Unmount(scope)` and `UnmountAll()` stop the instance contexts, deactivate placement roots immediately, unbind emitters, dispose Stage and session, then destroy all owned children. Combat projectiles are children of `CombatWorld`; fan warnings and Boss hazards are children of their actors. Death and Native run termination unload every mounted instance. A local `ExitReached` event remains in the selected Integrated binding; it never calls `NativeRunController.Complete` here.
 
+Only the focused instance simulates combat. An instance can run during its own synchronous mount initialization so `CombatWorld.Initialize`, `Session.TryStart` and `Stage.StartBound` succeed; before it is exposed, a nonfocused instance is paused. Paused instances stay mounted with their actor health, encounter state, door state and binding session intact. `TryGet` and `Focus` still accept a paused instance, so focus can resume it without rebuilding its run or level identity. Combat movement stops through `ILevelRunContext.IsRunning`; temporary projectiles and warnings may clear while paused under the toolkit combat behavior. Only a death reported by the currently focused instance can end the Native run. Unmounting a focused instance chooses another mounted instance if one exists; unmounting a paused instance leaves focus alone.
+
+| Operation | Focused instance | Other mounted instances | Native run |
+| --- | --- | --- | --- |
+| Mount first / later copy | First gains focus; later copy stays paused | Health, encounter and door state retained | Continues |
+| Focus another scope | New focus resumes | Previous focus pauses | Continues |
+| Unmount focused / paused | Another mounted scope gains focus / current focus stays | Removed scope and its session are disposed | Continues |
+| Focused actor dies | All scopes unload | All scopes unload | Native death callback runs once |
+| Native run ends or restarts | All scopes unload | All scopes unload | Original Native lifecycle owns result/restart |
+
 ## INT-LT scene wiring
 
 1. Add `NativeLevelHost` only to the new integration scene and assign that scene's Native run and camera. Leave the saved `NativeDemo` entry and its three memory/Boss/ending wiring intact.
@@ -20,4 +30,4 @@ Put `NativeLevelPlacement` on the root of the work prefab and assign its `LevelS
 
 ## Interface dependency and verification
 
-Written against KT-05 candidate `e187f1ae0e338c6fa7ac012b815fe84abe0c593d`: `LevelStage.Prepare(world, session)`, `StartBound()`, `Dispose()`, and its `Doors`, `LevelId`, `PlayerSpawn` properties. The baseline of this task is `c1a995e07ee967107d1b1940dc5f12272d326dc8`, which does not yet include KT-05. Unity compilation and runtime evidence belong to INT-LT after serial integration. Offline checks here cover only source structure, changed paths and whitespace.
+Written against KT-05 candidate `e187f1ae0e338c6fa7ac012b815fe84abe0c593d` and rechecked against its final handoff `fd9428e46c7b532e08fe3fe204c4b9408c5add32`: `LevelStage.Prepare(world, session)`, `StartBound()`, `Dispose()`, and its `Doors`, `LevelId`, `PlayerSpawn` properties. The baseline of this task is `c1a995e07ee967107d1b1940dc5f12272d326dc8`, which does not yet include KT-05. An offline .NET compile of the 27 baseline toolkit runtime files, six KT-05 final runtime files and this adapter against Unity 2021 managed assemblies succeeded with zero errors; the Native run/camera were minimal compile stubs. This does not replace Unity compilation or runtime evidence, which belong to INT-LT after serial integration.
