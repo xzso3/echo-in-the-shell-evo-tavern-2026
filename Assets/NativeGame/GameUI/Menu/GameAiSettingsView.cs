@@ -82,12 +82,14 @@ namespace Echo.NativeGame.GameUI
             backButton.onClick.AddListener(Close);
 
             var scrollRoot = GameUiElements.LocalBox("Fields Scroll", panel, 24, 76, 588, 346);
+            var scrollHitArea = scrollRoot.gameObject.AddComponent<UnityEngine.UI.Image>();
+            scrollHitArea.color = new Color(0f, 0f, 0f, 0.001f);
+            scrollHitArea.raycastTarget = true;
             var scroll = scrollRoot.gameObject.AddComponent<UnityEngine.UI.ScrollRect>();
             var viewport = GameUiElements.Fill("Viewport", scrollRoot);
-            var viewportImage = viewport.gameObject.AddComponent<UnityEngine.UI.Image>();
-            viewportImage.color = new Color(0f, 0f, 0f, 0.001f);
-            viewportImage.raycastTarget = true;
-            viewport.gameObject.AddComponent<UnityEngine.UI.Mask>().showMaskGraphic = false;
+            // Stencil masks use the viewport graphic's alpha. A transparent Image can
+            // mask every field, so clip by geometry without a viewport graphic.
+            viewport.gameObject.AddComponent<UnityEngine.UI.RectMask2D>();
             var content = GameUiElements.Rect("Content", viewport,
                 new Vector2(0, 1), Vector2.one, Vector2.zero, Vector2.zero);
             content.pivot = new Vector2(0.5f, 1);
