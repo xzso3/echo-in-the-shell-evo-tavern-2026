@@ -127,7 +127,7 @@ namespace Echo.LevelToolkit.Editor.Packaging
             {
                 foreach (string guid in asset.content.referenceGuids.Concat(asset.meta.referenceGuids).Distinct(StringComparer.OrdinalIgnoreCase))
                 {
-                    if (allowed.Contains(guid) || guid.StartsWith("0000000000000000", StringComparison.Ordinal)) continue;
+                    if (allowed.Contains(guid) || IsUnityBuiltinGuid(guid)) continue;
                     string resolved = AssetDatabase.GUIDToAssetPath(guid);
                     if (resolved.StartsWith("Packages/", StringComparison.Ordinal))
                     {
@@ -226,6 +226,10 @@ namespace Echo.LevelToolkit.Editor.Packaging
 
         private static bool IsGuid(string value) => value != null && value.Length == 32 && value.All(Uri.IsHexDigit);
         private static bool IsDigest(string value) => value != null && value.Length == 64 && value.All(Uri.IsHexDigit);
+        private static bool IsUnityBuiltinGuid(string guid) => guid == "00000000000000000000000000000000"
+            || guid == "0000000000000000d000000000000000"
+            || guid == "0000000000000000e000000000000000"
+            || guid == "0000000000000000f000000000000000";
     }
 
 }

@@ -105,7 +105,13 @@ namespace Echo.LevelToolkit.Editor.Packaging
                     item.category = DependencyClass.WorkOwned;
                     if (!IsSafeAssetPath(path) || IsForbiddenWorkAsset(path)) result.errors.Add("Work asset is unsafe to exchange: " + path);
                 }
-                else if (path.StartsWith(ToolkitRoot, StringComparison.Ordinal)) item.category = DependencyClass.ToolkitShared;
+                else if (path.StartsWith(ToolkitRoot, StringComparison.Ordinal))
+                {
+                    item.category = DependencyClass.ToolkitShared;
+                    if (path.StartsWith(ManifestRoot, StringComparison.Ordinal)
+                        || path.StartsWith("Assets/EchoLevelToolkit/Editor/Packaging/AcceptanceRecords/", StringComparison.Ordinal))
+                        result.errors.Add("Work references packaging bookkeeping rather than public toolkit content: " + path);
+                }
                 else if (path.StartsWith("Packages/", StringComparison.Ordinal))
                 {
                     item.category = DependencyClass.UnityOrUpm;
