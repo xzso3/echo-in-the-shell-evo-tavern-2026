@@ -76,6 +76,7 @@ namespace Echo.NativeGame
         }
         public void Restart()
         {
+            if (hud) hud.PrepareForRestart();
             PhonePause.ReleaseForRunEnd();
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }

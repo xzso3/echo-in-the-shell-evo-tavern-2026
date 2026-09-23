@@ -36,27 +36,31 @@ namespace Echo.NativeGame
         }
         public static string PageLabel(Page value) => value == Page.Comms ? "通讯" : value == Page.Support ? "支援" : "网络";
         public void SelectPage(int index)
-        { CancelComposition(); SelectedPage = (Page)index; finalDecision = false; topic = 0; feedback = ""; lastBody = null; scroll.verticalNormalizedPosition = 1; }
+        { BlurComposition(); SelectedPage = (Page)index; finalDecision = false; topic = 0; feedback = ""; lastBody = null; scroll.verticalNormalizedPosition = 1; }
         public void ShowFinalDecision()
-        { CancelComposition(); finalDecision = true; feedback = ""; level.hud.phonePanel.SetActive(true); scroll.verticalNormalizedPosition = 1; }
+        { BlurComposition(); finalDecision = true; feedback = ""; level.hud.OpenPhone(); scroll.verticalNormalizedPosition = 1; }
         public void CloseDecision() { finalDecision = false; }
         public void ShowContinuation()
-        { CancelComposition(); finalDecision = false; SelectedPage = Page.Comms; topic = 0; level.hud.phonePanel.SetActive(true); scroll.verticalNormalizedPosition = 1; }
+        { BlurComposition(); finalDecision = false; SelectedPage = Page.Comms; topic = 0; level.hud.OpenPhone(); scroll.verticalNormalizedPosition = 1; }
         public void CancelComposition()
         {
             if (proxy && proxy.Busy)
             { proxy.Cancel(); onlineStatus = "通讯已取消，草稿已保留。预设通讯仍可使用。"; }
+            BlurComposition();
+        }
+        void BlurComposition()
+        {
             if (composer && EventSystem.current && EventSystem.current.currentSelectedGameObject == composer.gameObject)
             { composer.DeactivateInputField(); EventSystem.current.SetSelectedGameObject(null); }
         }
         void Update()
         {
-            if (!level.hud.phonePanel.activeSelf) { CancelComposition(); return; }
+            if (!level.hud.phonePanel.activeSelf) { BlurComposition(); return; }
             var narrative = level.narrative;
             bool composingPage = !finalDecision && SelectedPage == Page.Comms;
             string safeReason = "安全通讯节点未接线。";
             bool safe = safeNode && safeNode.CanCompose(out safeReason);
-            if (!composingPage || !safe) CancelComposition();
+            if (!composingPage || !safe) BlurComposition();
             if (composer)
             { composer.gameObject.SetActive(composingPage); composer.interactable = safe; }
             if (sendButton)
@@ -123,7 +127,7 @@ namespace Echo.NativeGame
             {
                 case 1: return "指挥官 / 记忆\n私人记忆中留着一句异议，系统却从摘要中删除了它。找回这段记忆，并不等于决定如何对待它。选择“保留异议”，就是拒绝让系统抹去这份不同。差异度+35，仅计一次。\n\n" + level.narrative.MemorySummary();
                 case 2: return "指挥官 / 身份\n我是分配给这副躯壳的指挥模型。我能描述你走过的路，却无法重现你记忆中的那只手。那是我所没有的经历。\n\n当前通讯使用内置对白，未连接在线模型。交谈不会增加同步度或差异度。";
-                case 3: return "指挥官 / 授权\n手机内的医疗支援与弱点解析需要明确授权。有限授权允许读取所选记忆；深度授权允许共同改写对它的理解。请先核对支援效果、所选记忆和同步度变化，再按 Enter 或“接受并执行”。\n\n北侧区块 2 的定向脉冲终端可选择执行或拒绝；只有真正命中弧光哨兵才增加20同步度，且不共享记忆。\n\n请求失败或被拒绝时，不授予权限，也不增加同步度。交谈无需付出代价。阅读时，战斗仍会继续。";
+                case 3: return "指挥官 / 授权\n手机内的医疗支援与弱点解析需要明确授权。有限授权允许读取所选记忆；深度授权允许共同改写对它的理解。请先核对支援效果、所选记忆和同步度变化，再按 Enter 或“接受并执行”。\n\n北侧区块 2 的定向脉冲终端可选择执行或拒绝；只有真正命中弧光哨兵才增加20同步度，且不共享记忆。\n\n请求失败或被拒绝时，不授予权限，也不增加同步度。交谈无需付出代价。打开手机期间，战斗与计时暂停。";
                 case 5: return "本局 / 行为记录\n\n" + level.quest.SideObjectiveText + "\n\n" + level.narrative.BehaviorSummary();
                 default: return "指挥官 / 任务\n" + level.quest.ObjectiveText + "\n\n" + level.quest.SideObjectiveText + "\n\n收齐三段记忆，连接中继终端，再迎战战斗机体。核心暴露时靠近并按 E。最终节点位于东侧大门后。\n\n走过上方的检修通道，会记下一次绕行选择，但不代表整局都没有参加战斗。\n\n" + level.narrative.ScoreSummary();
             }
@@ -174,7 +178,7 @@ namespace Echo.NativeGame
             string memories = level.narrative.MemorySummary();
             if (!proxy.Send(message, objective, memories, (reply, error) =>
                 {
-                    if (!level || !level.hud.phonePanel.activeSelf || finalDecision || SelectedPage != Page.Comms || !safeNode || !safeNode.CanCompose(out _)) return;
+                    if (!level || !level.hud.phonePanel.activeSelf || !safeNode || !safeNode.CanCompose(out _)) return;
                     if (level.quest.ObjectiveText != objective || level.narrative.MemorySummary() != memories)
                     { onlineStatus = "局内进度已变化，旧回复已丢弃；草稿已保留。"; return; }
                     if (error != null) { onlineStatus = error; return; }
