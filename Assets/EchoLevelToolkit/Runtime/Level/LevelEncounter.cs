@@ -53,8 +53,14 @@ namespace Echo.LevelToolkit.Level
             var area = GetComponent<PolygonCollider2D>();
             if (!area || !area.isTrigger || !regionEnteredEndpoint.IsComplete)
                 return false;
+            if (!EndpointMatches(binding, regionEnteredEndpoint, LevelEndpointKind.RegionEntered))
+                return false;
             if (mode != EncounterMode.FreeCombat && !activateEndpoint.IsComplete) return false;
             if (mode != EncounterMode.FreeCombat && !completedEndpoint.IsComplete) return false;
+            if (mode != EncounterMode.FreeCombat &&
+                (!EndpointMatches(binding, activateEndpoint, LevelEndpointKind.ActivateEncounter)
+                 || !EndpointMatches(binding, completedEndpoint, LevelEndpointKind.EncounterCompleted)))
+                return false;
             if (mode == EncounterMode.Boss && (!boss || Enemies.Count != 0)) return false;
             if (mode != EncounterMode.Boss && boss) return false;
             if (mode == EncounterMode.ClearEnemies && Enemies.Count == 0) return false;
@@ -87,14 +93,20 @@ namespace Echo.LevelToolkit.Level
             return true;
         }
 
-        public void OnBindingStarted()
+        public bool OnBindingStarted()
         {
-            if (session == null || !session.IsActive) return;
+            if (session == null || !session.IsActive) return false;
             if (mode == EncounterMode.FreeCombat)
             {
-                foreach (CombatEnemy enemy in Enemies) if (enemy) enemy.gameObject.SetActive(true);
+                foreach (CombatEnemy enemy in Enemies)
+                {
+                    if (!enemy || !enemy.Alive) return false;
+                    enemy.gameObject.SetActive(true);
+                    if (!enemy.isActiveAndEnabled) return false;
+                }
                 State = EncounterState.Active;
             }
+            return true;
         }
 
         public LevelActionResult Execute(LevelActionCommand command)
@@ -164,9 +176,10 @@ namespace Echo.LevelToolkit.Level
 
         private void OnTriggerStay2D(Collider2D other)
         {
-            if (playerInside) return;
             CombatPlayer player = other.GetComponentInParent<CombatPlayer>();
-            if (player) PlayerEntered(player);
+            if (!player || !world || player != world.Player) return;
+            if (!playerInside) PlayerEntered(player);
+            else if (autoStartOnEnter && State == EncounterState.Dormant) TryStart();
         }
 
         private void OnTriggerExit2D(Collider2D other)
@@ -227,5 +240,12 @@ namespace Echo.LevelToolkit.Level
         }
 
         private void OnDestroy() { Dispose(); }
+
+        private static bool EndpointMatches(LevelBindingSession binding, ContentIdentity id,
+            LevelEndpointKind kind)
+        {
+            return binding.Catalog.TryGet(id, out var endpoint) && endpoint.Kind == kind
+                && endpoint.Allows(binding.Mode);
+        }
     }
 }

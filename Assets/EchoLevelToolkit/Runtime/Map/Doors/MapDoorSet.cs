@@ -23,13 +23,14 @@ namespace Echo.LevelToolkit.Map.Doors
         private readonly List<IDisposable> registrations = new List<IDisposable>();
         private RuntimeScope scope;
         public RuntimeScope Scope => scope;
+        public IReadOnlyList<MapDoor> ConfiguredDoors => doors ?? Array.Empty<MapDoor>();
         public bool IsInitialized { get; private set; }
 
         public bool Initialize(RuntimeScope ownerScope)
         {
             if (IsInitialized || !ownerScope.RunId.IsValid || !ownerScope.InstanceId.IsValid) return false;
             scope = ownerScope;
-            foreach (MapDoor door in doors)
+            foreach (MapDoor door in ConfiguredDoors)
             {
                 if (!door || !door.DoorId.IsComplete || !door.Blocker || entries.ContainsKey(door.DoorId))
                 { ResetState(); return false; }
@@ -91,6 +92,7 @@ namespace Echo.LevelToolkit.Map.Doors
                 if (!entries.TryGetValue(id, out var entry) || !entry.HasOwner
                     || !entry.LockOwner.Equals(encounterId)) continue;
                 entry.Locked = false;
+                entry.RequestedOpen = true;
                 entry.Door.ApplyOpen(entry.RequestedOpen);
             }
         }
@@ -117,7 +119,7 @@ namespace Echo.LevelToolkit.Map.Doors
             if (!IsInitialized || session == null || session.Context.Scope != scope) return false;
             try
             {
-                foreach (MapDoor door in doors)
+                foreach (MapDoor door in ConfiguredDoors)
                 {
                     if (!door.SetOpenEndpoint.IsComplete) continue;
                     ContentIdentity doorId = door.DoorId;

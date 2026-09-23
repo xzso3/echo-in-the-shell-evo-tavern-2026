@@ -29,6 +29,11 @@ namespace Echo.LevelToolkit.Level
                 || !reachedEndpoint.IsComplete || !unlockEndpoint.IsComplete
                 || combatWorld.Context.Scope != binding.Context.Scope || !GetComponent<Collider2D>().isTrigger)
                 return false;
+            if (!binding.Catalog.TryGet(reachedEndpoint, out var reached)
+                || reached.Kind != LevelEndpointKind.ExitReached || !reached.Allows(binding.Mode)
+                || !binding.Catalog.TryGet(unlockEndpoint, out var unlock)
+                || unlock.Kind != LevelEndpointKind.UnlockExit || !unlock.Allows(binding.Mode))
+                return false;
             world = combatWorld;
             session = binding;
             scope = binding.Context.Scope;

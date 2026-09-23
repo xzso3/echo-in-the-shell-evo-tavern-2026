@@ -16,6 +16,7 @@ namespace Echo.LevelToolkit.Level
         [SerializeField] private LevelStage stage;
         [SerializeField] private LevelEndpointCatalog catalog;
         [SerializeField] private SandboxBindingDefinition bindingDefinition;
+        [SerializeField] private GameObject restartPrefab;
         [SerializeField] private bool showDebugHud = true;
         private LevelBindingSession session;
         private string status = "Starting test level";
@@ -108,8 +109,17 @@ namespace Echo.LevelToolkit.Level
             IsRunning = false;
             session?.Dispose();
             if (stage) stage.Dispose();
+            if (restartPrefab)
+            {
+                gameObject.SetActive(false);
+                Instantiate(restartPrefab, transform.position, transform.rotation);
+                Destroy(gameObject);
+                return;
+            }
             Scene scene = gameObject.scene;
-            if (scene.IsValid()) SceneManager.LoadScene(scene.name);
+            if (scene.IsValid() && Application.CanStreamedLevelBeLoaded(scene.path))
+                SceneManager.LoadScene(scene.path);
+            else Fail("Assign a fresh level prefab for restart, or add this scene to Build Settings.");
         }
 
         private void OnDestroy()

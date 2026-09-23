@@ -1,0 +1,7 @@
+{
+  "name": "Echo.LevelToolkit.Encounters.Editor",
+  "rootNamespace": "Echo.LevelToolkit.Level.Editor",
+  "references": ["Echo.LevelToolkit.Runtime"],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": true
+}

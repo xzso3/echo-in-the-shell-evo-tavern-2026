@@ -53,7 +53,8 @@ namespace Echo.LevelToolkit.Level
         public bool StartBound()
         {
             if (session == null || !session.IsActive) return false;
-            foreach (LevelEncounter encounter in Encounters) encounter.OnBindingStarted();
+            foreach (LevelEncounter encounter in Encounters)
+                if (!encounter.OnBindingStarted()) return false;
             return true;
         }
 
