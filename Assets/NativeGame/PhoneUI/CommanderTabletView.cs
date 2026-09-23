@@ -688,21 +688,34 @@ namespace Echo.NativeGame.PhoneUI
                 foreach (var entry in page.Entries)
                 {
                     bool preview = !string.IsNullOrEmpty(entry.Preview);
-                    float height = preview ? 88 : 40;
-                    var row = StretchRow("Entry " + entry.Title, content, height);
+                    var row = StretchRow("Entry " + entry.Title, content, 40);
                     var button = Button(row, "", new Color32(24, 49, 39, 255), Pale, 20);
-                    RowHeight(row.gameObject, height);
-                    Image(Box("Accent", row, 0, 0, 3, height), Edge, false);
-                    var title = Text(Box("Title", row, 16, preview ? 6 : 5, preview ? 335 : 690, 26), entry.Title, 20, Pale);
+                    float top = preview ? 6 : 4;
+                    var title = Text(Box("Title", row, 16, top, preview ? 335 : 690, 1), entry.Title, 20, Pale);
                     title.enableWordWrapping = false;
                     title.overflowMode = TextOverflowModes.Ellipsis;
+                    float titleHeight = EntryTextHeight(title, 1);
+                    title.rectTransform.sizeDelta = new Vector2(preview ? 335 : 690, titleHeight);
+                    float height = Mathf.Max(40, top + titleHeight + 4);
                     if (preview)
                     {
-                        Text(Box("Status", row, 358, 7, 335, 26), entry.Status, 16, Jade);
-                        var summary = Text(Box("Preview", row, 16, 32, 680, 48), entry.Preview, 18, Pale);
+                        var status = Text(Box("Status", row, 358, top, 335, 1), entry.Status, 16, Jade);
+                        status.enableWordWrapping = false;
+                        status.overflowMode = TextOverflowModes.Ellipsis;
+                        float statusHeight = EntryTextHeight(status, 1);
+                        status.rectTransform.sizeDelta = new Vector2(335, statusHeight);
+                        float headerHeight = Mathf.Max(titleHeight, statusHeight);
+                        float summaryTop = top + headerHeight + 4;
+                        var summary = Text(Box("Preview", row, 16, summaryTop, 680, 1), entry.Preview, 18, Pale);
                         summary.overflowMode = TextOverflowModes.Ellipsis;
+                        float summaryHeight = EntryTextHeight(summary, 2);
+                        summary.rectTransform.sizeDelta = new Vector2(680, summaryHeight);
+                        height = summaryTop + summaryHeight + 8;
                     }
-                    Text(Box("Chevron", row, 707, 5, 30, height - 10), "›", 24, Jade, TextAlignmentOptions.Center);
+                    // The layout group, accent and chevron all follow the measured text envelope.
+                    RowHeight(row.gameObject, height);
+                    Image(Box("Accent", row, 0, 0, 3, height), Edge, false);
+                    Text(Box("Chevron", row, 707, 4, 30, height - 8), "›", 24, Jade, TextAlignmentOptions.Center);
                     button.onClick.AddListener(() => { entry.Open?.Invoke(); RefreshExternal(); });
                 }
             if (page.Groups != null)
@@ -767,6 +780,18 @@ namespace Echo.NativeGame.PhoneUI
             state.Back.anchoredPosition = new Vector2(0, -top);
             state.Body.anchoredPosition = new Vector2(0, -top - (state.HasBack ? 36 : 0));
             state.Body.sizeDelta = new Vector2(770, height - (state.HasBack ? 36 : 0) - (state.HasActions ? 48 : 0));
+        }
+
+        // Limited to Entry slots: TMP Ellipsis can clear the whole line when its first
+        // glyph exceeds the vertical box, so width ellipsis still needs safe line height.
+        static float EntryTextHeight(TMP_Text text, int lines)
+        {
+            var face = text.font.faceInfo;
+            float scale = text.fontSize / Mathf.Max(1f, face.pointSize) * face.scale;
+            float fontHeight = (face.ascentLine - face.descentLine + (lines - 1) * face.lineHeight) * scale;
+            string sample = lines == 1 ? text.text : "A\nA";
+            float preferred = text.GetPreferredValues(sample, Mathf.Infinity, Mathf.Infinity).y;
+            return Mathf.Ceil(Mathf.Max(fontHeight, preferred)) + 6;
         }
 
         void ReadingText(Transform parent, string name, string value, int size, Color color)
