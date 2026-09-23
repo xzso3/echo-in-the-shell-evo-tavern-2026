@@ -22,7 +22,7 @@ Development Build 可由开发调试入口显式设置 `CommanderDiagnostics.Ena
 - `transport.enter/rejected`、`sdk.request/start`：传输门槛、SDK 实际 ChatRequest 序列化正文（完整消息和实际参数）。未设置的采样/输出参数由供应商默认处理。
 - `sdk.success/exception`、`sdk.choice`、`transport.complete`：SDK 结果、finish reason、content 类型/长度、统一状态。SDK 8.8.9 成功接口不暴露 HTTP 数值状态，明确记为 `not_exposed_by_sdk`；失败从 `RestException.Response.Code` 获取状态码，0 表示未知。
 - `sdk.response` 是 SDK 反序列化后的响应 JSON，**不是原始 HTTP 字节**；`reply.raw` 是解析前 `choices[0].message.content` 完整正文（脱敏后、未 Trim）。HTTP 错误可获取时输出 `http.error_body`。SDK 在反序列化 HTTP envelope 时失败则无法从公开接口获得原始成功响应；不伪造缺失证据。
-- `parse.accepted/rejected`：解析后结构或明确拒绝原因。现有规则只允许严格 JSON，恰好包含 `reply`（1–1200 字）与 `proposal`；不能有 Markdown 包装/额外字段。支援提案必须匹配本次快照列出的 ID 与 kind。自然语言回复会被拒绝；实际故障属于哪一条仍待真实输出。
+- `parse.accepted/rejected`：解析后结构或明确拒绝原因。现有规则只允许严格 JSON，恰好包含 `reply`（1–1200 字）与 `proposal`；不能有 Markdown 包装/额外字段；仅兼容单个开头完整闭合的 `<think>…</think>` 前缀，剥离后仍执行同样校验。支援提案必须匹配本次快照列出的 ID 与 kind。自然语言回复会被拒绝；实际故障属于哪一条仍待真实输出。
 - `support.registered/rejected`：本地支援验证结果。注册只是待确认提案，绝不自动执行合同。
 - `cancel/invalidate/discard`：取消、设置变更、换局或焦点变化；失效结果不触发 fallback。
 - `fallback`、`ui.fallback/online/error`、`ui.render/message`、`ui.send.return`：最终决策、文案、实际 UI 消息渲染与发送返回值。平板隐藏时会话仍可完成，UI 渲染要等重新打开。
@@ -38,3 +38,18 @@ Endpoint 隐去代理路径、userinfo/query/fragment；凭据值和常见凭据
 编译记录：源码提交 `2234a29`。本工作树用固定 Editor 执行 `-batchmode -nographics -quit` 导入编译，退出码 0；日志 `/private/tmp/gf02-llm-diagnostics-import.log` 包含 `Tundra build success`、修改后的脚本再次导入编译成功、`Mono: successfully reloaded assembly` 和 `Exiting batchmode successfully now!`，无 `error CS`。其他工作树 Editor 未关闭，字体/设置未改动。
 
 集成记录：`2234a290b4525c8acb7f007abb9fda8688574b52`、`7d4682b8acf62a4fc46c461f95bcd76b959b9771` 已按序 fast-forward 到唯一 `codex/gf02-integration`。INT 在 4e44 用固定 Unity `2021.3.27f1c2` 做一次正常导入/C# 编译，退出码 **0**；日志 `/private/tmp/gf02-llm-diagnostics-integration.log` 有 `Tundra build success (2.77 seconds), 9 items updated`、`AssetDatabase: script compilation time: 4.338745s`、`Mono: successfully reloaded assembly` 及成功退出，未检出 `error CS`、编译失败或包解析/导入错误。未运行 Play、真实联网、自动测试、mock 或截图巡检；本轮仅证明诊断代码在集成树可编译。集成树原有未提交 FusionPixel 字体、PackageManager 设置和 `mono_crash.7330f4927.0.json` 的内容哈希在合入前后相同，未清理或提交。
+
+## 真实日志后的修复（2026-09-24）
+
+直接读取 `/Users/const/Library/Logs/Unity/Editor.log`，同一 session `7caaee4c624b434abec4006021e3c1b2`：
+
+- gen2 / rid `3c70d30411b94ecf8b8eb0b1672c1458`：请求仅 system/system/user，无 assistant 历史。SDK 成功，原始正文是完整 think 前缀后跟 reply/proposal JSON，解析拒绝。不能归因于历史污染。
+- gen3 / rid `3c75fb86c13f430abb0fc0b7b5e97511`：重发后是规范 JSON，解析成功并显示。
+- gen4 / rid `00092e92b0a841ac93abf2a82159ae1d`：请求已有纯文本 assistant 历史，但模型仍返回 JSON，成功显示。
+- gen5 / rid `4901385a2615465499bb9db193a7371d`：请求有两条纯文本 assistant 历史，SDK 成功返回自然语言，解析拒绝并 fallback。历史协议不一致是确定的源码问题，但日志不能证明它是模型此次格式漂移的唯一成因。
+
+修复：成功且通过本地支援验证的回复重新序列化为准确的 reply/proposal JSON 写回历史，UI 继续只显示 reply。保留历史提案信息，但系统明确旧 ID 不可复用，所有新提案仍必须匹配本次快照并通过本地注册/合同授权。提示词明确不要输出思考过程。
+
+解析仅兼容一个位于开头且完整闭合的 think 前缀；不搜索正文中的 JSON，不修复任意文本、Markdown 或非法 proposal。前缀未闭合/嵌套、后接非对象均拒绝，余下 JSON 的重复属性、额外内容、长度、结构和支援 ID 校验保留。诊断增加 `parse.reasoning_prefix`。纯自然语言仍拒绝；代理未验证支持 JSON response_format，未强制配置。修复后真实服务仍需复现，不能声称消除了所有格式漂移。
+
+本批只做源码检查和 `git diff --check`；按主控指令，不开 Unity、不跑自动测试/harness，编译由 INT 合入后完成。之前的编译成功记录只覆盖诊断基线，不覆盖本批修复。

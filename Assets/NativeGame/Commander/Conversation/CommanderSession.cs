@@ -241,7 +241,11 @@ namespace Echo.NativeGame.Commander
                 CompleteFallback(request, TransportFailure(result.Status));
                 return;
             }
-            if (!CommanderResponseParser.TryParse(result.Content, request.Snapshot, out var parsed, out var parseReason))
+            bool valid = CommanderResponseParser.TryParse(result.Content, request.Snapshot,
+                out var parsed, out var parseReason, out var removedReasoningPrefix);
+            if (removedReasoningPrefix)
+                request.Trace.Log("parse.reasoning_prefix", "removed one leading closed think envelope; remaining JSON undergoes all schema/support checks");
+            if (!valid)
             {
                 request.Trace.Log("parse.rejected", parseReason);
                 CompleteFallback(request, "在线回复格式或支援选项无效；请手动重试。");

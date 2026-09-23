@@ -21,17 +21,33 @@ namespace Echo.NativeGame.Commander
     internal static class CommanderResponseParser
     {
         internal static bool TryParse(string content, CommanderSnapshot snapshot,
-            out CommanderParsedResponse response, out string reason)
+            out CommanderParsedResponse response, out string reason, out bool removedReasoningPrefix)
         {
             response = default;
             reason = null;
+            removedReasoningPrefix = false;
             if (string.IsNullOrWhiteSpace(content)) { reason = "empty_content"; return false; }
             if (content.Length > 16384) { reason = "content_exceeds_16384"; return false; }
             if (snapshot == null) { reason = "missing_snapshot"; return false; }
+            // Some compatible providers put reasoning in content rather than a
+            // separate field. Accept only one explicit, leading, closed envelope;
+            // never scan for JSON inside prose or repair a rejected proposal.
+            string candidate = content.Trim();
+            if (candidate.StartsWith("<think>", StringComparison.Ordinal))
+            {
+                int end = candidate.IndexOf("</think>", 7, StringComparison.Ordinal);
+                int nested = candidate.IndexOf("<think>", 7, StringComparison.Ordinal);
+                if (end < 0 || (nested >= 0 && nested < end))
+                { reason = "reasoning_prefix_unclosed_or_nested"; return false; }
+                candidate = candidate.Substring(end + "</think>".Length).Trim();
+                removedReasoningPrefix = true;
+                if (!candidate.StartsWith("{", StringComparison.Ordinal))
+                { reason = "reasoning_prefix_not_followed_by_json_object"; return false; }
+            }
             JObject root;
             try
             {
-                using (var reader = new JsonTextReader(new System.IO.StringReader(content))
+                using (var reader = new JsonTextReader(new System.IO.StringReader(candidate))
                 { DateParseHandling = DateParseHandling.None, MaxDepth = 8 })
                 {
                     root = JToken.ReadFrom(reader, new JsonLoadSettings
