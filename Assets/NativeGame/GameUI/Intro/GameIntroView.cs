@@ -49,9 +49,11 @@ namespace Echo.NativeGame.GameUI
             returnButton = GameUiElements.BoxButton("Return To Menu", transform, "返回主菜单",
                 font, 19, GameUiElements.Line, GameUiElements.Primary, 320, 526, 188, 56);
             beginButton = GameUiElements.BoxButton("Begin Action", transform, "开始行动", font, 22,
-                GameUiElements.Mint, GameUiElements.Graphite, 748, 526, 212, 56);
+                GameUiElements.Graphite, GameUiElements.Primary, 748, 526, 212, 56);
+            beginButton.gameObject.AddComponent<GamePrimaryButtonVisual>();
             retryButton = GameUiElements.BoxButton("Retry Loading", transform, "重试加载", font, 20,
-                GameUiElements.Mint, GameUiElements.Graphite, 748, 526, 212, 56);
+                GameUiElements.Graphite, GameUiElements.Primary, 748, 526, 212, 56);
+            retryButton.gameObject.AddComponent<GamePrimaryButtonVisual>();
             beginButton.onClick.AddListener(Begin);
             retryButton.onClick.AddListener(() => bindings?.RetryLoad?.Invoke());
             returnButton.onClick.AddListener(() => bindings?.ReturnToMenu?.Invoke());
@@ -64,8 +66,6 @@ namespace Echo.NativeGame.GameUI
         public void SetArt(Sprite corner, Sprite button, Sprite keycap)
         {
             GameUiElements.ApplyCorners(cornerImages, corner);
-            GameUiElements.ApplyButtonSprite(beginButton, button, 72);
-            GameUiElements.ApplyButtonSprite(retryButton, button, 72);
             GameUiElements.ApplyButtonSprite(returnButton, button, 64);
             foreach (var image in keycaps) GameUiElements.ApplySprite(image, keycap);
         }
