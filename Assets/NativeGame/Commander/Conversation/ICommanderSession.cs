@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Echo.NativeGame.Commander
 {
-    public enum CommanderChatSource { Player, OnlineAssistant, LocalFact, Error }
+    public enum CommanderChatSource { Player, OnlineAssistant, LocalFact, Error, LocalTopic }
 
     public sealed class CommanderChatItem
     {
@@ -28,6 +28,7 @@ namespace Echo.NativeGame.Commander
         IReadOnlyList<CommanderChatItem> Messages { get; }
         event Action Changed;
         bool Send(string input);
+        void ShowLocalTopic(string text);
         void Cancel();
         void Reset();
     }

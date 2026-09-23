@@ -10,7 +10,7 @@ namespace Echo.NativeGame.Commander
         sealed class Turn
         {
             internal string Question;
-            internal string Answer;
+            internal string WireAnswer;
             internal readonly List<string> Feedback = new List<string>();
         }
 
@@ -27,6 +27,7 @@ namespace Echo.NativeGame.Commander
             internal CommanderSnapshot Snapshot;
             internal CommanderSnapshotSource.FocusIdentity Focus;
             internal string Question;
+            internal CommanderDiagnostics Trace;
         }
 
         const string SystemRules =
@@ -38,7 +39,8 @@ namespace Echo.NativeGame.Commander
             "{\"reply\":\"对白\",\"proposal\":{\"kind\":\"medical\",\"option_id\":\"本次合法ID\"}}。" +
             "kind还可为weakpoint。" +
             "只能选择本次状态列出的option_id，kind须匹配。无合适选项时proposal为null，并用对白说明原因。" +
-            "不要输出伤害、回血、同步分、会话ID或其他字段。";
+            "不要输出伤害、回血、同步分、会话ID或其他字段。" +
+            "不要输出思考过程或think标签。历史提案只供对话理解，旧option_id不可复用；当前支援只能使用本次状态列出的ID。";
 
         readonly CommanderSnapshotSource source;
         readonly ICommanderTransport transport;
@@ -50,12 +52,15 @@ namespace Echo.NativeGame.Commander
         readonly HashSet<Guid> recordedFeedback = new HashSet<Guid>();
         readonly IReadOnlyList<CommanderChatItem> readOnlyMessages;
         Pending pending;
+        public CommanderDiagnostics DiagnosticTrace { get; private set; }
         string draft = string.Empty;
         bool disposed;
+        public string LastOnlineStatus { get; private set; } = "未验证";
 
         public Guid SessionId { get; private set; } = Guid.NewGuid();
         public long RequestGeneration { get; private set; }
         public bool Busy => pending != null;
+        public bool TransportBusy => transport.Busy;
         public string Draft
         {
             get => draft;
@@ -82,7 +87,10 @@ namespace Echo.NativeGame.Commander
 
         public bool Send(string input)
         {
-            if (disposed || Busy) return false;
+            var trace = new CommanderDiagnostics(SessionId, RequestGeneration + 1);
+            DiagnosticTrace = trace;
+            trace.Log("session.send", "disposed=" + disposed + " busy=" + Busy + " input=" + input);
+            if (disposed || Busy) { trace.Log("send.rejected", "disposed_or_busy"); return false; }
             string question = (input ?? string.Empty).Trim();
             if (question.Length == 0 || question.Length > 1200)
             {
@@ -98,40 +106,92 @@ namespace Echo.NativeGame.Commander
                 return false;
             }
 
+            trace.Log("snapshot", "snapshot=" + snapshot.SnapshotId + " options=" + snapshot.AvailableSupportOptions.Count);
+            bool onlineConfigured = !CommanderLaunchState.OfflineForCurrentRun &&
+                CommanderSettings.Instance.HasKey &&
+                !string.IsNullOrEmpty(CommanderSettings.Instance.EndpointUrl) &&
+                !string.IsNullOrWhiteSpace(CommanderSettings.Instance.ModelId);
+            trace.Log("configuration", "onlineConfigured=" + onlineConfigured + " offline=" + CommanderLaunchState.OfflineForCurrentRun +
+                " hasKey=" + CommanderSettings.Instance.HasKey + " endpoint=" + CommanderDiagnostics.Endpoint(CommanderSettings.Instance.EndpointUrl) +
+                " model=" + CommanderSettings.Instance.ModelId + " timeoutSeconds=" + CommanderSettings.Instance.TimeoutSeconds);
+            if (onlineConfigured && transport.Busy)
+            {
+                LastOnlineStatus = "待重试";
+                AddError("在线通道正在通讯，请等待设置页连接测试或当前请求结束后手动重试。草稿已保留。");
+                return false;
+            }
+
             var request = new Pending
             {
                 SessionId = SessionId, Generation = ++RequestGeneration,
-                Snapshot = snapshot, Focus = focus, Question = question
+                Snapshot = snapshot, Focus = focus, Question = question, Trace = trace
             };
             pending = request;
             messages.Add(new CommanderChatItem(question, CommanderChatSource.Player));
             Changed?.Invoke();
             if (pending != request) return false;
+            if (!onlineConfigured)
+            {
+                CompleteFallback(request, "在线通讯未配置或本局选择离线试玩。");
+                return true;
+            }
             var wireMessages = BuildMessages(snapshot, question);
+            CommanderDiagnostics.Bind(wireMessages, trace);
             bool started = transport.SendAsync(wireMessages, result => OnCompleted(request, result));
             if (!started && pending == request)
             {
-                pending = null;
-                AddError("在线通讯暂不可用，请检查配置或等待当前连接结束。草稿已保留。");
+                if (transport.Busy) CompleteBusy(request);
+                else CompleteFallback(request, "在线通讯未能启动；请检查连接或稍后手动重试。");
             }
-            return started;
+            return true;
+        }
+
+        void CompleteBusy(Pending request)
+        {
+            if (pending != request || request.SessionId != SessionId ||
+                request.Generation != RequestGeneration) { request.Trace.Log("discard", "pending/session/generation mismatch; no fallback"); return; }
+            DiagnosticTrace = request.Trace;
+            pending = null;
+            if (!source.IsCurrent(request.Focus))
+            {
+                request.Trace.Log("discard", "focus_changed; no fallback");
+                DropStaleReply();
+                return;
+            }
+            LastOnlineStatus = "待重试";
+            AddError("在线通道正在通讯，请等待设置页连接测试或当前请求结束后手动重试。草稿已保留。");
+        }
+
+        public void ShowLocalTopic(string text)
+        {
+            if (disposed || string.IsNullOrWhiteSpace(text)) return;
+            messages.Add(new CommanderChatItem(text.Trim(), CommanderChatSource.LocalTopic));
+            Changed?.Invoke();
         }
 
         public void Cancel()
         {
             if (pending == null) return;
+            pending.Trace.Log("cancel", "session_cancel; no fallback");
             ++RequestGeneration;
             pending = null;
             transport.Cancel();
-            AddError("已取消本次在线通讯。草稿已保留。");
+            LastOnlineStatus = "已取消";
+            AddError("已取消本次在线通讯。草稿已保留；预设主题仍可使用。");
         }
 
-        // The owner calls this immediately after any endpoint, model, timeout or Key edit.
-        // The settings interface has no change event, so a UI edit cannot be inferred here.
-        public void ConfigurationChanged() => Cancel();
+        // CommanderRuntimeHost forwards settings edits; old callbacks cannot reach fallback.
+        public void ConfigurationChanged()
+        {
+            pending?.Trace.Log("invalidate", "configuration_changed");
+            Cancel();
+            LastOnlineStatus = "未验证";
+            Changed?.Invoke();
+        }
 
         public void Reset()
         {
+            pending?.Trace.Log("invalidate", "session_reset_or_dispose; no fallback");
             ++RequestGeneration;
             bool wasBusy = pending != null;
             pending = null;
@@ -145,6 +205,7 @@ namespace Echo.NativeGame.Commander
             recentFeedback.Clear();
             proposalTurns.Clear();
             recordedFeedback.Clear();
+            LastOnlineStatus = "未验证";
             Changed?.Invoke();
         }
 
@@ -158,24 +219,39 @@ namespace Echo.NativeGame.Commander
 
         void OnCompleted(Pending request, CommanderTransportResult result)
         {
+            request.Trace.Log("session.result", "status=" + result.Status + " http=" + result.HttpStatus);
             if (pending != request || request.SessionId != SessionId ||
-                request.Generation != RequestGeneration) return;
+                request.Generation != RequestGeneration) { request.Trace.Log("discard", "pending/session/generation mismatch; no fallback"); return; }
+            DiagnosticTrace = request.Trace;
             pending = null;
             if (!source.IsCurrent(request.Focus))
             {
-                Changed?.Invoke();
+                request.Trace.Log("discard", "focus_changed; no fallback");
+                DropStaleReply();
                 return;
             }
             if (result.Status != CommanderTransportStatus.Success)
             {
-                AddError(TransportFailure(result.Status));
+                if (result.Status == CommanderTransportStatus.Cancelled)
+                {
+                    LastOnlineStatus = "已取消";
+                    AddError("在线通讯已取消。草稿已保留；预设主题仍可使用。");
+                    return;
+                }
+                CompleteFallback(request, TransportFailure(result.Status));
                 return;
             }
-            if (!CommanderResponseParser.TryParse(result.Content, request.Snapshot, out var parsed))
+            bool valid = CommanderResponseParser.TryParse(result.Content, request.Snapshot,
+                out var parsed, out var parseReason, out var removedReasoningPrefix);
+            if (removedReasoningPrefix)
+                request.Trace.Log("parse.reasoning_prefix", "removed one leading closed think envelope; remaining JSON undergoes all schema/support checks");
+            if (!valid)
             {
-                AddError("在线回复格式或支援选项无效。草稿已保留，请手动重试。");
+                request.Trace.Log("parse.rejected", parseReason);
+                CompleteFallback(request, "在线回复格式或支援选项无效；请手动重试。");
                 return;
             }
+            request.Trace.Log("parse.accepted", JsonConvert.SerializeObject(new { reply = parsed.Reply, kind = parsed.Kind, option_id = parsed.OptionId }));
             Guid? proposalId = null;
             if (parsed.Kind.HasValue)
             {
@@ -184,20 +260,65 @@ namespace Echo.NativeGame.Commander
                     parsed.Kind.Value);
                 if (!support.TryRegister(proposal, out var reason))
                 {
-                    AddError("支援选项已失效。" + (string.IsNullOrWhiteSpace(reason) ?
-                        "草稿已保留，请重新询问。" : reason));
+                    request.Trace.Log("support.rejected", reason);
+                    CompleteFallback(request, "支援选项已失效。" + (string.IsNullOrWhiteSpace(reason) ?
+                        "请重新询问。" : reason));
                     return;
                 }
                 proposalId = proposal.ProposalId;
+                request.Trace.Log("support.registered", "proposal=" + proposalId + "; contract confirmation still required; not executed");
             }
-            var turn = new Turn { Question = request.Question, Answer = parsed.Reply };
+            request.Trace.Log("ui.online", "fallback=false; proposal=" + proposalId + " reply=" + parsed.Reply);
+            // Keep assistant history in the same protocol as the requested response.
+            // Only validated fields enter history; reasoning prefixes never do.
+            string wireAnswer = JsonConvert.SerializeObject(new
+            {
+                reply = parsed.Reply,
+                proposal = parsed.Kind.HasValue ? new
+                {
+                    kind = parsed.Kind.Value == NativeSupportKind.Medical ? "medical" : "weakpoint",
+                    option_id = parsed.OptionId
+                } : null
+            });
+            var turn = new Turn { Question = request.Question, WireAnswer = wireAnswer };
             turns.Add(turn);
             if (turns.Count > 6) turns.RemoveAt(0);
             if (proposalId.HasValue) proposalTurns.Add(proposalId.Value, turn);
             messages.Add(new CommanderChatItem(parsed.Reply, CommanderChatSource.OnlineAssistant, proposalId));
+            LastOnlineStatus = "上次请求成功";
             if (string.Equals(draft.Trim(), request.Question, StringComparison.Ordinal))
                 draft = string.Empty;
             Changed?.Invoke();
+        }
+
+        void CompleteFallback(Pending request, string reason)
+        {
+            if (pending != null && pending != request) return;
+            if (request.SessionId != SessionId || request.Generation != RequestGeneration) { request.Trace.Log("discard", "pending/session/generation mismatch; no fallback"); return; }
+            DiagnosticTrace = request.Trace;
+            pending = null;
+            if (!source.IsCurrent(request.Focus))
+            {
+                request.Trace.Log("discard", "focus_changed; no fallback");
+                DropStaleReply();
+                return;
+            }
+            request.Trace.Log("fallback", "fallback=true; reason=" + reason);
+            LastOnlineStatus = "上次在线失败 · 本地可用";
+            messages.Add(new CommanderChatItem(reason + " 草稿已保留，可手动重试。",
+                CommanderChatSource.Error));
+            messages.Add(new CommanderChatItem(
+                "本地预设 / 当前任务：" + request.Snapshot.CurrentObjective +
+                "\n自由输入没有本地问答模型，不能按任意问题生成回答。请选择下方任务、记忆、身份或授权主题；支援与记录仍可独立使用。",
+                CommanderChatSource.LocalFact));
+            request.Trace.Log("ui.fallback", "status=" + LastOnlineStatus + "\n" + messages[messages.Count - 2].Text + "\n" + messages[messages.Count - 1].Text);
+            Changed?.Invoke();
+        }
+
+        void DropStaleReply()
+        {
+            LastOnlineStatus = "状态已变化";
+            AddError("局内进度或焦点已变化，旧请求已丢弃；草稿已保留，请在当前状态下手动重试。");
         }
 
         void OnProposalChanged(Guid proposalId, CommanderProposalState state, string text)
@@ -225,7 +346,7 @@ namespace Echo.NativeGame.Commander
             foreach (var turn in turns)
             {
                 result.Add(new CommanderMessage(CommanderMessageRole.User, turn.Question));
-                result.Add(new CommanderMessage(CommanderMessageRole.Assistant, turn.Answer));
+                result.Add(new CommanderMessage(CommanderMessageRole.Assistant, turn.WireAnswer));
                 foreach (var feedback in turn.Feedback)
                     result.Add(new CommanderMessage(CommanderMessageRole.System,
                         "Unity已确认的支援结果：" + feedback));
@@ -264,6 +385,7 @@ namespace Echo.NativeGame.Commander
 
         void AddError(string text)
         {
+            DiagnosticTrace?.Log("ui.error", text);
             messages.Add(new CommanderChatItem(text, CommanderChatSource.Error));
             Changed?.Invoke();
         }
@@ -272,11 +394,12 @@ namespace Echo.NativeGame.Commander
         {
             switch (status)
             {
-                case CommanderTransportStatus.Timeout: return "在线通讯超时。草稿已保留，请手动重试。";
-                case CommanderTransportStatus.InvalidConfiguration: return "在线配置无效。草稿已保留，请检查地址、模型和Key。";
-                case CommanderTransportStatus.InvalidResponse: return "服务回复无效。草稿已保留，请手动重试。";
-                case CommanderTransportStatus.Cancelled: return "在线通讯已取消。草稿已保留。";
-                default: return "在线通讯暂不可用。草稿已保留，请手动重试。";
+                case CommanderTransportStatus.Timeout: return "在线通讯超时。";
+                case CommanderTransportStatus.InvalidConfiguration: return "在线配置无效，请检查地址、模型和 Key。";
+                case CommanderTransportStatus.InvalidResponse: return "服务回复无效。";
+                case CommanderTransportStatus.NetworkError: return "在线网络暂不可达。";
+                case CommanderTransportStatus.HttpError: return "在线服务返回错误。";
+                default: return "在线通讯暂不可用。";
             }
         }
     }

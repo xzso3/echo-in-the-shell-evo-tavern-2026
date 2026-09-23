@@ -1,0 +1,79 @@
+# GF02-ART image-gen prompt record
+
+All assets in this log were made with the built-in `image_gen` tool on 2026-09-23. The images named below are the exact generated outputs copied into `Assets/NativeGame/GameUI/Art/GF02/` without recoloring or painted additions.
+
+## MenuBackgroundStatic.png
+
+Reference: `Docs/GameFlow/GF02/References/MainMenuReview/main-menu-approved-direction.png`.
+
+> Create a FINAL production game art BACKGROUND ONLY, 16:9 wide landscape pixel art. Use the reference ONLY for approved environment composition and atmosphere. Scene: abandoned network relay room overlooking a rainy cyberpunk night city, wet floor reflections, terminal at lower center-right, deep skyline, industrial window frame and cables. Left 42 percent is very dark, quiet negative space reserved for separate UI overlay; do not put any writing there. Maintain stable, sharply defined architecture and camera, coherent perspective, crisp intentional pixel clusters and hard pixel edges; deep blue black #071116, dark teal #163332, cold pale cyan-green accents and restrained amber lamps. Subtle rain is fine, but leave animation for separate transparent layers. Absolutely NO text, letters, numbers, menu items, title, logo, watermark, signage with readable glyphs, floating UI, borders, mockup, or four-panel sheet. Full bleed single image. Specifically remove all ECHO IN THE SHELL lettering, Chinese menu/status text and any graphic UI from the reference. No people.
+
+## EchoInTheShellLogo.png
+
+Reference: same approved static direction, for the title styling only.
+
+> Create a FINAL isolated pixel-art title logo asset for a cyberpunk game, true transparent PNG background with alpha (checkerboard must NOT be drawn). Reference image is visual direction only. EXACT ENGLISH TEXT, no other glyphs: top line "ECHO" spelled E-C-H-O in large wide original angular pixel lettering; second line "IN THE SHELL" spelled I-N [space] T-H-E [space] S-H-E-L-L in smaller strong pixel lettering. Align both lines at left, headline dominant; subtle broken signal line and sparse 1-2 pixel glitches, but every letter cleanly readable and all characters fully intact. Pale cold mint #D8F5E8, mint-green #70DDB4 edge accents on dark UI. Flat crisp pixel clusters, no blur, no gradients, no 3D bevel, no drop shadow backdrop. Wide horizontal composition tightly framing the lettering, generous safe padding around edges. No Chinese, no menu, no city, no building, no subtitle, no extra words, no mockup, no watermark. The only visible pixels should belong to the logo and its small signal accents; all surrounding space truly transparent.
+
+## CipherWorksLogo.png
+
+Reference: `Docs/GameFlow/GF02/References/MainMenuReview/main-menu-motion-four-frames.png`, for the lower-right mark direction only. The concept panels themselves were not cut into final assets.
+
+> Create a FINAL separate small cyberpunk pixel-art team mark, true transparent PNG with alpha and crisp hard pixel edges. Use the tiny bottom-right mark in the reference only as direction; develop an original compact angular monogram made of interlocking C and W circuit traces at left, with exact single-line mixed-case word "CipherWorks" at right, spelled C-i-p-h-e-r-W-o-r-k-s. Readable and modest, appropriate for a low-priority bottom-right game-menu corner at 16:9. Cold pale mint #D8F5E8 with a restrained #70DDB4 circuit accent. Flat pixel lettering, no glow haze, no gradients, no white box, no dark backing plate, no fake checkerboard, no shadow backdrop. Tight horizontal composition. Absolutely no other characters, subtitle, graphic frame, watermark, city, menu, or mockup. All surrounding canvas truly transparent.
+
+## MenuRainFrame_00–03.png
+
+Reference: generated `MenuBackgroundStatic.png`, for screen coordinates only. Initial sheet prompt:
+
+> Produce a FINAL transparent 2x2 sprite sheet of FOUR LOOPING RAIN OVERLAY FRAMES for the referenced pixel-art game menu background. Each quadrant is exactly the SAME 16:9 full-screen coordinate canvas; no gutters, no panel borders, no labels. Output as a PNG with TRUE ALPHA transparency. The reference image is for spatial alignment ONLY: do not paint, copy, redraw or darken any building, terminal, sky, floor, scenery, UI, text, logo, or opaque backdrop. Each of four quadrants contains ONLY delicate individual cool pale cyan rain streak pixels and a little dark-teal rain mist in the open right-side city/window area, roughly x=46–95% of each quadrant and y=8–70%, with a few streaks at the foreground sill. Keep the left 43% and lower floor almost completely transparent to protect title/menu and separate water overlay. The pattern progresses visibly but subtly downward from frame 1 to 4 and is designed for a seamless loop from frame 4 back to 1. Do not introduce lightning, large flashes, white speckles, diagonal crosshatching, dense texture noise or a solid veil. Pixel clusters sharp and hard edged, no blur or glow. Sheet order: top-left frame 0, top-right frame 1, bottom-left frame 2, bottom-right frame 3. Aside from rain pixels every quadrant must be fully transparent.
+
+Refinement after initial sheet contained unwanted cloud patches:
+
+> EDIT this transparent 2x2 rain animation sprite sheet. Keep its exact overall layout, all four equal quadrants and fully transparent background. REMOVE every cloud, mist, turquoise or blue blob and colored patch completely. The ONLY visible content in each quadrant must be a sparse field of thin 1–2 pixel pale cyan VERTICAL rain dashes, with no touching clusters, no opaque wash. Place rain dashes predominantly in the right half of each quadrant (x 46–95% local), y 8–70% local; leave left side and lower third empty. Four frames should show those sparse short vertical dashes displaced gently downward across a loop, no static scenery or text. Hard pixel edges, no glow or gradients. No borders, labels, architecture, window shapes, floor, ripples, lightning, blue spots, gray cloud silhouettes, or noise. TRUE TRANSPARENT alpha around the rain. One 2x2 sheet, quadrants edge-to-edge without gutters.
+
+## MenuWaterFrame_00–03.png
+
+Reference: generated `MenuBackgroundStatic.png`, for screen coordinates only. Initial sheet prompt:
+
+> Create a FINAL 2x2 sprite sheet of FOUR LOOPING TRANSPARENT WATER RIPPLE OVERLAY FRAMES, based on the referenced 16:9 pixel-art game menu background. Four equal edge-to-edge quadrants, each representing exactly the same full-screen coordinate system, no gutters or frames. TRUE ALPHA PNG: only ripple highlights visible, all other pixels fully transparent. The reference is for placement ONLY: wet floor and distant water are in the bottom of the image; do not copy or redraw any floor tiles, buildings, terminal, sky, people, text, menu, logo, UI, or opaque scene. In EACH quadrant, put only THREE or FOUR small delicate broken elliptical cyan/teal rain-drop ripple rings, concentrated in the wet foreground floor around local x=52–90%, y=79–94%. Include a tiny warm amber reflected glint near local x=72%, y=87%, but keep it subtle. Frame progression: rings expand one or two pixels and fade, new tiny circles appear, designed for seamless four-frame loop. Keep exact same positions for the ripple centers in all quadrants; no camera movement. Pixel clusters crisp, 1–2 pixel lines, no blur, fog, glow, water slab, bright blue blobs, or random colored spots. Left 48% and upper 76% of each quadrant must be EMPTY TRANSPARENT. Order: top-left 0, top-right 1, bottom-left 2, bottom-right 3. No labels, borders, panel outlines or background.
+
+Refinement to remove filled, raised shapes:
+
+> EDIT this four-frame transparent water-ripple sprite sheet. Preserve the 2x2 equal quadrant layout, frame order, exact ripple center locations and true transparent background. Simplify each colored shape into a very thin, small, FLAT HORIZONTAL broken ellipse of 1–2 pixel cyan/teal strokes like a raindrop ripple seen on a wet floor from a low angle. Remove every tall central spire, funnel, mound, solid gray filled area, blue blob, yellow puddle, and 3D object. Each quadrant should have only three delicate partial elliptical rings, sparse disconnected horizontal highlights, no filled interiors. The same three centers remain stationary in every frame as rings expand/fade slightly, then return for a smooth loop. Keep everything else alpha=0. No scene, text, floor tiles, border, panel lines, stars, or other marks. Crisp original pixel art, no blur, bloom or gradient.
+
+## MenuLightsFrame_00–03.png
+
+Reference: generated `MenuBackgroundStatic.png`, for screen coordinates only. Initial sheet prompt:
+
+> Create a FINAL 2x2 sprite sheet of FOUR LOOPING TRANSPARENT LOCAL LIGHT OVERLAY FRAMES for this exact pixel-art game menu background. Four equal edge-to-edge quadrants, each the same 16:9 full-screen coordinate system, no gutter or border. TRUE ALPHA PNG: ONLY tiny fixed-location colored lamp/screen pixels and reflection accents are visible; all other pixels fully transparent. Reference placement: small green glow of existing terminal screen at local x≈46%, y≈61%; a few amber building-window points in the right-hand city at x≈70–90%, y≈25–59%; very small cyan signal light near x≈88%, y≈40%. Do not draw the terminal, buildings, towers, wires, floor, window frames, scene, text, UI, logo, sky or opaque dark patches. Each frame keeps every light point at EXACTLY the same position and shape, changing only brightness by a very small amount in the 4-frame cycle (off/dim/bright/dim). No spatial movement, no large glow, fog, blur, bloom, or full-screen flash. Pixel-art points and 1–2 pixel horizontal screen scanline accents only. Leave left 42% fully transparent for menu and title. Sheet order top-left 0, top-right 1, bottom-left 2, bottom-right 3. No labels.
+
+Refinement to remove full-screen-looking halos and terminal graphics:
+
+> EDIT the existing TRUE-TRANSPARENT 2x2 four-frame light sprite sheet. Keep quadrant layout and fixed positions across all four frames. REMOVE all broad brown/green glow halos, black smudges and the rectangular terminal-screen image/text completely. In each quadrant leave ONLY sparse sharp pixel lamp accents: about 12 tiny amber window dots at existing right-side locations and 3–5 tiny mint terminal/signal dots around local x 45–48%, y 56–65%. Every dot must occupy just 1–3 pixels at sprite-sheet resolution, with no soft halo or surrounding fill. The only animation is slight brightness change of the same dots across frames 0,1,2,3 (dim, medium, bright, medium), no movement. All pixels except these tiny lights are alpha 0. No scene, text, architecture, labels, panel borders, bloom, colored clouds, or gradients. Pixel perfect hard edges.
+
+## HealthCross.png
+
+Reference: `Docs/GameFlow/GF02/References/HUDReview/hud-v2-approved.png`, for style only.
+
+> Create ONE standalone production pixel-art HUD icon: a simple EQUILATERAL MEDICAL CROSS for health. Visual reference is only for the game's approved cool cyan-green industrial pixel UI style; do not copy any screenshot content. Design on an exact virtual 24x24 pixel grid, cross itself filling approximately the central 16x16 cells with squared ends and 4-cell thick arms. Mint #70DDB4 with a small cold-white #D8F5E8 top-edge highlight, 1-pixel dark teal outline, no other shapes. Centered, truly transparent PNG background with alpha, square canvas, clean straight pixel edges, no antialias, no shadows or glow. Absolutely no text, numbers, blood, heart, circle, button, frame, floor, character, UI screenshot, watermark or extra icon. This is a tiny in-game HUD sprite intended to display at 24x24 logical pixels.
+
+Refinement to simplify the generated shading:
+
+> EDIT only this isolated medical-cross HUD sprite. Preserve centered cross silhouette, square canvas and true transparent surroundings. Convert the filled arms to ONE perfectly flat solid mint #70DDB4 with no gradient or lighting. Keep a simple 1 logical pixel dark teal outside outline and no highlight, or at most one straight cold-white row along the upper edge. Exact hard pixel-grid stepped corners; remove all airbrush, smooth antialiasing, bevel, glossy shading, shadow and glow. No added symbols or background. It must remain legible after reduction to 24x24 pixels.
+
+## WeaponAuto.png
+
+Reference: same approved HUD direction, for style only.
+
+> ONE isolated flat MONOCHROME pixel HUD icon of a side-view compact automatic rifle, weapon state indicator, not a weapon illustration. Build a readable silhouette on a virtual 32x24 pixel grid: horizontal barrel points right, short stock at left, small angled grip and box magazine below. Exactly one flat cold-white color #D8F5E8 for all visible pixels. Hard square pixel cells and stepped edges, no gradients, no highlights, no outlines, no glow, no shadow, no textures, no realism. Center this sprite with transparent safe padding on a true-alpha rectangular canvas. Match the restrained industrial pixel HUD style of the reference, but do not copy any scene, UI layout or text from it. No bullets, muzzle flash, crosshair, labels, extra icons, panel, keycap, watermark or background. This must remain legible at 32x24 logical pixels.
+
+## EquipmentChip.png
+
+Reference: same approved HUD direction, for style only.
+
+> ONE isolated 24x24-logical-pixel HUD sprite of a simple square EQUIPMENT MICROCHIP, in the approved industrial pixel UI style. A clean square central chip body with 3 short connector pins on each of the four sides and a tiny darker square in the middle; strong readable silhouette. Use exactly flat amber #C79050 for the outline/pins, cold pale mint #D8F5E8 for two tiny data pixels, dark teal interior; no smooth gradients, no glow, no shadows, no realistic circuit board, no beveled metal. Build it on a virtual 24x24 pixel grid with hard stepped pixels. True transparent PNG square canvas with alpha, centered icon and safe transparent margin. This is an icon only, not the equipment text or UI panel. No letters, numbers, prompt, scene, weapon, tablet, frame, watermark or extra icon. Must read clearly at 24x24 pixels.
+
+## Tablet.png
+
+Reference: same approved HUD direction, for style only.
+
+> ONE standalone minimalist FLAT PIXEL-ART HUD ICON of a tactical handheld TABLET, front-facing portrait rectangle, to sit next to a native Tab key prompt. Draw on a virtual 24x32 logical pixel grid. Squared pale cold-white #D8F5E8 outline (2 logical pixels thick), dark transparent interior, tiny centered mint #70DDB4 signal bars on the screen and one small square home indicator at the bottom. Simple 2D icon, no perspective, no 3D device rendering, no photorealism, no bright glow, no gradients, no shadow, no extra frame. True transparent PNG alpha with safe padding around the icon, crisp hard square pixel edges, centered portrait composition. Match the restrained industrial pixel HUD direction of the reference without copying its whole scene. NO letters, Chinese text, number, tab key drawing, menu, character, background, watermark or other icon. Legible at 24x32 logical pixels.

@@ -16,3 +16,28 @@ MonoBehaviour:
   lightPanelCorner: {fileID: 21300000, guid: 0082a484f3544d008ba7a2815685e3ee, type: 3}
   terminalButtonBlank: {fileID: 21300000, guid: 502bf390a0ee4e309864f237cc55057e, type: 3}
   keycapBlank: {fileID: 21300000, guid: 9413a5ec1f7245aa94b881a6fdf3fd51, type: 3}
+  menuBackgroundStatic: {fileID: 21300000, guid: 0507e1ed498f4af08a3b66e8fd3789cc, type: 3}
+  echoInTheShellLogo: {fileID: 21300000, guid: 6f295a7223684428b166923135be5b75, type: 3}
+  cipherWorksLogo: {fileID: 21300000, guid: 15e6673d092c4590ae0aefd33514d5fb, type: 3}
+  menuRainFrames:
+  - {fileID: 21300000, guid: d634e959ce0f46e483d4f803925ad6ff, type: 3}
+  - {fileID: 21300000, guid: 922087fc7b3644d3b815e8de372f6254, type: 3}
+  - {fileID: 21300000, guid: 0a22f164b937423e95b34de2074d1103, type: 3}
+  - {fileID: 21300000, guid: b0421d7c8ac949219454c663781b38af, type: 3}
+  menuWaterFrames:
+  - {fileID: 21300000, guid: 87b041b16a0046a69af28d53ff2f0a08, type: 3}
+  - {fileID: 21300000, guid: 16b185d370bf4d659e14d8c9e9489026, type: 3}
+  - {fileID: 21300000, guid: 7a3373aa9b8349fc84e4a7244969d32b, type: 3}
+  - {fileID: 21300000, guid: 13ce07b67f1b41af8d3f28754eeffd37, type: 3}
+  menuLightsFrames:
+  - {fileID: 21300000, guid: cad6e9b9e88c4443adabb4fae46897c9, type: 3}
+  - {fileID: 21300000, guid: 7b4303cd5b4d4dccb79a18db6359cefc, type: 3}
+  - {fileID: 21300000, guid: 3586d7f25e054134b9966ca8797ecab6, type: 3}
+  - {fileID: 21300000, guid: 61d1cd8ec7f84e21933706dfbed978e5, type: 3}
+  menuRainFrameSeconds: 0.16
+  menuWaterFrameSeconds: 0.2
+  menuLightsFrameSeconds: 0.3
+  healthIcon: {fileID: 21300000, guid: 02aca0bbcf744d649da2da9f96f6f4f1, type: 3}
+  weaponIcon: {fileID: 21300000, guid: d7249611ea884069a032a9b56e65182e, type: 3}
+  equipmentIcon: {fileID: 21300000, guid: e962956d8992425fbcc8f357538bcdb9, type: 3}
+  tabletIcon: {fileID: 21300000, guid: dec95c55a24241f1adc05a7cb7406a6a, type: 3}

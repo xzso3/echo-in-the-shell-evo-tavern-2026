@@ -1,23 +1,27 @@
+using System;
 using TMPro;
 using UnityEngine;
 
 namespace Echo.NativeGame.GameUI
 {
-    // A frame of already-owned run state. The view does not sample combat or input.
+    // A frame of run state. NativeHud still owns input and the update cadence.
     public readonly struct NativeHudDisplay
     {
-        public readonly float Health;
-        public readonly float MaxHealth;
+        public readonly float Health, MaxHealth, ElapsedSeconds;
         public readonly bool AutoFire;
-        public readonly string Objective;
-        public readonly string InteractionPrompt;
-        public readonly float ElapsedSeconds;
-        public readonly int Kills;
-        public readonly int Sync;
-        public readonly int Difference;
+        public readonly string Objective, InteractionPrompt;
+        public readonly int Kills, Sync, Difference;
+        public readonly NativeHudExtras Extras;
 
+        // Retain the GF01 call until INT supplies the extended live snapshot.
         public NativeHudDisplay(float health, float maxHealth, bool autoFire, string objective,
             string interactionPrompt, float elapsedSeconds, int kills, int sync, int difference)
+            : this(health, maxHealth, autoFire, objective, interactionPrompt, elapsedSeconds,
+                kills, sync, difference, default(NativeHudExtras)) { }
+
+        public NativeHudDisplay(float health, float maxHealth, bool autoFire, string objective,
+            string interactionPrompt, float elapsedSeconds, int kills, int sync, int difference,
+            NativeHudExtras extras)
         {
             Health = health;
             MaxHealth = maxHealth;
@@ -28,31 +32,113 @@ namespace Echo.NativeGame.GameUI
             Kills = kills;
             Sync = sync;
             Difference = difference;
+            Extras = extras;
         }
     }
 
-    // Build beneath the existing 1280x720 Canvas. NativeHud remains the sole input owner.
+    // Presentation adapter only. "安全通讯" means the local tablet can open;
+    // configured credentials are never treated as proof of a live AI connection.
+    public readonly struct NativeHudExtras
+    {
+        static readonly int RequiredMemoryCount = Enum.GetValues(typeof(NativeMemoryKind)).Length;
+        public readonly bool HasState, ShowMemoryClues, PrivateMemory, SystemMemory, InitialEcho;
+        public readonly bool HasEquipmentSource, EquipmentActive, TabletAvailable;
+        public readonly int MemoryCount, MemoryGoal;
+        public readonly string EquipmentTitle, EquipmentHint;
+
+        NativeHudExtras(bool showClues, int count, int goal, bool privateMemory,
+            bool systemMemory, bool initialEcho, bool hasEquipment, string gear,
+            string hint, bool active, bool tabletAvailable)
+        {
+            HasState = true;
+            ShowMemoryClues = showClues;
+            MemoryCount = count;
+            MemoryGoal = goal;
+            PrivateMemory = privateMemory;
+            SystemMemory = systemMemory;
+            InitialEcho = initialEcho;
+            HasEquipmentSource = hasEquipment;
+            EquipmentTitle = gear;
+            EquipmentHint = hint;
+            EquipmentActive = active;
+            TabletAvailable = tabletAvailable;
+        }
+
+        public static NativeHudExtras FromRun(NativeRunController run, NativeEquipment equipment,
+            bool tabletAvailable)
+        {
+            var quest = run ? run.quest : null;
+            var narrative = run ? run.narrative : null;
+            int goal = RequiredMemoryCount;
+            int count = narrative ? narrative.MemoryCount : 0;
+            bool showClues = quest && narrative && quest.Active && count < goal;
+            string gear = null, hint = null;
+            bool active = false;
+            if (equipment)
+            {
+                if (!equipment.HasCoil)
+                {
+                    gear = "装备未获取";
+                    hint = "寻找脉冲线圈";
+                }
+                else if (!equipment.Equipped)
+                {
+                    gear = "脉冲线圈已拾取";
+                    hint = "F 装备";
+                }
+                else
+                {
+                    gear = "脉冲线圈  伤害 +" + equipment.damageBonus.ToString("0.#");
+                    hint = equipment.OverclockActive
+                        ? "超频生效  " + equipment.OverclockSecondsLeft.ToString("0.0") + " 秒"
+                        : "F 卸下 / Q 超频 " + equipment.overclockDuration.ToString("0.#") + " 秒";
+                    active = equipment.OverclockActive;
+                }
+            }
+            return new NativeHudExtras(showClues, count, goal,
+                narrative && narrative.HasMemory(NativeMemoryKind.Private),
+                narrative && narrative.HasMemory(NativeMemoryKind.System),
+                narrative && narrative.HasMemory(NativeMemoryKind.InitialEcho),
+                equipment, gear, hint, active, tabletAvailable);
+        }
+    }
+
+    // Small native layers beneath the existing ScaleWithScreenSize Canvas.
     [RequireComponent(typeof(RectTransform))]
     public sealed class NativeHudView : MonoBehaviour
     {
-        [Header("Optional GF01-04 decorations; all labels remain TMP")]
-        public Sprite healthFrameSprite;
-        public Sprite objectiveFrameSprite;
-        public Sprite fireFrameSprite;
-        public Sprite tabletFrameSprite;
-        public Sprite promptFrameSprite;
+        static readonly Color Shadow = new Color32(5, 14, 18, 185);
+        static readonly Color Amber = new Color32(255, 193, 83, 255);
+        static readonly Color Faint = new Color32(99, 132, 139, 255);
+        static readonly Color Bright = new Color32(229, 241, 237, 255);
+
+        [Header("GF02 transparent pixel icons; text and meters remain native")]
+        public Sprite healthIconSprite, weaponIconSprite, equipmentIconSprite, tabletIconSprite;
         public Sprite keycapSprite;
 
-        TextMeshProUGUI healthLabel, objectiveLabel, fireLabel, statusLabel, scoresLabel, promptLabel;
+        RectTransform healthGroup, objectiveGroup, fireGroup, equipmentGroup, tabletGroup, promptGroup;
         RectTransform healthFill;
-        GameObject promptPanel;
-        UnityEngine.UI.Image healthArt, objectiveArt, fireArt, tabletArt, promptArt, keycapArt;
+        GameObject[] clueRows;
+        UnityEngine.UI.Image[] clueMarks, icons, keycaps;
+        GameObject[] iconFallbacks;
+        TextMeshProUGUI healthValue, objectiveTitle, objectiveProgress, objectiveDetail;
+        TextMeshProUGUI[] clueLabels;
+        TextMeshProUGUI fireMode, fireAction, elapsedLabel, scoreLabel;
+        TextMeshProUGUI equipmentTitle, equipmentHint, tabletTitle, tabletHint, promptLabel;
+        GameObject legacyEquipmentPanel;
         bool built;
+        float lastHealthRatio = -1f;
+        string lastObjectiveDetail;
+        string[] clueTexts = new string[0];
 
         public static NativeHudView Create(Transform canvasParent, TMP_FontAsset chineseFont)
         {
-            var root = FlowUiElements.OverlayRoot("GF01 HUD", canvasParent);
+            var oldTitle = canvasParent.Find("Title");
+            if (oldTitle) oldTitle.gameObject.SetActive(false);
+            var root = FlowUiElements.OverlayRoot("GF02 HUD", canvasParent);
             var view = root.gameObject.AddComponent<NativeHudView>();
+            var oldEquipment = canvasParent.Find("Pulse coil status");
+            view.legacyEquipmentPanel = oldEquipment ? oldEquipment.gameObject : null;
             view.Build(chineseFont);
             return view;
         }
@@ -65,121 +151,302 @@ namespace Echo.NativeGame.GameUI
             root.anchorMin = Vector2.zero;
             root.anchorMax = Vector2.one;
             root.offsetMin = root.offsetMax = Vector2.zero;
+            icons = new UnityEngine.UI.Image[4];
+            iconFallbacks = new GameObject[4];
+            keycaps = new UnityEngine.UI.Image[3];
 
-            var health = Corner("Health", new Vector2(0, 1), new Vector2(0, 1),
-                new Vector2(24, -22), new Vector2(286, 88));
-            FlowUiElements.Image(FlowUiElements.Fill("Face", health),
-                new Color(.067f, .106f, .122f, .81f));
-            healthArt = FlowUiElements.Image(FlowUiElements.Fill("Decoration", health), Color.clear);
-            FlowUiElements.Image(FlowUiElements.Box("Accent", health, 0, 0, 3, 88), FlowUiElements.Mint);
-            healthLabel = FlowUiElements.Label(FlowUiElements.Box("Value", health, 16, 10, 254, 39),
-                chineseFont, "", 23, FlowUiElements.Text);
-            FlowUiElements.Image(FlowUiElements.Box("Bar", health, 16, 63, 254, 8), FlowUiElements.Edge);
-            healthFill = FlowUiElements.Fill("Fill", health.Find("Bar"));
+            healthGroup = Corner("Health", new Vector2(0, 1), new Vector2(0, 1), 300, 66);
+            Face(healthGroup, 300, 60);
+            icons[0] = Icon("Health Icon", healthGroup, 8, 7, 28, 28, out iconFallbacks[0]);
+            Cross(iconFallbacks[0].transform, FlowUiElements.Mint);
+            healthValue = Label("Value", healthGroup, 44, 5, 246, 36, chineseFont, 25, Bright);
+            var track = FlowUiElements.Box("Health Track", healthGroup, 8, 49, 284, 7);
+            FlowUiElements.Image(track, Faint);
+            healthFill = FlowUiElements.Fill("Health Fill", track);
             FlowUiElements.Image(healthFill, FlowUiElements.Mint);
+            for (int i = 1; i < 10; i++)
+                FlowUiElements.Image(FlowUiElements.Box("Tick", healthGroup,
+                    8 + i * 28.4f - 2, 49, 2, 7), Shadow);
 
-            var objective = Corner("Objective", new Vector2(1, 1), new Vector2(1, 1),
-                new Vector2(-24, -22), new Vector2(332, 74));
-            FlowUiElements.Image(FlowUiElements.Fill("Face", objective),
-                new Color(.067f, .106f, .122f, .81f));
-            objectiveArt = FlowUiElements.Image(FlowUiElements.Fill("Decoration", objective), Color.clear);
-            FlowUiElements.Image(FlowUiElements.Box("Accent", objective, 0, 0, 3, 74), FlowUiElements.Mint);
-            objectiveLabel = FlowUiElements.Label(FlowUiElements.Box("Text", objective, 14, 8, 302, 58),
-                chineseFont, "", 18, FlowUiElements.Text);
+            objectiveGroup = Corner("Objective", Vector2.one, Vector2.one, 360, 126);
+            Face(objectiveGroup, 360, 126);
+            objectiveTitle = Label("Title", objectiveGroup, 10, 5, 246, 30, chineseFont, 21, Amber);
+            objectiveProgress = Label("Progress", objectiveGroup, 254, 5, 96, 30,
+                chineseFont, 19, Bright, TextAlignmentOptions.MidlineRight);
+            objectiveDetail = Label("Detail", objectiveGroup, 16, 42, 334, 77,
+                chineseFont, 17, Bright);
+            clueRows = new GameObject[3];
+            clueMarks = new UnityEngine.UI.Image[3];
+            clueLabels = new TextMeshProUGUI[3];
+            for (int i = 0; i < clueRows.Length; i++)
+            {
+                var row = FlowUiElements.Box("Memory Clue " + i, objectiveGroup,
+                    16, 40 + i * 27, 332, 25);
+                clueRows[i] = row.gameObject;
+                clueMarks[i] = FlowUiElements.Image(FlowUiElements.Box("Diamond", row,
+                    4, 8, 10, 10), Faint);
+                clueMarks[i].rectTransform.localRotation = Quaternion.Euler(0, 0, 45);
+                clueLabels[i] = Label("Clue", row, 27, 0, 302, 25, chineseFont, 17, Bright);
+            }
 
-            var fire = Corner("Fire and Run", Vector2.zero, Vector2.zero,
-                new Vector2(24, 24), new Vector2(310, 78));
-            FlowUiElements.Image(FlowUiElements.Fill("Face", fire),
-                new Color(.067f, .106f, .122f, .81f));
-            fireArt = FlowUiElements.Image(FlowUiElements.Fill("Decoration", fire), Color.clear);
-            FlowUiElements.Image(FlowUiElements.Box("Accent", fire, 0, 0, 3, 78), FlowUiElements.Mint);
-            fireLabel = FlowUiElements.Label(FlowUiElements.Box("Fire", fire, 15, 5, 285, 26),
-                chineseFont, "", 18, FlowUiElements.Mint);
-            statusLabel = FlowUiElements.Label(FlowUiElements.Box("Run", fire, 15, 31, 285, 21),
-                chineseFont, "", 15, FlowUiElements.Text);
-            scoresLabel = FlowUiElements.Label(FlowUiElements.Box("Mind", fire, 15, 52, 285, 21),
-                chineseFont, "", 15, FlowUiElements.Muted);
+            fireGroup = Corner("Fire and Stats", Vector2.zero, Vector2.zero, 300, 93);
+            Face(fireGroup, 300, 93);
+            icons[1] = Icon("Weapon Icon", fireGroup, 8, 5, 34, 27, out iconFallbacks[1]);
+            Weapon(iconFallbacks[1].transform, Bright);
+            fireMode = Label("Fire Mode", fireGroup, 47, 4, 118, 28,
+                chineseFont, 18, FlowUiElements.Mint);
+            keycaps[0] = Keycap("Space", fireGroup, 169, 5, 64, 25, chineseFont, "SPACE");
+            fireAction = Label("Fire Action", fireGroup, 239, 4, 56, 28, chineseFont, 17, Bright);
+            elapsedLabel = Label("Elapsed and Kills", fireGroup, 8, 36, 284, 25,
+                chineseFont, 16, Bright);
+            scoreLabel = Label("Sync and Difference", fireGroup, 8, 63, 284, 24,
+                chineseFont, 16, FlowUiElements.Muted);
 
-            var tablet = Corner("Tablet Hint", new Vector2(1, 0), new Vector2(1, 0),
-                new Vector2(-24, 24), new Vector2(316, 66));
-            FlowUiElements.Image(FlowUiElements.Fill("Face", tablet),
-                new Color(.067f, .106f, .122f, .81f));
-            tabletArt = FlowUiElements.Image(FlowUiElements.Fill("Decoration", tablet), Color.clear);
-            FlowUiElements.Image(FlowUiElements.Box("Accent", tablet, 313, 0, 3, 66), FlowUiElements.Mint);
-            FlowUiElements.Label(FlowUiElements.Box("Key", tablet, 12, 10, 58, 46),
-                chineseFont, "TAB", 18, FlowUiElements.Mint, TextAlignmentOptions.Center);
-            FlowUiElements.Label(FlowUiElements.Box("Text", tablet, 78, 10, 224, 46),
-                chineseFont, "战术平板", 20, FlowUiElements.Text);
+            equipmentGroup = Corner("Equipment", Vector2.zero, Vector2.zero, 260, 67);
+            Face(equipmentGroup, 260, 67);
+            icons[2] = Icon("Equipment Icon", equipmentGroup, 8, 13, 32, 32,
+                out iconFallbacks[2]);
+            Chip(iconFallbacks[2].transform, Amber);
+            equipmentTitle = Label("Equipment Status", equipmentGroup, 45, 6, 208, 27,
+                chineseFont, 16, Amber);
+            equipmentHint = Label("Equipment Action", equipmentGroup, 45, 34, 208, 27,
+                chineseFont, 15, Bright);
+            equipmentGroup.gameObject.SetActive(false);
 
-            var prompt = Corner("Interaction", new Vector2(.5f, 0), new Vector2(.5f, 0),
-                new Vector2(0, 116), new Vector2(500, 60));
-            promptPanel = prompt.gameObject;
-            FlowUiElements.Image(FlowUiElements.Fill("Face", prompt),
-                new Color(.067f, .106f, .122f, .92f));
-            promptArt = FlowUiElements.Image(FlowUiElements.Fill("Decoration", prompt), Color.clear);
-            keycapArt = FlowUiElements.Image(FlowUiElements.Box("Key Face", prompt, 7, 4, 52, 52),
-                FlowUiElements.Edge);
-            FlowUiElements.Label(FlowUiElements.Box("Key", prompt, 7, 4, 52, 52),
-                chineseFont, "E", 20, FlowUiElements.Text, TextAlignmentOptions.Center);
-            promptLabel = FlowUiElements.Label(FlowUiElements.Box("Action", prompt, 66, 6, 422, 48),
-                chineseFont, "", 19, FlowUiElements.Text);
-            promptPanel.SetActive(false);
+            tabletGroup = Corner("Tablet Hint", Vector2.right, Vector2.right, 270, 63);
+            Face(tabletGroup, 270, 63);
+            icons[3] = Icon("Tablet Icon", tabletGroup, 8, 7, 26, 43, out iconFallbacks[3]);
+            Tablet(iconFallbacks[3].transform, FlowUiElements.Mint);
+            keycaps[1] = Keycap("Tab", tabletGroup, 43, 7, 48, 25, chineseFont, "TAB");
+            tabletTitle = Label("Tablet Action", tabletGroup, 97, 6, 166, 27,
+                chineseFont, 18, Bright);
+            tabletHint = Label("Local Communication", tabletGroup, 43, 35, 218, 23,
+                chineseFont, 15, FlowUiElements.Mint);
+
+            promptGroup = Corner("Interaction", new Vector2(.5f, 0),
+                new Vector2(.5f, 0), 430, 43);
+            Face(promptGroup, 430, 43);
+            keycaps[2] = Keycap("Interact", promptGroup, 7, 6, 31, 30, chineseFont, "E");
+            promptLabel = Label("Action", promptGroup, 47, 3, 374, 36,
+                chineseFont, 17, Bright);
+            promptGroup.gameObject.SetActive(false);
+
             ApplyArt();
+            AdaptLayout();
         }
 
         public void ApplyArt()
         {
-            SetArt(healthArt, healthFrameSprite);
-            SetArt(objectiveArt, objectiveFrameSprite);
-            SetArt(fireArt, fireFrameSprite);
-            SetArt(tabletArt, tabletFrameSprite);
-            SetArt(promptArt, promptFrameSprite);
-            SetArt(keycapArt, keycapSprite);
-            if (keycapArt && !keycapSprite) keycapArt.color = FlowUiElements.Edge;
+            if (icons == null) return;
+            Sprite[] sprites = { healthIconSprite, weaponIconSprite, equipmentIconSprite,
+                tabletIconSprite };
+            for (int i = 0; i < icons.Length; i++)
+            {
+                icons[i].sprite = sprites[i];
+                icons[i].color = sprites[i] ? Color.white : Color.clear;
+                icons[i].preserveAspect = true;
+                iconFallbacks[i].SetActive(!sprites[i]);
+            }
+            for (int i = 0; i < keycaps.Length; i++)
+            {
+                keycaps[i].sprite = keycapSprite;
+                keycaps[i].type = keycapSprite && keycapSprite.border.sqrMagnitude > 0
+                    ? UnityEngine.UI.Image.Type.Sliced : UnityEngine.UI.Image.Type.Simple;
+                keycaps[i].color = keycapSprite ? Color.white : new Color32(42, 58, 64, 230);
+            }
         }
 
         public void Bind(NativeHudDisplay state)
         {
             if (!built) return;
-            healthLabel.text = "生命  " + Mathf.CeilToInt(state.Health) + " / " +
-                Mathf.CeilToInt(state.MaxHealth);
+            SetText(healthValue, Mathf.Max(0, Mathf.CeilToInt(state.Health)) + " / " +
+                Mathf.Max(0, Mathf.CeilToInt(state.MaxHealth)));
             float ratio = state.MaxHealth > 0 ? Mathf.Clamp01(state.Health / state.MaxHealth) : 0;
-            healthFill.anchorMax = new Vector2(ratio, 1);
-            healthFill.offsetMin = healthFill.offsetMax = Vector2.zero;
-            fireLabel.text = state.AutoFire ? "自动开火  /  Space 停火" : "停火  /  Space 开火";
-            fireLabel.color = state.AutoFire ? FlowUiElements.Mint : new Color32(223, 177, 109, 255);
-            objectiveLabel.text = state.Objective ?? string.Empty;
+            if (!Mathf.Approximately(ratio, lastHealthRatio))
+            {
+                healthFill.anchorMax = new Vector2(ratio, 1);
+                healthFill.offsetMin = healthFill.offsetMax = Vector2.zero;
+                lastHealthRatio = ratio;
+            }
+
+            string objective = state.Objective ?? string.Empty;
+            int breakAt = objective.IndexOf('\n');
+            string headline = breakAt < 0 ? objective : objective.Substring(0, breakAt);
+            string detail = breakAt < 0 ? string.Empty : objective.Substring(breakAt + 1);
+            int slash = headline.IndexOf(" / ", StringComparison.Ordinal);
+            if (slash >= 0 && slash <= 3) headline = headline.Substring(slash + 3);
+            int progressAt = headline.IndexOf("   ", StringComparison.Ordinal);
+            if (progressAt >= 0) headline = headline.Substring(0, progressAt);
+            SetText(objectiveTitle, headline);
+            if (detail != lastObjectiveDetail)
+            {
+                clueTexts = detail.Split(new[] { '。' }, StringSplitOptions.RemoveEmptyEntries);
+                for (int i = 0; i < clueRows.Length && i < clueTexts.Length; i++)
+                    SetText(clueLabels[i], clueTexts[i].Trim().Replace("：", " · "));
+                lastObjectiveDetail = detail;
+            }
+            bool clues = state.Extras.HasState && state.Extras.ShowMemoryClues &&
+                clueTexts.Length >= clueRows.Length;
+            SetVisible(objectiveProgress.gameObject, clues);
+            if (clues)
+                SetText(objectiveProgress, state.Extras.MemoryCount + " / " + state.Extras.MemoryGoal);
+            SetVisible(objectiveDetail.gameObject, !clues);
+            if (!clues) SetText(objectiveDetail, detail);
+            for (int i = 0; i < clueRows.Length; i++)
+            {
+                SetVisible(clueRows[i], clues);
+                if (clues)
+                {
+                    bool found = i == 0 ? state.Extras.PrivateMemory :
+                        i == 1 ? state.Extras.SystemMemory : state.Extras.InitialEcho;
+                    clueMarks[i].color = found ? FlowUiElements.Mint : Bright;
+                    clueLabels[i].color = found ? FlowUiElements.Mint : Bright;
+                }
+            }
+
+            SetText(fireMode, state.AutoFire ? "自动开火" : "停火");
+            SetText(fireAction, state.AutoFire ? "停火" : "开火");
+            fireMode.color = state.AutoFire ? FlowUiElements.Mint : Amber;
             int seconds = Mathf.Max(0, Mathf.FloorToInt(state.ElapsedSeconds));
-            statusLabel.text = string.Format("用时 {0:00}:{1:00}  /  击败 {2}", seconds / 60,
-                seconds % 60, Mathf.Max(0, state.Kills));
-            scoresLabel.text = "同步 " + state.Sync + "  /  差异 " + state.Difference;
+            SetText(elapsedLabel, string.Format("{0:00}:{1:00}  |  击败 {2}",
+                seconds / 60, seconds % 60, Mathf.Max(0, state.Kills)));
+            SetText(scoreLabel, "同步 " + state.Sync + "  |  差异 " + state.Difference);
+
+            bool hasGear = state.Extras.HasState && state.Extras.HasEquipmentSource;
+            SetVisible(equipmentGroup.gameObject, hasGear);
+            if (hasGear)
+            {
+                SetText(equipmentTitle, state.Extras.EquipmentTitle);
+                SetText(equipmentHint, state.Extras.EquipmentHint);
+                equipmentHint.color = state.Extras.EquipmentActive ? Amber : Bright;
+                if (legacyEquipmentPanel && legacyEquipmentPanel.activeSelf)
+                    legacyEquipmentPanel.SetActive(false);
+            }
+            bool tabletAvailable = !state.Extras.HasState || state.Extras.TabletAvailable;
+            SetText(tabletTitle, tabletAvailable ? "战术平板" : "平板暂不可用");
+            SetText(tabletHint, tabletAvailable ? "安全通讯 / 本地" : "当前不可进入");
+            tabletHint.color = tabletAvailable ? FlowUiElements.Mint : FlowUiElements.Muted;
             bool hasPrompt = !string.IsNullOrWhiteSpace(state.InteractionPrompt);
-            promptPanel.SetActive(hasPrompt);
-            if (hasPrompt) promptLabel.text = state.InteractionPrompt;
+            SetVisible(promptGroup.gameObject, hasPrompt);
+            if (hasPrompt) SetText(promptLabel, state.InteractionPrompt);
         }
 
         public void Show(bool visible) => gameObject.SetActive(visible);
 
-        RectTransform Corner(string name, Vector2 anchor, Vector2 pivot, Vector2 position,
-            Vector2 size)
+        void OnRectTransformDimensionsChange()
+        {
+            if (built) AdaptLayout();
+        }
+
+        void AdaptLayout()
+        {
+            if (!healthGroup || !objectiveGroup || !fireGroup || !tabletGroup) return;
+            var rect = GetComponent<RectTransform>().rect;
+            if (rect.width <= 0 || rect.height <= 0) return;
+            float scale = Mathf.Clamp(Mathf.Min(rect.width / 1050f, rect.height / 640f), .62f, 1f);
+            float margin = Mathf.Max(14f, Mathf.Min(24f, rect.width * .025f));
+            healthGroup.localScale = objectiveGroup.localScale = fireGroup.localScale =
+                equipmentGroup.localScale = tabletGroup.localScale = promptGroup.localScale =
+                Vector3.one * scale;
+            healthGroup.anchoredPosition = new Vector2(margin, -margin);
+            objectiveGroup.anchoredPosition = new Vector2(-margin, -margin);
+            fireGroup.anchoredPosition = new Vector2(margin, margin);
+            equipmentGroup.anchoredPosition = new Vector2(margin + 318f * scale, margin);
+            tabletGroup.anchoredPosition = new Vector2(-margin, margin);
+            promptGroup.anchoredPosition = new Vector2(0, margin + 108f * scale);
+        }
+
+        RectTransform Corner(string name, Vector2 anchor, Vector2 pivot, float width, float height)
         {
             var rect = new GameObject(name, typeof(RectTransform)).GetComponent<RectTransform>();
             rect.SetParent(transform, false);
             rect.anchorMin = rect.anchorMax = anchor;
             rect.pivot = pivot;
-            rect.anchoredPosition = position;
-            rect.sizeDelta = size;
+            rect.sizeDelta = new Vector2(width, height);
             return rect;
         }
 
-        static void SetArt(UnityEngine.UI.Image image, Sprite sprite)
+        static void Face(Transform parent, float width, float height)
         {
-            if (!image) return;
-            image.sprite = sprite;
-            image.type = sprite && sprite.border.sqrMagnitude > 0 ?
-                UnityEngine.UI.Image.Type.Sliced : UnityEngine.UI.Image.Type.Simple;
-            image.color = sprite ? Color.white : Color.clear;
-            image.raycastTarget = false;
+            FlowUiElements.Image(FlowUiElements.Box("Local Contrast", parent, 0, 0,
+                width, height), Shadow);
+        }
+
+        static TextMeshProUGUI Label(string name, Transform parent, float x, float y,
+            float width, float height, TMP_FontAsset font, int size, Color color,
+            TextAlignmentOptions alignment = TextAlignmentOptions.MidlineLeft)
+        {
+            var label = FlowUiElements.Label(FlowUiElements.Box(name, parent, x, y,
+                width, height), font, string.Empty, size, color, alignment);
+            label.overflowMode = TextOverflowModes.Truncate;
+            return label;
+        }
+
+        static UnityEngine.UI.Image Icon(string name, Transform parent, float x, float y,
+            float width, float height, out GameObject fallback)
+        {
+            var rect = FlowUiElements.Box(name, parent, x, y, width, height);
+            var image = FlowUiElements.Image(rect, Color.clear);
+            fallback = FlowUiElements.Fill("Native Fallback", rect).gameObject;
+            return image;
+        }
+
+        static void Block(Transform parent, string name, float x, float y, float width,
+            float height, Color color)
+        {
+            FlowUiElements.Image(FlowUiElements.Box(name, parent, x, y, width, height), color);
+        }
+
+        static void Cross(Transform parent, Color color)
+        {
+            Block(parent, "Vertical", 11, 2, 6, 24, color);
+            Block(parent, "Horizontal", 2, 11, 24, 6, color);
+        }
+
+        static void Weapon(Transform parent, Color color)
+        {
+            Block(parent, "Barrel", 3, 8, 27, 5, color);
+            Block(parent, "Body", 7, 13, 19, 6, color);
+            Block(parent, "Grip", 14, 18, 6, 8, color);
+        }
+
+        static void Chip(Transform parent, Color color)
+        {
+            Block(parent, "Top", 5, 4, 22, 3, color);
+            Block(parent, "Bottom", 5, 25, 22, 3, color);
+            Block(parent, "Left", 5, 7, 3, 18, color);
+            Block(parent, "Right", 24, 7, 3, 18, color);
+            Block(parent, "Core", 13, 12, 6, 8, color);
+        }
+
+        static void Tablet(Transform parent, Color color)
+        {
+            Block(parent, "Top", 3, 2, 20, 3, color);
+            Block(parent, "Bottom", 3, 38, 20, 3, color);
+            Block(parent, "Left", 3, 5, 3, 33, color);
+            Block(parent, "Right", 20, 5, 3, 33, color);
+            Block(parent, "Screen", 8, 28, 10, 6, color);
+        }
+
+        static UnityEngine.UI.Image Keycap(string name, Transform parent, float x, float y,
+            float width, float height, TMP_FontAsset font, string value)
+        {
+            var rect = FlowUiElements.Box(name, parent, x, y, width, height);
+            var image = FlowUiElements.Image(rect, new Color32(42, 58, 64, 230));
+            FlowUiElements.Label(FlowUiElements.Fill("Key", rect), font, value, 15,
+                Bright, TextAlignmentOptions.Center).overflowMode = TextOverflowModes.Truncate;
+            return image;
+        }
+
+        static void SetText(TextMeshProUGUI label, string value)
+        {
+            value = value ?? string.Empty;
+            if (label.text != value) label.text = value;
+        }
+
+        static void SetVisible(GameObject target, bool visible)
+        {
+            if (target.activeSelf != visible) target.SetActive(visible);
         }
     }
 }

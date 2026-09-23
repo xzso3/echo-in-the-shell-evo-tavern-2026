@@ -15,7 +15,7 @@ namespace Echo.NativeGame.GameUI
             view.Build(font);
             if (art)
             {
-                view.SetArt(art.mainMenuFacility, art.lightPanelCorner, art.terminalButtonBlank);
+                view.SetArt(art);
                 view.SettingsView.SetArt(art.lightPanelCorner);
             }
             return view;
