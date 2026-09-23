@@ -19,7 +19,7 @@ namespace Echo.NativeGame.Commander
     public sealed class CommanderHomeBootstrap : MonoBehaviour
     {
         public TMP_FontAsset chineseFont;
-        public string gameSceneName = "NativeDemo";
+        public string gameSceneName = "NativeDemoTilemap";
 
         void Start()
         {
@@ -47,7 +47,10 @@ namespace Echo.NativeGame.Commander
                 EnterGame = offline =>
                 {
                     CommanderLaunchState.OfflineForCurrentRun = offline;
-                    SceneManager.LoadScene(gameSceneName);
+                    // Keep the committed Native scene playable when an optional
+                    // Tilemap scene is absent from this checkout's Build Settings.
+                    SceneManager.LoadScene(Application.CanStreamedLevelBeLoaded(gameSceneName)
+                        ? gameSceneName : "NativeDemo");
                 }
             });
         }

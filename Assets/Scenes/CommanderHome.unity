@@ -224,7 +224,7 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier:
   chineseFont: {fileID: 11400000, guid: 945fdb8889baf46f39b4c9a818d57d71, type: 2}
-  gameSceneName: NativeDemo
+  gameSceneName: NativeDemoTilemap
 --- !u!114 &1719509373
 MonoBehaviour:
   m_ObjectHideFlags: 0

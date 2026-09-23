@@ -4,7 +4,7 @@
 
 ## 启动与配置
 
-- 隔离集成版 Build Settings 首场景为 `Assets/Scenes/CommanderHome.unity`，首页“开始游戏”和“离线试玩”均进入已提交的 `Assets/Scenes/NativeDemo.unity`。主目录尚未提交的 `NativeDemoTilemap.unity` 和 Build Settings 是用户现有改动，最终合流时必须保留，不能以隔离版设置覆盖。
+- 主目录本机 Build Settings 顺序为 `CommanderHome.unity`、`NativeDemoTilemap.unity`、`NativeDemo.unity`。首页“开始游戏”和“离线试玩”均进入 `NativeDemoTilemap`；若干净检出未包含这份用户本地场景，入口回退到已提交的 `NativeDemo`。Tilemap 场景及其地图依赖仍是用户未提交内容，不能把本机可玩误写成干净检出已包含 Tilemap。
 - 首页填写兼容 `/v1/chat/completions` 的 API Base URL、模型 ID、API Key，可改 1–120 秒超时（默认 15 秒）。测试连接只验证回复有非空文本，不进入本局聊天或提案。模型 ID 由玩家填写，没有写死暂定供应商的未核验名称。
 - URL、模型、超时按 AI-01 保存到本机 PlayerPrefs；Key 仅在当前程序内存中，重开本局保留，退出程序清除。“离线试玩”禁用本局在线发送，不清除现有配置或内存 Key；手动支援和记录仍可用。
 
@@ -14,7 +14,11 @@
 - 在安全通讯节点可发送当前状态与最近六轮成功问答；节点内敌人不再阻止输入。请求可取消，切换页签不断线，关闭/重开隔离迟到响应。非安全节点仍可阅读、查看本局记录和使用手动支援。
 - AI 只返回对白及可选医疗/弱点解析提案；合同由现有 `NativeSupportController` 生成，查看和接受分别重查条件。实际效果与同步变化由 Unity 回写为本地事实，不自动再问模型。手动/AI 合同通过待确认版本和一次性执行状态隔离。
 - 既有任务、记忆、保留异议、改写回声、最终写入/销毁及结局接续入口保留在记录页。Toolkit 焦点玩家与 Boss 仍由原支援、快照和输入路由读取。
-- `Assets/Scenes/NativeDemo.unity` 的 `CommanderTabletView` 序列化绑定了 `Assets/NativeGame/PhoneUI/Art/` 的七张 ImageGen Sprite；文本、数值、合同和点击区仍由 TMP/uGUI 负责。
+- 已提交的 `Assets/Scenes/NativeDemo.unity` 与本机未跟踪的 `Assets/Scenes/NativeDemoTilemap.unity` 都有 `CommanderTabletView`，序列化绑定了 `Assets/NativeGame/PhoneUI/Art/` 的七张 ImageGen Sprite；文本、数值、合同和点击区仍由 TMP/uGUI 负责。
+
+## Tilemap 本机交付边界
+
+`NativeDemoTilemap.unity` 的 GUID 保持 `b2325c2a6efb54237952e6f13ab944f8`。集成只给场景原有 Phone 添加平板引用和七项 Sprite，并沿用它已有的 Run、Hud、安全节点与地图层级。场景、`Assets/NativeGame/TilemapDemo/`、`Assets/EchoLevelToolkit/Content/Map/{Palette,Works}/` 及其 `.meta` 仍由用户保留为未提交文件；本阶段提交只包含可版本化的首页目标和代码回退。Unity 2021.3.27f1c2 在隔离副本正常导入、编译并保存了 Tilemap 场景，未操作主目录正在打开的 Editor；本机 Play 与真实联网仍待人工校验。
 
 ## 最后人工校验
 
