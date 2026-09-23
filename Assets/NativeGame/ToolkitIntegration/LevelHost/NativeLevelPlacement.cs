@@ -38,6 +38,8 @@ namespace Echo.NativeGame.ToolkitIntegration.LevelHost
         {
             if (!stage || !map || !doors || !world || !player || !catalog)
             { diagnostic = "Assign Stage, ChunkMap, MapDoorSet, CombatWorld, CombatPlayer and catalog."; return false; }
+            if (GetComponentInChildren<SandboxLevelHost>(true))
+            { diagnostic = "A formal work cannot contain a SandboxLevelHost."; return false; }
             if (!stage.LevelId.IsComplete || !stage.LevelId.Equals(catalog.LevelIdentity) || stage.Doors != doors)
             { diagnostic = "Stage, door set and endpoint catalog do not describe the same level."; return false; }
             if (!Contains(stage.transform) || !Contains(map.transform) || !Contains(doors.transform)

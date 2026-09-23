@@ -20,6 +20,7 @@ namespace Echo.NativeGame.ToolkitIntegration.LevelHost
         private LevelRunBindingPolicy policy;
         private LevelInstanceId focused;
         private bool savedCamera;
+        private bool unmountingAll;
         private Transform originalTarget;
         private Vector2 originalCenter;
         private Vector2 originalHalfSize;
@@ -71,6 +72,8 @@ namespace Echo.NativeGame.ToolkitIntegration.LevelHost
             out NativeLevelInstance instance, out string diagnostic)
         {
             instance = null;
+            if (unmountingAll)
+            { diagnostic = "The host is unloading its instances."; return false; }
             if (!Application.isPlaying || !BeginRun())
             { diagnostic = "A playing Native run is required."; return false; }
             if (!prefab)
@@ -194,22 +197,28 @@ namespace Echo.NativeGame.ToolkitIntegration.LevelHost
 
         public void UnmountAll()
         {
-            if (instances.Count != 0)
+            if (unmountingAll) return;
+            unmountingAll = true;
+            try
             {
-                var pending = new List<NativeLevelInstance>(instances.Values);
-                foreach (NativeLevelInstance instance in pending)
-                    if (contexts.TryGetValue(instance.Scope.InstanceId, out var context)) context.Stop();
-                instances.Clear();
-                contexts.Clear();
-                focused = default;
-                RestoreCamera();
-                foreach (NativeLevelInstance instance in pending)
+                if (instances.Count != 0)
                 {
-                    instance.Dispose();
-                    Notify(Unmounted, instance);
+                    var pending = new List<NativeLevelInstance>(instances.Values);
+                    foreach (NativeLevelInstance instance in pending)
+                        if (contexts.TryGetValue(instance.Scope.InstanceId, out var context)) context.Stop();
+                    instances.Clear();
+                    contexts.Clear();
+                    focused = default;
+                    RestoreCamera();
+                    foreach (NativeLevelInstance instance in pending)
+                    {
+                        instance.Dispose();
+                        Notify(Unmounted, instance);
+                    }
                 }
+                else { focused = default; RestoreCamera(); }
             }
-            else { focused = default; RestoreCamera(); }
+            finally { unmountingAll = false; }
         }
 
         public void ReportPlayerDeath()
