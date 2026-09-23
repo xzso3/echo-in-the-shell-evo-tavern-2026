@@ -16,7 +16,7 @@ namespace Echo.NativeGame.GameFlow.Ending
 
     // UI binds StageChanged; NativeRunController remains the sole phase and victory owner.
     [DisallowMultipleComponent]
-    [RequireComponent(typeof(NativeRunController))]
+    [RequireComponent(typeof(NativeRunController), typeof(RunKillLedger))]
     public sealed class NativeRunResultFlow : MonoBehaviour
     {
         public RunResultSnapshot Snapshot { get; private set; }
@@ -29,7 +29,8 @@ namespace Echo.NativeGame.GameFlow.Ending
             IReadOnlyList<NativeBehaviorRecord> behaviorRecords)
         {
             if (Snapshot != null || !run || run.gameObject != gameObject || behaviorRecords == null) return false;
-            var captured = RunResultSnapshot.CaptureSuccess(run, behaviorRecords);
+            var captured = RunResultSnapshot.CaptureSuccess(run, behaviorRecords,
+                GetComponent<RunKillLedger>().ReadKills(run));
             if (captured == null) return false;
             Snapshot = captured;
             SetStage(captured.Ending == NativeEnding.Birth
@@ -41,7 +42,8 @@ namespace Echo.NativeGame.GameFlow.Ending
             IReadOnlyList<NativeBehaviorRecord> behaviorRecords)
         {
             if (Snapshot != null || !run || run.gameObject != gameObject || behaviorRecords == null) return false;
-            var captured = RunResultSnapshot.CaptureDeath(run, behaviorRecords);
+            var captured = RunResultSnapshot.CaptureDeath(run, behaviorRecords,
+                GetComponent<RunKillLedger>().ReadKills(run));
             if (captured == null) return false;
             Snapshot = captured;
             SetStage(RunResultStage.Results);

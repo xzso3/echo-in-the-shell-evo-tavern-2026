@@ -38,7 +38,7 @@ namespace Echo.NativeGame.GameFlow.Results
         }
 
         public static RunResultSnapshot CaptureSuccess(NativeRunController run,
-            IReadOnlyList<NativeBehaviorRecord> behaviorRecords)
+            IReadOnlyList<NativeBehaviorRecord> behaviorRecords, int kills)
         {
             if (!run || !run.quest || !run.quest.Completed || !run.narrative ||
                 !run.narrative.EndingCommitted) return null;
@@ -49,20 +49,20 @@ namespace Echo.NativeGame.GameFlow.Results
             int secondBreak = firstBreak < 0 ? -1 : story.IndexOf("\n\n", firstBreak + 2, StringComparison.Ordinal);
             string presentation = secondBreak < 0 ? story : story.Substring(0, secondBreak);
             return Capture(run, true, run.narrative.Ending, run.narrative.EndingTitle,
-                summary, presentation, behaviorRecords);
+                summary, presentation, behaviorRecords, kills);
         }
 
         public static RunResultSnapshot CaptureDeath(NativeRunController run,
-            IReadOnlyList<NativeBehaviorRecord> behaviorRecords)
+            IReadOnlyList<NativeBehaviorRecord> behaviorRecords, int kills)
         {
             if (!run || !run.narrative) return null;
             const string summary = "本局意识连接已中断。";
-            return Capture(run, false, null, "意识涣散", summary, summary, behaviorRecords);
+            return Capture(run, false, null, "意识涣散", summary, summary, behaviorRecords, kills);
         }
 
         static RunResultSnapshot Capture(NativeRunController run, bool succeeded,
             NativeEnding? ending, string title, string summary, string presentation,
-            IReadOnlyList<NativeBehaviorRecord> behaviorRecords)
+            IReadOnlyList<NativeBehaviorRecord> behaviorRecords, int kills)
         {
             string rawId = run.combatIntegration ? run.combatIntegration.CurrentRunId.ToString() : string.Empty;
             if (rawId.Length == 0)
@@ -72,8 +72,6 @@ namespace Echo.NativeGame.GameFlow.Results
             }
             if (!Guid.TryParseExact(rawId, "N", out Guid id)) id = Guid.NewGuid();
 
-            var focusedWeapon = run.hud ? run.hud.ActiveToolkitWeapon : null;
-            int kills = focusedWeapon ? focusedWeapon.Kills : run.combat ? run.combat.Kills : 0;
             return new RunResultSnapshot(id, succeeded, ending, title ?? string.Empty,
                 summary ?? string.Empty, presentation ?? string.Empty,
                 Mathf.Max(0f, run.Elapsed), Mathf.Max(0, kills), run.narrative.Sync,
