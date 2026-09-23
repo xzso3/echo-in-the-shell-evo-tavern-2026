@@ -39,6 +39,8 @@ flowHudView.Bind(new NativeHudDisplay(health, maxHealth, autoFire,
 
 它是世界空间的 `Gate - relay opens this collider`：`NativeDemoBuilder` 在 `(10,0)` 创建橙红色 SpriteRenderer，场景把对象连到 `NativeMap.exitGate`，`NativeMap.OpenExit()` 按玩法状态关闭门。HUD 代码没有删除或重绘它；它的碰撞和通路信息保留。
 
+批准图中的 NPC/终端小型世界标记涉及场景常驻 `WorldText` 与目标对象，超出本包独占路径；本包保留现有目标选择，并将实际近距离 `E` 提示缩为 HUD 内一条。若需改常驻标签，请由 INT 在其场景/共享接线范围处理，保留交互可发现性。
+
 ## 待 INT 集中验证
 
 本工作包按分工不运行 Unity、不编译、不跑自动测试或截图巡检。请在合入后检查编译、图标导入、16:9/16:10/低分辨率文字裁剪、伤害恢复、三条记忆、拾取/装备/超频、平板与近距离交互，以及标题和旧装备面板的可见性。
