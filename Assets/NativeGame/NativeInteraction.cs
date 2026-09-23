@@ -14,10 +14,14 @@ namespace Echo.NativeGame
         public bool Used { get; private set; }
         public event Action<NativeInteraction> Confirmed;
         public string Prompt => !string.IsNullOrEmpty(promptOverride) ? promptOverride : isExit ? map.ExitOpen ? "E  /  离开区域" : "出口已锁定 / 请先连接青色终端" : "E  /  连接终端";
-        public bool CanReach(NativePlayer player) => isActiveAndEnabled && (!npc || npc.CanInteract) && player && Vector2.Distance(player.transform.position, transform.position) <= radius && !NativeObstacle.Blocked(player.transform.position, transform.position);
+        public bool CanReach(NativePlayer player) => isActiveAndEnabled && gameObject.scene.isLoaded && !Used &&
+            run && run.Running && player && player.Alive && player.run == run && run.player == player &&
+            (!npc || npc.CanInteract) && radius > 0 &&
+            Vector2.Distance(player.transform.position, transform.position) <= radius &&
+            !NativeObstacle.Blocked(player.transform.position, transform.position);
         public void Use(NativePlayer player)
         {
-            if (Used || !run || !run.Running || !CanReach(player)) return;
+            if (!CanReach(player)) return;
             Confirmed?.Invoke(this);
         }
         public void Consume()
@@ -25,9 +29,10 @@ namespace Echo.NativeGame
         public static NativeInteraction FindNearest(NativeInteraction[] targets, NativePlayer player)
         {
             NativeInteraction best = null; float distance = float.MaxValue;
+            if (targets == null || !player) return null;
             foreach (var target in targets)
             {
-                if (!target || target.Used || !target.CanReach(player)) continue;
+                if (!target || !target.CanReach(player)) continue;
                 float d = Vector2.Distance(target.transform.position, player.transform.position);
                 if (d < distance) { distance = d; best = target; }
             }
