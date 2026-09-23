@@ -16,3 +16,16 @@ MonoBehaviour:
   lightPanelCorner: {fileID: 21300000, guid: 0082a484f3544d008ba7a2815685e3ee, type: 3}
   terminalButtonBlank: {fileID: 21300000, guid: 502bf390a0ee4e309864f237cc55057e, type: 3}
   keycapBlank: {fileID: 21300000, guid: 9413a5ec1f7245aa94b881a6fdf3fd51, type: 3}
+  menuBackgroundStatic: {fileID: 21300000, guid: 0507e1ed498f4af08a3b66e8fd3789cc, type: 3}
+  echoInTheShellLogo: {fileID: 21300000, guid: 6f295a7223684428b166923135be5b75, type: 3}
+  cipherWorksLogo: {fileID: 21300000, guid: 15e6673d092c4590ae0aefd33514d5fb, type: 3}
+  menuRainFrames: []
+  menuWaterFrames: []
+  menuLightsFrames: []
+  menuRainFrameSeconds: 0.16
+  menuWaterFrameSeconds: 0.24
+  menuLightsFrameSeconds: 0.36
+  healthIcon: {fileID: 0}
+  weaponIcon: {fileID: 0}
+  equipmentIcon: {fileID: 0}
+  tabletIcon: {fileID: 0}
