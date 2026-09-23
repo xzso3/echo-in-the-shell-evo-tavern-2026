@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e0f10c2191d41f0bbb1598534498e09, type: 3}
+  m_Name: Boss
+  m_EditorClassIdentifier:
+  kind: 3
+  sourceRevision: 7dde3aec8cf7060b825be4464e7ad18ebfdcb91a
+  sourceFingerprint: b3e801f851f10025487deca653d6f0598759ca9b35551af1d6431f85e0083862
+  speed: 0
+  health: 1400
+  colliderRadius: 0.9
+  hurtCooldown: 0
+  contactDamage: 0
+  detectionRange: 0
+  range: 0
+  shotInterval: 0
+  damage: 0
+  projectileSpeed: 0
+  projectileLifetime: 0
+  projectileRadius: 0
+  preferredRange: 0
+  fanWarmup: 0
+  fanCooldown: 0
+  fanShotSpeed: 0
+  fanShotDamage: 0
+  fanSpreadDegrees: 0
+  armorDamageScale: 0.45
+  trackingSeconds: 0.9
+  lockSeconds: 0.55
+  bossShotInterval: 0.22
+  burstCount: 3
+  bossShotSpeed: 8
+  bossShotDamage: 12
+  bombWarning: 1.25
+  bombInterval: 0.7
+  bombRadius: 1.05
+  bombDamage: 18
+  coreWindowSeconds: 6
+  retryWindowDelay: 8
+  coreInteractionRadius: 1.9
+  muzzleOffset: {x: 1.05, y: 0.18}
