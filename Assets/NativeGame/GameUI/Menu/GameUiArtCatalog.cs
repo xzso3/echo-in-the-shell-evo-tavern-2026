@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Echo.NativeGame.GameUI
 {
-    // References the four GF01-04 decorative sprites without copying their assets.
+    // INT binds these shared serialized references in Resources/GF01Art.asset.
     public sealed class GameUiArtCatalog : ScriptableObject
     {
         public Sprite mainMenuFacility;
@@ -10,5 +10,21 @@ namespace Echo.NativeGame.GameUI
         public Sprite terminalButtonBlank;
         public Sprite keycapBlank;
 
+        [Header("GF02 Menu")]
+        public Sprite menuBackgroundStatic;
+        public Sprite echoInTheShellLogo;
+        public Sprite cipherWorksLogo;
+        public Sprite[] menuRainFrames;
+        public Sprite[] menuWaterFrames;
+        public Sprite[] menuLightsFrames;
+        public float menuRainFrameSeconds = 0.16f;
+        public float menuWaterFrameSeconds = 0.24f;
+        public float menuLightsFrameSeconds = 0.36f;
+
+        [Header("GF02 HUD")]
+        public Sprite healthIcon;
+        public Sprite weaponIcon;
+        public Sprite equipmentIcon;
+        public Sprite tabletIcon;
     }
 }

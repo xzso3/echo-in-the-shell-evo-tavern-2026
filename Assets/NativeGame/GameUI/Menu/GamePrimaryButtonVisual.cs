@@ -7,7 +7,7 @@ namespace Echo.NativeGame.GameUI
     // Owns the color of the native Button and its TMP label in every input state.
     [DisallowMultipleComponent]
     [RequireComponent(typeof(UnityEngine.UI.Button))]
-    internal sealed class GamePrimaryButtonVisual : MonoBehaviour,
+    public sealed class GamePrimaryButtonVisual : MonoBehaviour,
         IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler,
         ISubmitHandler
     {
