@@ -17,7 +17,13 @@ namespace Echo.NativeGame
     {
         event Action<NativeSupportAuthorization> Authorized;
         bool HasPending { get; }
+        // Changes only when a new contract is opened. Consumers can distinguish their
+        // contract from a later manual one without taking ownership of the support UI.
+        long PendingVersion { get; }
         string StatusText { get; }
+        // Read-only intrinsic eligibility; HasPending is checked separately by callers.
+        bool CanApply(NativeSupportKind kind, NativeSupportTier tier,
+            NativeMemoryKind sharedMemory, out string reason);
         bool Request(NativeSupportKind kind, NativeSupportTier tier, NativeMemoryKind sharedMemory);
         bool Confirm();
         void Cancel();

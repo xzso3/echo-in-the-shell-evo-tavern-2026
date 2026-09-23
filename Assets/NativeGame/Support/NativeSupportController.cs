@@ -13,6 +13,7 @@ namespace Echo.NativeGame
         public const float MedicalHealing = 40;
         public event Action<NativeSupportAuthorization> Authorized;
         public bool HasPending { get; private set; }
+        public long PendingVersion { get; private set; }
         public string StatusText { get; private set; } = "请选择支援、授权范围和一段已找回的记忆。确认并成功执行前，不会共享任何记忆。";
         bool medicalUsed, weakpointUsed;
         NativeSupportKind pendingKind;
@@ -28,6 +29,13 @@ namespace Echo.NativeGame
         bool pendingIntegrated;
         RunId usageRunId;
         bool hasUsageRunId;
+
+        public bool CanApply(NativeSupportKind kind, NativeSupportTier tier,
+            NativeMemoryKind sharedMemory, out string reason)
+        {
+            reason = Unavailable(kind, tier, sharedMemory, CurrentBoss(), CurrentCombatBoss());
+            return reason == null;
+        }
 
         public bool Request(NativeSupportKind kind, NativeSupportTier tier, NativeMemoryKind sharedMemory)
         {
@@ -45,6 +53,7 @@ namespace Echo.NativeGame
             pendingIntegrated = level.hud && level.hud.IntegratedInput;
             pendingScope = pendingIntegrated ? level.hud.ActiveInputScope : default(RuntimeScope);
             HasPending = true;
+            PendingVersion++;
             string memory = NativeMemoryNode.KindLabel(sharedMemory);
             foreach (var entry in level.narrative.Memories)
                 if (entry.Kind == sharedMemory) { memory = entry.Source + " / " + entry.Title; break; }
@@ -164,13 +173,13 @@ namespace Echo.NativeGame
                 return "本局尚未找回所选记忆。";
             if (kind == NativeSupportKind.Medical)
             {
-                if (medicalUsed) return "本局已使用医疗支援。";
+                if (UsedInCurrentRun(medicalUsed)) return "本局已使用医疗支援。";
                 if (combatPlayer ? combatPlayer.Health >= combatPlayer.maxHealth : player.Health >= player.maxHealth)
                     return "生命已满，无需治疗。";
             }
             else
             {
-                if (weakpointUsed) return "本局已使用弱点解析。";
+                if (UsedInCurrentRun(weakpointUsed)) return "本局已使用弱点解析。";
                 bool valid = combatPlayer
                     ? combatTarget && combatTarget.World == combatPlayer.World && combatTarget.gameObject.scene.isLoaded && combatTarget.CanEnableWeakpointSupport
                     : target && target.level == level && target.gameObject.scene.isLoaded && target.CanEnableWeakpointSupport;
@@ -178,6 +187,12 @@ namespace Echo.NativeGame
                     return "请在战斗机体启动后、被击败前使用，且本局尚未使用弱点解析。";
             }
             return null;
+        }
+        bool UsedInCurrentRun(bool used)
+        {
+            if (!used || !level || !level.hud || !level.hud.IntegratedInput || !level.hud.HasActiveInputScope)
+                return used;
+            return hasUsageRunId && usageRunId == level.hud.ActiveInputScope.RunId;
         }
     }
 }
