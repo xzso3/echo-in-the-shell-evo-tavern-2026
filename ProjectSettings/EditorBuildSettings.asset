@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/CommanderHome.unity
+    guid: 4e5005609603f41c99d12306a8ef4ef3
+  - enabled: 1
     path: Assets/Scenes/NativeDemo.unity
     guid: bda44eab5100a432d96dd72f56681f6a
   - enabled: 0

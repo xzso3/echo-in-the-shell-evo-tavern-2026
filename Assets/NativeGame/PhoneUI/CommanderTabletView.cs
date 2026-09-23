@@ -515,7 +515,7 @@ namespace Echo.NativeGame.PhoneUI
 
         void Update()
         {
-            if (handleEscapeLocally && Input.GetKeyDown(KeyCode.Escape)) HandleBack();
+            if (handleEscapeLocally && UnityEngine.Input.GetKeyDown(KeyCode.Escape)) HandleBack();
             if (!tablet) return;
             var root = GetComponent<RectTransform>();
             float scale = Mathf.Min(1f, root.rect.width / 1088f, root.rect.height / 612f);

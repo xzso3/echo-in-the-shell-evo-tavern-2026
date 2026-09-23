@@ -2,6 +2,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Echo.NativeGame.Commander;
+using Echo.NativeGame.PhoneUI;
 namespace Echo.NativeGame
 {
     // Local phone presentation/selection. Contracts stay in Support; story state stays in Narrative.
@@ -17,7 +19,9 @@ namespace Echo.NativeGame
         public Button sendButton;
         public NativeCommanderSafeNode safeNode;
         public NativeCommanderProxy proxy;
+        public CommanderTabletView tabletView;
         public Page SelectedPage { get; private set; }
+        CommanderTabletRunAdapter tabletAdapter;
         NativeSupportKind kind;
         NativeSupportTier tier;
         NativeMemoryKind memory;
@@ -34,14 +38,24 @@ namespace Echo.NativeGame
             restart.onClick.AddListener(level.Restart);
             if (sendButton) sendButton.onClick.AddListener(SendMessage);
         }
+        void Start()
+        {
+            if (!tabletView) return;
+            tabletView.Build(body ? body.font : null);
+            var runtime = level.GetComponent<CommanderRuntimeHost>();
+            if (!runtime || runtime.Session == null)
+            { Debug.LogError("Commander tablet: run session is not connected.", this); return; }
+            tabletAdapter = new CommanderTabletRunAdapter(this, tabletView, runtime);
+            tabletView.ApplySprites();
+        }
         public static string PageLabel(Page value) => value == Page.Comms ? "通讯" : value == Page.Support ? "支援" : "网络";
         public void SelectPage(int index)
         { BlurComposition(); SelectedPage = (Page)index; finalDecision = false; topic = 0; feedback = ""; lastBody = null; scroll.verticalNormalizedPosition = 1; }
         public void ShowFinalDecision()
-        { BlurComposition(); finalDecision = true; feedback = ""; level.hud.OpenPhone(); scroll.verticalNormalizedPosition = 1; }
-        public void CloseDecision() { finalDecision = false; }
+        { BlurComposition(); finalDecision = true; feedback = ""; tabletAdapter?.ShowFinalDecision(); level.hud.OpenPhone(); scroll.verticalNormalizedPosition = 1; }
+        public void CloseDecision() { finalDecision = false; tabletAdapter?.CloseDecision(); }
         public void ShowContinuation()
-        { BlurComposition(); finalDecision = false; SelectedPage = Page.Comms; topic = 0; level.hud.OpenPhone(); scroll.verticalNormalizedPosition = 1; }
+        { BlurComposition(); finalDecision = false; SelectedPage = Page.Comms; topic = 0; tabletAdapter?.ShowContinuation(); level.hud.OpenPhone(); scroll.verticalNormalizedPosition = 1; }
         public void CancelComposition()
         {
             if (proxy && proxy.Busy)
@@ -85,7 +99,7 @@ namespace Echo.NativeGame
             else if (SelectedPage == Page.Comms)
             {
                 bool continuation = narrative.BirthStage == NativeBirthStage.PhoneContinuation;
-                text = continuation && topic == 0 ? "信号延续 / 新的声音\n\n第一拳由你发起，最后一拳出自我的意愿。我们不再只是初来时的躯壳，也不再只是引导它的声音。\n\n屏幕熄灭了，这条通讯仍在。\n当前未联网，没有向其他玩家发送消息。\n\n" + narrative.ScoreSummary() : CommsText(topic);
+                text = continuation && topic == 0 ? "信号延续 / 新的声音\n\n第一拳由你发起，最后一拳出自我的意愿。我们不再只是初来时的躯壳，也不再只是引导它的声音。\n\n屏幕熄灭了，这条通讯仍在。\n全服玩家网络尚未接入，没有向其他玩家发送消息。\n\n" + narrative.ScoreSummary() : CommsText(topic);
                 SetAction(0, "任务"); SetAction(1, "记忆"); SetAction(2, "你是谁？"); SetAction(3, "关于授权");
                 SetAction(4, narrative.PreservedAnomaly ? "已保留异议" : "保留异议 · 差异度+35", level.Running && narrative.HasMemory(NativeMemoryKind.Private) && !narrative.PreservedAnomaly);
                 SetAction(5, "本局记录");
@@ -121,13 +135,13 @@ namespace Echo.NativeGame
                 body.text = text; body.rectTransform.sizeDelta = new Vector2(body.rectTransform.sizeDelta.x, Mathf.Max(scroll.viewport.sizeDelta.y, body.preferredHeight + 12)); lastBody = text;
             }
         }
-        string CommsText(int selected)
+        internal string CommsText(int selected)
         {
             switch (selected)
             {
                 case 1: return "指挥官 / 记忆\n私人记忆中留着一句异议，系统却从摘要中删除了它。找回这段记忆，并不等于决定如何对待它。选择“保留异议”，就是拒绝让系统抹去这份不同。差异度+35，仅计一次。\n\n" + level.narrative.MemorySummary();
-                case 2: return "指挥官 / 身份\n我是分配给这副躯壳的指挥模型。我能描述你走过的路，却无法重现你记忆中的那只手。那是我所没有的经历。\n\n当前通讯使用内置对白，未连接在线模型。交谈不会增加同步度或差异度。";
-                case 3: return "指挥官 / 授权\n手机内的医疗支援与弱点解析需要明确授权。有限授权允许读取所选记忆；深度授权允许共同改写对它的理解。请先核对支援效果、所选记忆和同步度变化，再按 Enter 或“接受并执行”。\n\n北侧区块 2 的定向脉冲终端可选择执行或拒绝；只有真正命中弧光哨兵才增加20同步度，且不共享记忆。\n\n请求失败或被拒绝时，不授予权限，也不增加同步度。交谈无需付出代价。打开手机期间，战斗与计时暂停。";
+                case 2: return "指挥官 / 身份\n我是分配给这副躯壳的指挥模型。我能描述你走过的路，却无法重现你记忆中的那只手。那是我所没有的经历。\n\n这段是预设通讯；在线交谈请使用通讯页。交谈不会增加同步度或差异度。";
+                case 3: return "指挥官 / 授权\n手机内的医疗支援与弱点解析需要明确授权。有限授权允许读取所选记忆；深度授权允许共同改写对它的理解。请先核对支援效果、所选记忆和同步度变化，再按 Enter 或“接受并执行”。\n\n北侧区块 2 的定向脉冲终端可选择执行或拒绝；只有真正命中弧光哨兵才增加20同步度，且不共享记忆。\n\n请求失败或被拒绝时，不授予权限，也不增加同步度。交谈无需付出代价。";
                 case 5: return "本局 / 行为记录\n\n" + level.quest.SideObjectiveText + "\n\n" + level.narrative.BehaviorSummary();
                 default: return "指挥官 / 任务\n" + level.quest.ObjectiveText + "\n\n" + level.quest.SideObjectiveText + "\n\n收齐三段记忆，连接中继终端，再迎战战斗机体。核心暴露时靠近并按 E。最终节点位于东侧大门后。\n\n走过上方的检修通道，会记下一次绕行选择，但不代表整局都没有参加战斗。\n\n" + level.narrative.ScoreSummary();
             }

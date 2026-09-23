@@ -61,6 +61,15 @@ namespace Echo.NativeGame
         {
             phonePanel.SetActive(false); resultPanel.SetActive(false);
             restartButton.onClick.AddListener(level.Restart); phoneCloseButton.onClick.AddListener(ClosePhone);
+            if (phone && phone.tabletView)
+            {
+                var oldPhone = phonePanel.GetComponent<CanvasGroup>();
+                if (!oldPhone) oldPhone = phonePanel.AddComponent<CanvasGroup>();
+                oldPhone.alpha = 0f;
+                oldPhone.interactable = false;
+                oldPhone.blocksRaycasts = false;
+                phone.tabletView.gameObject.SetActive(false);
+            }
         }
         public void BindCommanderSession(ICommanderSession session) { commanderSession = session; }
         void OnDestroy()
@@ -85,8 +94,14 @@ namespace Echo.NativeGame
             bool phoneOpen = phonePanel.activeSelf;
             if (phoneOpen)
             {
-                if (!typing && (Input.GetKeyDown(KeyCode.Tab) || Input.GetKeyDown(KeyCode.Escape))) ClosePhone();
-                else if (!typing && Input.GetKeyDown(KeyCode.Return) && phone) phone.ConfirmSupport();
+                if (Input.GetKeyDown(KeyCode.Escape) || !typing && Input.GetKeyDown(KeyCode.Tab))
+                {
+                    if (phone && phone.tabletView && phone.tabletView.gameObject.activeSelf)
+                        phone.tabletView.HandleBack();
+                    else ClosePhone();
+                }
+                else if (!typing && Input.GetKeyDown(KeyCode.Return) && phone &&
+                    (!phone.tabletView || !phone.tabletView.gameObject.activeSelf)) phone.ConfirmSupport();
             }
             else if (!typing)
             {
@@ -144,6 +159,11 @@ namespace Echo.NativeGame
         {
             level.PhonePause.OpenPhone();
             phonePanel.SetActive(true);
+            if (phone && phone.tabletView)
+            {
+                phone.tabletView.gameObject.SetActive(true);
+                phone.tabletView.RefreshExternal();
+            }
             if (level.player) level.player.MoveInput = Vector2.zero;
             if (ActiveToolkitPlayer) ActiveToolkitPlayer.MoveInput = Vector2.zero;
             ClearSelection();
@@ -152,6 +172,7 @@ namespace Echo.NativeGame
         {
             if (phonePanel.activeSelf || level.PhonePause.IsPhoneOpen)
             {
+                if (phone && phone.tabletView) phone.tabletView.gameObject.SetActive(false);
                 commanderSession?.Cancel();
                 if (phone) phone.CancelComposition();
             }

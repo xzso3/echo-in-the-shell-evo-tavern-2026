@@ -216,6 +216,10 @@ namespace Echo.NativeGame.Commander
             return entry.State;
         }
 
+        // Presentation may name a registered card without trusting the model's text.
+        public NativeSupportKind? GetKind(Guid proposalId) =>
+            proposals.TryGetValue(proposalId, out Proposal entry) ? entry.Option.Kind : (NativeSupportKind?)null;
+
         void Finish(Guid proposalId, CommanderProposalState state, string text)
         {
             if (!proposals.TryGetValue(proposalId, out Proposal entry) || IsTerminal(entry.State)) return;
