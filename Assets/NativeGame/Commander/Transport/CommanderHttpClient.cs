@@ -29,6 +29,7 @@ namespace Echo.NativeGame.Commander
             public Task<ChatResponse> Task;
             public bool IsConnectionTest;
             public bool Finished;
+            public CommanderDiagnostics Trace;
         }
 
         const int MaxReplyCharacters = 65536;
@@ -62,12 +63,14 @@ namespace Echo.NativeGame.Commander
         public bool SendAsync(IReadOnlyList<CommanderMessage> messages,
             Action<CommanderTransportResult> completed)
         {
+            var trace = CommanderDiagnostics.For(messages);
+            trace.Log("transport.enter", "enabled=" + isActiveAndEnabled + " busy=" + Busy + " messages=" + (messages?.Count ?? 0));
             if (!isActiveAndEnabled || settings == null || Busy || completed == null ||
                 messages == null || messages.Count == 0 ||
                 string.IsNullOrWhiteSpace(settings.ModelId) ||
                 !settings.TryGetApiKey(out var key) ||
                 !TryGetSdkAddress(settings.EndpointUrl, out var domain, out var apiVersion))
-                return false;
+            { trace.Log("transport.rejected", "inactive/busy/missing_callback/messages/model/key_or_invalid_endpoint"); return false; }
 
             var sdkMessages = new List<Message>(messages.Count);
             for (int i = 0; i < messages.Count; i++)
@@ -78,21 +81,22 @@ namespace Echo.NativeGame.Commander
                     case CommanderMessageRole.System: role = Role.System; break;
                     case CommanderMessageRole.User: role = Role.User; break;
                     case CommanderMessageRole.Assistant: role = Role.Assistant; break;
-                    default: return false;
+                    default: trace.Log("transport.rejected", "invalid_message_role index=" + i); return false;
                 }
-                if (string.IsNullOrWhiteSpace(messages[i].Content)) return false;
+                if (string.IsNullOrWhiteSpace(messages[i].Content)) { trace.Log("transport.rejected", "empty_message index=" + i); return false; }
                 sdkMessages.Add(new Message(role, messages[i].Content));
             }
 
-            var state = new RequestState { Callback = completed };
+            var state = new RequestState { Callback = completed, Trace = trace };
             active = state;
             try
             {
                 state.Coroutine = StartCoroutine(Exchange(state, sdkMessages,
                     settings.ModelId, domain, apiVersion, key, settings.TimeoutSeconds));
             }
-            catch (Exception)
+            catch (Exception exception)
             {
+                trace.Log("transport.start_exception", exception.GetType().FullName);
                 active = null;
                 state.Finished = true;
                 state.Callback = null;
@@ -124,6 +128,7 @@ namespace Echo.NativeGame.Commander
         {
             var state = active;
             if (state == null) return;
+            state.Trace.Log("transport.cancel", "cancel/settings_changed/disable; connectionTest=" + state.IsConnectionTest);
             state.Finished = true;
             active = null;
             Abort(state);
@@ -147,10 +152,14 @@ namespace Echo.NativeGame.Commander
                 var client = new OpenAIClient(new OpenAIAuthentication(key),
                     new OpenAISettings(domain, apiVersion));
                 var request = new ChatRequest(messages, model: model);
+                if (CommanderDiagnostics.Enabled)
+                    state.Trace.Log("sdk.request", request.ToString());
+                state.Trace.Log("sdk.start", "non-streaming; timeoutSeconds=" + timeoutSeconds + "; SDK debug disabled");
                 state.Task = client.ChatEndpoint.GetCompletionAsync(request, state.Cancellation.Token);
             }
             catch (Exception exception)
             {
+                LogException(state, exception);
                 Complete(state, Classify(exception));
                 yield break;
             }
@@ -160,6 +169,7 @@ namespace Echo.NativeGame.Commander
                 if (state.Finished) yield break;
                 if (clock.Elapsed.TotalSeconds >= timeoutSeconds)
                 {
+                    state.Trace.Log("transport.timeout", "elapsedSeconds=" + clock.Elapsed.TotalSeconds);
                     Abort(state);
                     Complete(state, new CommanderTransportResult(CommanderTransportStatus.Timeout,
                         null, "连接超时。"));
@@ -173,9 +183,14 @@ namespace Echo.NativeGame.Commander
             try
             {
                 var response = state.Task.GetAwaiter().GetResult();
+                state.Trace.Log("sdk.success", "http_status=not_exposed_by_sdk; choices=" + (response?.Choices?.Count ?? 0));
+                if (CommanderDiagnostics.Enabled)
+                    state.Trace.Log("sdk.response", response?.ToJsonString());
                 var choice = response?.Choices != null && response.Choices.Count > 0
                     ? response.Choices[0] : null;
                 var content = choice?.Message?.Content as string;
+                state.Trace.Log("sdk.choice", "finishReason=" + choice?.FinishReason + " contentType=" + choice?.Message?.Content?.GetType().FullName + " chars=" + (content?.Length ?? 0));
+                state.Trace.Log("reply.raw", content);
                 if (choice == null || choice.FinishReason == "length" ||
                     choice.FinishReason == "content_filter" ||
                     string.IsNullOrWhiteSpace(content) || content.Length > MaxReplyCharacters)
@@ -187,6 +202,7 @@ namespace Echo.NativeGame.Commander
             }
             catch (Exception exception)
             {
+                LogException(state, exception);
                 result = Classify(exception);
             }
             Complete(state, result);
@@ -225,6 +241,7 @@ namespace Echo.NativeGame.Commander
         void Complete(RequestState state, CommanderTransportResult result)
         {
             if (state.Finished) return;
+            state.Trace.Log("transport.complete", "status=" + result.Status + " http=" + result.HttpStatus + " error=" + result.ErrorText);
             state.Finished = true;
             if (active == state) active = null;
             Release(state);
@@ -256,6 +273,15 @@ namespace Echo.NativeGame.Commander
             callback?.Invoke(result);
         }
 
+        static void LogException(RequestState state, Exception exception)
+        {
+            state.Trace.Log("sdk.exception", "type=" + exception.GetType().FullName + " http=" + ReadHttpStatus(exception));
+            // Never log Exception.Message/ToString: SDK embeds headers there.
+            for (int depth = 0; exception != null && depth < 3; depth++, exception = exception.InnerException)
+                if (exception is Utilities.WebRequestRest.RestException rest)
+                    state.Trace.Log("http.error_body", rest.Response.Body);
+        }
+
         // SDK exceptions can contain request data. Only a numeric HTTP code may escape.
         static CommanderTransportResult Classify(Exception exception)
         {
@@ -285,6 +311,8 @@ namespace Echo.NativeGame.Commander
         {
             for (int depth = 0; exception != null && depth < 3; depth++, exception = exception.InnerException)
             {
+                if (exception is Utilities.WebRequestRest.RestException rest && rest.Response.Code >= 100 && rest.Response.Code <= 599)
+                    return (int)rest.Response.Code;
                 foreach (var name in new[] { "StatusCode", "ResponseCode", "HttpStatusCode" })
                 {
                     try

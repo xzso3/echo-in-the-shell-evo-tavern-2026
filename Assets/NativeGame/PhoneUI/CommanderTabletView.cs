@@ -392,7 +392,8 @@ namespace Echo.NativeGame.PhoneUI
             string message = input.text.Trim();
             if (message.Length == 0) return;
             notice = null;
-            bindings.Session.Send(message);
+            bool accepted = bindings.Session.Send(message);
+            (bindings.Session as CommanderSession)?.DiagnosticTrace?.Log("ui.send.return", "accepted=" + accepted + " busy=" + bindings.Session.Busy);
             Refresh();
         }
 
@@ -618,6 +619,11 @@ namespace Echo.NativeGame.PhoneUI
                 }
                 row.gameObject.AddComponent<UnityEngine.UI.LayoutElement>().preferredHeight = totalHeight + 6;
             }
+            var trace = (session as CommanderSession)?.DiagnosticTrace;
+            trace?.Log("ui.render", "messageCount=" + session.Messages.Count + " busy=" + session.Busy);
+            int firstNew = renderedSessionId == session.SessionId ? renderedMessageCount : 0;
+            for (int i = firstNew; i < session.Messages.Count; i++)
+                trace?.Log("ui.message", "index=" + i + " source=" + session.Messages[i].Source + " text=" + session.Messages[i].Text);
             renderedMessageCount = session.Messages.Count;
             renderedSessionId = session.SessionId;
             Canvas.ForceUpdateCanvases();
