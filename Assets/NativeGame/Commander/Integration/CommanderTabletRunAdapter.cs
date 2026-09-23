@@ -42,6 +42,7 @@ namespace Echo.NativeGame.Commander
                 ConnectionStatus = ConnectionStatus,
                 HealthStatus = HealthStatus,
                 ProposalKind = runtime.SupportBridge.GetKind,
+                CommunicationsActions = CommunicationsActions,
                 SupportText = SupportText,
                 SupportActions = SupportActions,
                 RecordsText = RecordsText,
@@ -52,15 +53,18 @@ namespace Echo.NativeGame.Commander
 
         public void ShowFinalDecision()
         {
+            runtime.Session.Cancel();
             finalDecision = true;
             recordsFeedback = string.Empty;
-            view.SelectPage(CommanderTabletPage.Records);
+            view.SetDecisionMode(true);
             view.RefreshExternal();
         }
 
         public void ShowContinuation()
         {
+            runtime.Session.Cancel();
             finalDecision = false;
+            view.SetDecisionMode(false);
             recordTopic = 0;
             recordsFeedback = string.Empty;
             view.SelectPage(CommanderTabletPage.Records);
@@ -70,34 +74,54 @@ namespace Echo.NativeGame.Commander
         public void CloseDecision()
         {
             finalDecision = false;
+            view.SetDecisionMode(false);
         }
 
         bool CanCompose()
         {
-            if (CommanderLaunchState.OfflineForCurrentRun || !settings.HasKey ||
-                string.IsNullOrEmpty(settings.EndpointUrl) || string.IsNullOrWhiteSpace(settings.ModelId))
-                return false;
             return phone.safeNode && phone.safeNode.CanCompose(out _);
         }
 
         string ComposeReason()
         {
-            if (CommanderLaunchState.OfflineForCurrentRun)
-                return "本局选择了离线试玩；可阅读记录和使用手动支援。";
-            if (!settings.HasKey || string.IsNullOrEmpty(settings.EndpointUrl) ||
-                string.IsNullOrWhiteSpace(settings.ModelId))
-                return "AI 连接尚未配置；可阅读记录和使用手动支援。";
             if (!phone.safeNode) return "安全通讯节点未接线。";
-            return phone.safeNode.CanCompose(out string reason)
-                ? "安全节点内可输入。" : reason ?? "请到安全通讯节点输入。";
+            if (!phone.safeNode.CanCompose(out string reason))
+                return reason ?? "请到安全通讯节点输入。";
+            if (CommanderLaunchState.OfflineForCurrentRun || !OnlineConfigured())
+                return "安全节点内可使用预设主题；自由输入仅有本地反馈。";
+            if (runtime.Session.TransportBusy && !runtime.Session.Busy)
+                return "在线通道正在通讯；请等待连接测试结束。";
+            return "安全节点内可发送；结果以本次在线请求为准。";
         }
+
+        bool OnlineConfigured() => settings.HasKey &&
+            !string.IsNullOrEmpty(settings.EndpointUrl) &&
+            !string.IsNullOrWhiteSpace(settings.ModelId);
 
         string ConnectionStatus()
         {
             if (CommanderLaunchState.OfflineForCurrentRun) return "AI 通讯 / 离线试玩";
-            if (!settings.HasKey || string.IsNullOrEmpty(settings.EndpointUrl) ||
-                string.IsNullOrWhiteSpace(settings.ModelId)) return "AI 通讯 / 未配置";
-            return runtime.Session.Busy ? "AI 通讯 / 连接中" : "AI 通讯 / 已配置";
+            if (!OnlineConfigured()) return "AI 通讯 / 未配置 · 本地可用";
+            return runtime.Session.Busy ? "AI 通讯 / 等待在线回复" :
+                runtime.Session.TransportBusy ? "AI 通讯 / 在线通道正在通讯" :
+                "AI 通讯 / 已配置 · " + runtime.Session.LastOnlineStatus;
+        }
+
+        IReadOnlyList<CommanderTabletAction> CommunicationsActions()
+        {
+            return new List<CommanderTabletAction>
+            {
+                new CommanderTabletAction("任务 / 本地", () => ShowLocalTopic(0)),
+                new CommanderTabletAction("记忆 / 本地", () => ShowLocalTopic(1)),
+                new CommanderTabletAction("身份 / 本地", () => ShowLocalTopic(2)),
+                new CommanderTabletAction("授权 / 本地", () => ShowLocalTopic(3))
+            };
+        }
+
+        void ShowLocalTopic(int topic)
+        {
+            if (!level || !level.quest || !level.narrative) return;
+            runtime.Session.ShowLocalTopic(phone.CommsText(topic));
         }
 
         string HealthStatus()
@@ -183,7 +207,17 @@ namespace Echo.NativeGame.Commander
             else if (recordTopic == 6) text = "记忆档案\n\n" + narrative.MemorySummary();
             else if (recordTopic == 7) text = "本局行为记录\n\n" + narrative.BehaviorSummary();
             else if (recordTopic == 8) text = "同步与差异\n\n" + narrative.ScoreSummary();
+            else if (recordTopic == 4)
+                text = "初始回声 / 系统预置\n\n" + (narrative.RewroteEcho
+                    ? "你在本局写下的话：我会带着这些矛盾继续前行。\n这段改写尚未发布。"
+                    : "过去不必毫无矛盾，你仍可以选择带着什么继续前行。\n找回这段记忆后，即可改写。");
             else text = phone.CommsText(recordTopic);
+            if (recordTopic == 7 && string.IsNullOrWhiteSpace(narrative.BehaviorSummary()))
+                text = "本局行为记录\n\n尚无已记录的本局行为。";
+            if (recordTopic == 5 && string.IsNullOrWhiteSpace(narrative.BehaviorSummary()))
+                text += "\n\n尚无已记录的本局行为。";
+            if (!finalDecision && narrative.BirthStage != NativeBirthStage.PhoneContinuation)
+                text = "网络未连接 / 以下仅保留在本局\n\n" + text;
             return text + (string.IsNullOrEmpty(recordsFeedback) ? string.Empty : "\n\n" + recordsFeedback);
         }
 
@@ -202,6 +236,7 @@ namespace Echo.NativeGame.Commander
             actions.Add(new CommanderTabletAction("你是谁？", () => SelectRecord(2)));
             actions.Add(new CommanderTabletAction("关于授权", () => SelectRecord(3)));
             actions.Add(new CommanderTabletAction("本局记录", () => SelectRecord(5)));
+            actions.Add(new CommanderTabletAction("初始回声", () => SelectRecord(4)));
             actions.Add(new CommanderTabletAction("记忆档案", () => SelectRecord(6)));
             actions.Add(new CommanderTabletAction("本局行为记录", () => SelectRecord(7)));
             actions.Add(new CommanderTabletAction("同步与差异", () => SelectRecord(8)));

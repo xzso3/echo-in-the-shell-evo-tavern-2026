@@ -8,7 +8,7 @@ namespace Echo.NativeGame.PhoneUI
 {
     public enum CommanderTabletPage { Communications, Support, Records }
 
-    // INT maps the existing local Support/Phone actions into these page buttons.
+    // The run adapter maps existing local Support/Phone actions into page buttons.
     // The view never calculates a support cost or changes game state itself.
     public sealed class CommanderTabletAction
     {
@@ -34,6 +34,7 @@ namespace Echo.NativeGame.PhoneUI
         public Func<string> HealthStatus;
         public Func<Guid, NativeSupportKind?> ProposalKind;
         public Func<Guid, string> ProposalTitle;
+        public Func<IReadOnlyList<CommanderTabletAction>> CommunicationsActions;
         public Func<string> SupportText;
         public Func<IReadOnlyList<CommanderTabletAction>> SupportActions;
         public Func<string> RecordsText;
@@ -77,6 +78,7 @@ namespace Echo.NativeGame.PhoneUI
         UnityEngine.UI.Image frameImage, returnImage, avatarImage;
         readonly UnityEngine.UI.Image[] tabIcons = new UnityEngine.UI.Image[3];
         readonly UnityEngine.UI.Button[] tabButtons = new UnityEngine.UI.Button[3];
+        readonly UnityEngine.UI.Button[] localTopicButtons = new UnityEngine.UI.Button[4];
         UnityEngine.UI.ScrollRect chatScroll;
         RectTransform chatContent;
         TMP_InputField input;
@@ -88,7 +90,9 @@ namespace Echo.NativeGame.PhoneUI
         Guid? openProposal;
         Action manualAccept, manualReject;
         string notice;
-        bool refreshing, built;
+        bool refreshing, built, decisionMode;
+        float nextPassiveRefresh;
+        string supportPresentation, recordsPresentation;
         int renderedMessageCount = -1;
         Guid renderedSessionId;
         readonly Dictionary<Guid, UnityEngine.UI.Button> proposalButtons =
@@ -169,6 +173,7 @@ namespace Echo.NativeGame.PhoneUI
             if (bindings?.Support != null) bindings.Support.ProposalChanged += OnProposalChanged;
             renderedMessageCount = -1;
             if (value?.Session == null && chatContent) Clear(chatContent);
+            supportPresentation = recordsPresentation = null;
             if (built) Refresh();
         }
 
@@ -184,6 +189,7 @@ namespace Echo.NativeGame.PhoneUI
 
         public void SelectPage(CommanderTabletPage page)
         {
+            if (decisionMode && page != CommanderTabletPage.Records) return;
             SelectedPage = page;
             notice = null;
             if (!built) return;
@@ -191,12 +197,22 @@ namespace Echo.NativeGame.PhoneUI
             supportPanel.SetActive(page == CommanderTabletPage.Support);
             recordsPanel.SetActive(page == CommanderTabletPage.Records);
             for (int i = 0; i < tabButtons.Length; i++)
+            {
+                tabButtons[i].interactable = !decisionMode || i == (int)CommanderTabletPage.Records;
                 tabButtons[i].GetComponent<UnityEngine.UI.Image>().color = i == (int)page
                     ? new Color32(58, 102, 72, 255) : new Color32(35, 62, 48, 255);
+            }
             if (page != CommanderTabletPage.Communications && input && input.isFocused)
                 input.DeactivateInputField();
             // Reading another page deliberately leaves the session and HTTP request alive.
             Refresh();
+        }
+
+        public void SetDecisionMode(bool value)
+        {
+            decisionMode = value;
+            if (value) SelectPage(CommanderTabletPage.Records);
+            else SelectPage(SelectedPage);
         }
 
         public void HandleBack()
@@ -206,7 +222,7 @@ namespace Echo.NativeGame.PhoneUI
             else gameObject.SetActive(false);
         }
 
-        // INT may use this for a manual Support.Request contract. Its delegates must
+        // The adapter uses this for a manual Support.Request contract. Its delegates must
         // call the existing Support Confirm/Cancel and refresh this view afterwards.
         public void ShowManualContract(string unityContractText, Action accept, Action reject)
         {
@@ -228,10 +244,18 @@ namespace Echo.NativeGame.PhoneUI
         void BuildComms()
         {
             var root = commsPanel.transform;
-            Image(Box("Chat Background", root, 0, 0, 770, 178), Ink);
-            chatScroll = Scroll(Box("Chat Scroll", root, 4, 4, 762, 170), out chatContent);
-            locationLabel = Text(Box("Location Reason", root, 0, 181, 770, 19), "", 14, Muted);
-            input = Input(Box("Composer", root, 0, 202, 558, 44), "在安全节点向指挥官发送消息…");
+            Image(Box("Chat Background", root, 0, 0, 770, 127), Ink);
+            chatScroll = Scroll(Box("Chat Scroll", root, 4, 4, 762, 119), out chatContent);
+            for (int i = 0; i < localTopicButtons.Length; i++)
+            {
+                int slot = i;
+                localTopicButtons[i] = Button(Box("Local Topic " + i, root,
+                    (i % 2) * 389, 130 + (i / 2) * 27, 381, 24),
+                    "预设主题", new Color32(35, 62, 48, 255), Pale, 14);
+                localTopicButtons[i].onClick.AddListener(() => InvokeLocalTopic(slot));
+            }
+            locationLabel = Text(Box("Location Reason", root, 0, 184, 770, 18), "", 14, Muted);
+            input = Input(Box("Composer", root, 0, 202, 558, 44), "输入消息；离线时仅有本地反馈…");
             input.onValueChanged.AddListener(value =>
             {
                 if (!refreshing && bindings?.Session != null) bindings.Session.Draft = value;
@@ -241,6 +265,15 @@ namespace Echo.NativeGame.PhoneUI
             cancelButton = Button(Box("Cancel", root, 668, 202, 102, 44), "取消", Edge, Pale, 17);
             sendButton.onClick.AddListener(Send);
             cancelButton.onClick.AddListener(() => bindings?.Session?.Cancel());
+        }
+
+        void InvokeLocalTopic(int slot)
+        {
+            var actions = bindings?.CommunicationsActions?.Invoke();
+            if (actions == null || slot >= actions.Count || actions[slot] == null ||
+                !actions[slot].Enabled) return;
+            actions[slot].Invoke?.Invoke();
+            Refresh();
         }
 
         GameObject BuildReadingPage(string name, out RectTransform content)
@@ -379,19 +412,36 @@ namespace Echo.NativeGame.PhoneUI
                     input.SetTextWithoutNotify(session.Draft ?? string.Empty);
                 connectionLabel.text = bindings?.ConnectionStatus?.Invoke() ?? "AI 通讯 / 未接线";
                 healthLabel.text = bindings?.HealthStatus?.Invoke() ?? string.Empty;
-                waitLabel.text = session?.Busy == true ? "指挥官正在回应" : string.Empty;
+                waitLabel.text = session?.Busy == true ? "正在等待在线服务" : string.Empty;
                 if (session != null && (renderedMessageCount != session.Messages.Count ||
                     renderedSessionId != session.SessionId)) RenderMessages(session);
                 RefreshProposalStates();
                 RefreshControls();
+                RefreshLocalTopics();
                 if (SelectedPage == CommanderTabletPage.Support)
                     RenderReading(supportContent, bindings?.SupportText?.Invoke() ?? "手动支援尚未接线。",
-                        bindings?.SupportActions?.Invoke());
+                        bindings?.SupportActions?.Invoke(), ref supportPresentation);
                 else if (SelectedPage == CommanderTabletPage.Records)
                     RenderReading(recordsContent, bindings?.RecordsText?.Invoke() ?? "本局记录尚未接线。",
-                        bindings?.RecordsActions?.Invoke());
+                        bindings?.RecordsActions?.Invoke(), ref recordsPresentation);
             }
             finally { refreshing = false; }
+        }
+
+        void RefreshLocalTopics()
+        {
+            var actions = bindings?.CommunicationsActions?.Invoke();
+            for (int i = 0; i < localTopicButtons.Length; i++)
+            {
+                var button = localTopicButtons[i];
+                if (!button) continue;
+                var action = actions != null && i < actions.Count ? actions[i] : null;
+                button.gameObject.SetActive(action != null);
+                if (action == null) continue;
+                button.interactable = action.Enabled && action.Invoke != null;
+                var label = button.GetComponentInChildren<TMP_Text>();
+                if (label) label.text = action.Label;
+            }
         }
 
         void RefreshControls()
@@ -404,8 +454,8 @@ namespace Echo.NativeGame.PhoneUI
             cancelButton.gameObject.SetActive(busy);
             locationLabel.color = string.IsNullOrWhiteSpace(notice) ? Muted : Error;
             locationLabel.text = !string.IsNullOrWhiteSpace(notice) ? notice :
-                allowed ? "安全节点 / 可发送" :
-                    (bindings?.ComposeReason?.Invoke() ?? "请到安全通讯节点输入；支援与记录仍可使用。");
+                (bindings?.ComposeReason?.Invoke() ??
+                    (allowed ? "安全节点内可发送。" : "请到安全通讯节点输入；支援与记录仍可使用。"));
         }
 
         void RenderMessages(ICommanderSession session)
@@ -424,7 +474,8 @@ namespace Echo.NativeGame.PhoneUI
                 background.raycastTarget = false;
                 string source = item.Source == CommanderChatSource.Player ? "你" :
                     item.Source == CommanderChatSource.OnlineAssistant ? "指挥官 / 在线" :
-                    item.Source == CommanderChatSource.LocalFact ? "本局事实" : "通讯提示";
+                    item.Source == CommanderChatSource.LocalFact ? "本地通讯" :
+                    item.Source == CommanderChatSource.LocalTopic ? "预设主题" : "通讯提示";
                 Text(Box("Source", row, 14, 8, 690, 21), source, 14,
                     item.Source == CommanderChatSource.Error ? Error : Muted);
                 var body = Text(Box("Body", row, 14, 31, 716, 30), item.Text, 18, Pale);
@@ -481,9 +532,17 @@ namespace Echo.NativeGame.PhoneUI
             }
         }
 
-        void RenderReading(RectTransform content, string body, IReadOnlyList<CommanderTabletAction> actions)
+        void RenderReading(RectTransform content, string body,
+            IReadOnlyList<CommanderTabletAction> actions, ref string presentation)
         {
             if (!content) return;
+            if (string.IsNullOrWhiteSpace(body)) body = "本局尚无可显示的记录。";
+            string next = body;
+            if (actions != null)
+                foreach (var action in actions)
+                    if (action != null) next += "\n" + action.Label + ":" + action.Enabled;
+            if (presentation == next) return;
+            presentation = next;
             var scroll = content.parent
                 ? content.parent.GetComponentInParent<UnityEngine.UI.ScrollRect>() : null;
             float position = scroll ? scroll.verticalNormalizedPosition : 1f;
@@ -523,6 +582,11 @@ namespace Echo.NativeGame.PhoneUI
             var root = GetComponent<RectTransform>();
             float scale = Mathf.Min(1f, root.rect.width / 1088f, root.rect.height / 612f);
             tablet.localScale = Vector3.one * Mathf.Max(.1f, scale);
+            if (Time.unscaledTime >= nextPassiveRefresh)
+            {
+                nextPassiveRefresh = Time.unscaledTime + .3f;
+                Refresh();
+            }
         }
 
         void OnDisable()
@@ -627,8 +691,7 @@ namespace Echo.NativeGame.PhoneUI
         {
             var scroll = root.gameObject.AddComponent<UnityEngine.UI.ScrollRect>();
             var viewport = Fill("Viewport", root);
-            Image(viewport, new Color(0, 0, 0, .001f));
-            viewport.gameObject.AddComponent<UnityEngine.UI.Mask>().showMaskGraphic = false;
+            viewport.gameObject.AddComponent<UnityEngine.UI.RectMask2D>();
             content = Fill("Content", viewport);
             content.anchorMin = new Vector2(0, 1);
             content.anchorMax = Vector2.one;
