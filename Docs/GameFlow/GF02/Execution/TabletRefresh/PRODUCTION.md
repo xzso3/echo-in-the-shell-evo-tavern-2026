@@ -36,5 +36,5 @@
 - UIUX 规格与三页代码已完成，程序只修改 TabletView 与 TabletRunAdapter；无新增运行资源。
 - 美术静态复核完成；任务行高、固定返回、标题省略与合同提示空间已闭环。制作人补充审查了模式返回、新Session清理、合同同帧/重入及键盘焦点恢复。
 - 静态色值计算：Pale/Ink 14.06:1，Pale/Selected 5.16:1，Muted/Ink 6.71:1。此为基础色理论计算，不等于真实字体/缩放验收。
-- INT 只读确认集成 HEAD 仍为输入基线；Unity PID 75893 占用4e44集成工程。已请求用户保存并正常关闭或说明继续占用，收到明确答复前不强关、不并开批处理、不改动该集成树。
-- 正在整理实施提交。Unity 编译、最终人工验收尚未执行；用户工作树设置改动仍保留。
+- 用户已明确保存并关闭集成工程 Editor；INT 复核锁解除后，将实施提交 `d9521e0561d6685a042e51e5f6e0708220e46ebe` 从 `d989a63` fast-forward 到唯一 `codex/gf02-integration`。
+- INT 以 Unity `2021.3.27f1c2` 在集成工作树完成一次正常导入与 C# 编译，退出码 0；日志见 [INTEGRATION.md](INTEGRATION.md)。未执行 Play、自动测试、mock 或截图巡检，最终人工验收仍未测。工作树原有字体资产和 `ProjectSettings/PackageManagerSettings.asset` 未提交改动均保留，未纳入本批提交。
