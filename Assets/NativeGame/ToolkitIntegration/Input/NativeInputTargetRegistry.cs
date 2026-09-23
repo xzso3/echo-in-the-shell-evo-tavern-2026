@@ -109,6 +109,12 @@ namespace Echo.NativeGame
                 instance.context.Run.Player == player.transform;
         }
 
+        public bool IsActiveRunReady(NativeRunController level, NativePlayer player)
+        {
+            Instance instance;
+            return TryGetActive(level, player, out instance);
+        }
+
         public Selection FindTarget(NativeRunController level, NativePlayer player)
         {
             Instance instance;

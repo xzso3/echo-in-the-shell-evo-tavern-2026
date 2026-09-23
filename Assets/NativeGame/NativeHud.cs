@@ -17,6 +17,7 @@ namespace Echo.NativeGame
         readonly NativeInputTargetRegistry inputTargets = new NativeInputTargetRegistry();
         public bool IntegratedInput => inputTargets.IntegratedMode;
         public bool HasActiveInputScope => inputTargets.HasActiveScope;
+        public bool ActiveInputReady => inputTargets.IsActiveRunReady(level, level ? level.player : null);
         public RuntimeScope ActiveInputScope => inputTargets.ActiveScope;
         // LevelHost registers only this instance's endpoints and switches the active
         // scope as the player crosses a level boundary. Legacy serialized input stays

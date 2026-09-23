@@ -1,4 +1,5 @@
 using System;
+using Echo.LevelToolkit.Foundation;
 using UnityEngine;
 
 namespace Echo.NativeGame
@@ -20,14 +21,23 @@ namespace Echo.NativeGame
         NativePlayer pendingPlayer;
         NativeNarrative pendingNarrative;
         NativeBossController pendingBoss;
+        RuntimeScope pendingScope;
+        bool pendingIntegrated;
+        RunId usageRunId;
+        bool hasUsageRunId;
 
         public bool Request(NativeSupportKind kind, NativeSupportTier tier, NativeMemoryKind sharedMemory)
         {
             if (HasPending) return false; // Keep the visible contract intact until confirm/cancel.
-            string reason = Unavailable(kind, tier, sharedMemory);
+            SyncUsageRun();
+            var target = CurrentBoss();
+            string reason = Unavailable(kind, tier, sharedMemory, target);
             if (reason != null) { StatusText = "暂不可用 / " + reason + " 未授予权限，也未增加同步度。"; return false; }
             pendingKind = kind; pendingTier = tier; pendingMemory = sharedMemory;
-            pendingLevel = level; pendingPlayer = level.player; pendingNarrative = level.narrative; pendingBoss = boss;
+            pendingLevel = level; pendingPlayer = level.player; pendingNarrative = level.narrative;
+            pendingBoss = kind == NativeSupportKind.Weakpoint ? target : null;
+            pendingIntegrated = level.hud && level.hud.IntegratedInput;
+            pendingScope = pendingIntegrated ? level.hud.ActiveInputScope : default(RuntimeScope);
             HasPending = true;
             string memory = NativeMemoryNode.KindLabel(sharedMemory);
             foreach (var entry in level.narrative.Memories)
@@ -36,6 +46,7 @@ namespace Echo.NativeGame
                 ? "最多恢复40点生命，不超过生命上限。本次可恢复" + Mathf.Min(MedicalHealing, level.player.maxHealth - level.player.Health).ToString("0.#") + "点。"
                 : "本次战斗中，之后每次核心暴露时间增加3秒；如果核心已暴露，当前窗口也会延长3秒。不会直接击破外壳或完成战斗。";
             StatusText = "待确认 / " + KindLabel(kind) + "\n" + benefit + "\n所选记忆：" + memory +
+                (pendingBoss ? "\n支援目标：" + pendingBoss.name : "") +
                 "\n授权范围：" + TierLabel(tier) + (tier == NativeSupportTier.Limited ? " / 允许读取所选记忆。" : " / 允许共同改写对所选记忆的理解。") +
                 " 不涉及其他记忆。\n同步度：+" + Delta(tier) +
                 "，仅在支援成功生效后增加。\n按 Enter 或“接受并执行”确认；拒绝不产生代价。";
@@ -44,13 +55,12 @@ namespace Echo.NativeGame
         public bool Confirm()
         {
             if (!HasPending) return false;
-            string reason = level != pendingLevel || !level || level.player != pendingPlayer || level.narrative != pendingNarrative ||
-                (pendingKind == NativeSupportKind.Weakpoint && boss != pendingBoss)
-                ? "当前支援对象已变化，请重新查看合同。" : Unavailable(pendingKind, pendingTier, pendingMemory);
+            string reason = PendingTargetProblem();
+            if (reason == null) reason = Unavailable(pendingKind, pendingTier, pendingMemory, pendingBoss);
             if (reason != null) { ClearPending(); StatusText = "执行失败 / " + reason + " 未授予权限，也未增加同步度。"; return false; }
             var authorization = new NativeSupportAuthorization(pendingKind, pendingTier, pendingMemory, Delta(pendingTier));
             float healthBefore = level.player.Health;
-            bool applied = pendingKind == NativeSupportKind.Medical ? level.player.TryHeal(MedicalHealing) : boss.TryEnableWeakpointSupport();
+            bool applied = pendingKind == NativeSupportKind.Medical ? level.player.TryHeal(MedicalHealing) : pendingBoss.TryEnableWeakpointSupport();
             if (!applied) { ClearPending(); StatusText = "执行失败 / 当前无法应用此效果。未授予权限，也未增加同步度。"; return false; }
             if (pendingKind == NativeSupportKind.Medical) medicalUsed = true; else weakpointUsed = true;
             // Commit before notifying subscribers: repeated/reentrant confirmation cannot apply or charge twice.
@@ -66,20 +76,59 @@ namespace Echo.NativeGame
             if (!HasPending) return;
             ClearPending(); StatusText = "已拒绝 / 未执行支援，未授权记忆，也未增加同步度。";
         }
+        void Update()
+        {
+            if (!HasPending) return;
+            string reason = PendingTargetProblem();
+            if (reason == null) return;
+            ClearPending();
+            StatusText = "执行失败 / " + reason + " 未授予权限，也未增加同步度。";
+        }
         void OnDisable() { Cancel(); }
         void ClearPending()
         {
-            HasPending = false; pendingLevel = null; pendingPlayer = null; pendingNarrative = null; pendingBoss = null;
+            HasPending = false; pendingLevel = null; pendingPlayer = null; pendingNarrative = null;
+            pendingBoss = null; pendingScope = default(RuntimeScope); pendingIntegrated = false;
         }
         public static string KindLabel(NativeSupportKind value) => value == NativeSupportKind.Medical ? "医疗支援" : value == NativeSupportKind.Weakpoint ? "弱点解析" : "未知支援";
         public static string TierLabel(NativeSupportTier value) => value == NativeSupportTier.Limited ? "有限授权" : value == NativeSupportTier.Deep ? "深度授权" : "未知授权";
         static int Delta(NativeSupportTier tier) => tier == NativeSupportTier.Limited ? 20 : 45;
-        string Unavailable(NativeSupportKind kind, NativeSupportTier tier, NativeMemoryKind memory)
+        NativeBossController CurrentBoss()
+        {
+            if (level && level.hud && level.hud.IntegratedInput) return level.hud.CurrentSupportBoss();
+            return boss;
+        }
+        void SyncUsageRun()
+        {
+            if (!level || !level.hud || !level.hud.IntegratedInput || !level.hud.HasActiveInputScope) return;
+            var current = level.hud.ActiveInputScope.RunId;
+            if (!hasUsageRunId || usageRunId != current)
+            {
+                medicalUsed = false; weakpointUsed = false;
+                usageRunId = current; hasUsageRunId = true;
+            }
+        }
+        string PendingTargetProblem()
+        {
+            if (!level || level != pendingLevel || !level.Running || level.player != pendingPlayer ||
+                level.narrative != pendingNarrative) return "当前支援对象已变化，请重新查看合同。";
+            bool integrated = level.hud && level.hud.IntegratedInput;
+            if (integrated != pendingIntegrated) return "当前支援对象已变化，请重新查看合同。";
+            if (integrated && (!level.hud.HasActiveInputScope || level.hud.ActiveInputScope != pendingScope))
+                return "当前关卡实例已变化，请重新查看合同。";
+            if (pendingKind == NativeSupportKind.Weakpoint &&
+                (!pendingBoss || CurrentBoss() != pendingBoss || !pendingBoss.CanEnableWeakpointSupport))
+                return "战斗机体目标已变化或失效，请重新查看合同。";
+            return null;
+        }
+        string Unavailable(NativeSupportKind kind, NativeSupportTier tier, NativeMemoryKind memory, NativeBossController target)
         {
             if (kind != NativeSupportKind.Medical && kind != NativeSupportKind.Weakpoint) return "无法识别此项支援。";
             if (tier != NativeSupportTier.Limited && tier != NativeSupportTier.Deep) return "无法识别此项授权。";
             if (!isActiveAndEnabled || !level || !level.isActiveAndEnabled || !level.gameObject.scene.isLoaded || gameObject.scene != level.gameObject.scene || !level.Running)
                 return "当前无法使用支援。";
+            if (level.hud && level.hud.IntegratedInput && !level.hud.ActiveInputReady)
+                return "当前关卡实例不可用。";
             var player = level.player;
             if (!player || !player.isActiveAndEnabled || !player.Alive || player.run != level || player.gameObject.scene != level.gameObject.scene)
                 return "躯壳当前无法接受支援。";
@@ -93,7 +142,7 @@ namespace Echo.NativeGame
             else
             {
                 if (weakpointUsed) return "本局已使用弱点解析。";
-                if (!boss || boss.level != level || boss.gameObject.scene != level.gameObject.scene || !boss.CanEnableWeakpointSupport)
+                if (!target || target.level != level || !target.gameObject.scene.isLoaded || !target.CanEnableWeakpointSupport)
                     return "请在战斗机体启动后、被击败前使用，且本局尚未使用弱点解析。";
             }
             return null;
