@@ -69,9 +69,10 @@ namespace Echo.LevelToolkit.Level.Editor
             var chunkMap = mapObject.AddComponent<ChunkMap>();
             for (int origin = -6; origin < 12; origin += 6)
             {
-                string prefabPath = folder + "/chunk_6.prefab";
+                string variant = origin == -6 ? "left" : origin == 6 ? "right" : "middle";
+                string prefabPath = folder + "/chunk_" + variant + "_6.prefab";
                 GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
-                if (!prefab) prefab = CreateChunkPrefab(prefabPath, tile);
+                if (!prefab) prefab = CreateChunkPrefab(prefabPath, tile, variant);
                 var instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab, SceneManager.GetActiveScene());
                 instance.name = "Chunk at " + origin;
                 instance.transform.SetParent(mapObject.transform);
@@ -145,20 +146,21 @@ namespace Echo.LevelToolkit.Level.Editor
             return root;
         }
 
-        private static GameObject CreateChunkPrefab(string path, Tile tile)
+        private static GameObject CreateChunkPrefab(string path, Tile tile, string variant)
         {
             var chunk = new GameObject("6x6 road chunk");
             var definition = chunk.AddComponent<ChunkDefinition>();
             chunk.AddComponent<ChunkMapInstance>();
-            SetId(definition, "contentId", "chunk_6");
+            SetId(definition, "contentId", "chunk_" + variant + "_6");
             SetInt(definition, "size", 6);
             SetString(definition, "themeId", "test-road");
-            SetPort(definition, "east", 6);
-            SetPort(definition, "west", 6);
+            if (variant != "right") SetPort(definition, "east", 6);
+            if (variant != "left") SetPort(definition, "west", 6);
             var grid = new GameObject("Ground grid").AddComponent<Grid>();
             grid.transform.SetParent(chunk.transform, false);
             var layer = new GameObject("Ground"); layer.transform.SetParent(grid.transform, false);
-            Tilemap map = layer.AddComponent<Tilemap>(); layer.AddComponent<TilemapRenderer>();
+            Tilemap map = layer.AddComponent<Tilemap>();
+            layer.AddComponent<TilemapRenderer>().sortingOrder = -100;
             for (int x = 0; x < 6; x++) for (int y = 0; y < 6; y++)
                 map.SetTile(new Vector3Int(x, y, 0), tile);
             GameObject prefab = PrefabUtility.SaveAsPrefabAsset(chunk, path);
@@ -171,7 +173,8 @@ namespace Echo.LevelToolkit.Level.Editor
             var grid = new GameObject("Boundary grid").AddComponent<Grid>();
             grid.transform.SetParent(parent, false);
             var layer = new GameObject("Wall tiles"); layer.transform.SetParent(grid.transform, false);
-            Tilemap map = layer.AddComponent<Tilemap>(); layer.AddComponent<TilemapRenderer>();
+            Tilemap map = layer.AddComponent<Tilemap>();
+            layer.AddComponent<TilemapRenderer>().sortingOrder = -50;
             for (int x = -7; x <= 12; x++)
             { map.SetTile(new Vector3Int(x, -1, 0), tile); map.SetTile(new Vector3Int(x, 6, 0), tile); }
             for (int y = 0; y < 6; y++)
@@ -246,6 +249,7 @@ namespace Echo.LevelToolkit.Level.Editor
             var door = go.AddComponent<MapDoor>();
             var visual = new GameObject("Closed visual"); visual.transform.SetParent(go.transform, false);
             var view = visual.AddComponent<SpriteRenderer>(); view.sprite = sprite; view.color = new Color(1, .2f, .2f, .8f);
+            view.sortingOrder = 110;
             visual.transform.localScale = new Vector3(.3f, 6f, 1);
             SetId(door, "doorId", localId);
             SetId(door, "setOpenEndpoint", localId + "_set");
@@ -287,6 +291,7 @@ namespace Echo.LevelToolkit.Level.Editor
             var marker = new GameObject("Locked marker"); marker.transform.SetParent(go.transform, false);
             var view = marker.AddComponent<SpriteRenderer>(); view.sprite = sprite;
             view.color = new Color(.3f, 1f, .4f, .7f);
+            view.sortingOrder = 108;
             marker.transform.localScale = new Vector3(.8f, 2f, 1);
             LevelExit exit = go.AddComponent<LevelExit>();
             SetId(exit, "exitId", "test_exit"); SetId(exit, "reachedEndpoint", "exit_reached");
