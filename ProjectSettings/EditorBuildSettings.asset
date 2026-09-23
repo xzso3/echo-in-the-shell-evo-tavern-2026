@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/CommanderHome.unity
     guid: 4e5005609603f41c99d12306a8ef4ef3
   - enabled: 1
+    path: Assets/Scenes/NativeDemoTilemap.unity
+    guid: b2325c2a6efb54237952e6f13ab944f8
+  - enabled: 1
     path: Assets/Scenes/NativeDemo.unity
     guid: bda44eab5100a432d96dd72f56681f6a
   - enabled: 0
