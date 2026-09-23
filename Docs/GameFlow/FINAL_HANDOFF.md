@@ -25,7 +25,7 @@
 | GF01-06 HUD／结局／结算 UI | `f8e8a62` | `51cf596`，`GameUI/Hud/`、`Ending/`、`Results/` |
 | GF01-INT 共享接线与修复 | — | `8688c9b`、`27b8ed8`，现有 Home/Run/Hud/Phone 与资源引用 |
 
-内置 ImageGen 实际生成了两张全流程四格草图 `Assets/NativeGame/GameUI/Design/FlowConceptBoard_A.png`、`FlowConceptBoard_B.png`，以及四张正式 Sprite `Assets/NativeGame/GameUI/Art/MainMenuFacility.png`、`LightPanelCorner.png`、`TerminalButtonBlank.png`、`KeycapBlank.png`。生成 prompt、尺寸、用途及导入设置在 [GF01_04_ASSETS.md](GF01_04_ASSETS.md)。四张正式图由 `GameUI/Resources/GF01Art.asset` 引用并在原生界面显示；草图只作设计参考。既有平板七图仍在 `Assets/NativeGame/PhoneUI/Art/`。
+内置 ImageGen 实际生成了两张全流程四格草图 `Assets/NativeGame/GameUI/Design/FlowConceptBoard_A.png`、`FlowConceptBoard_B.png`，以及四张正式 Sprite `Assets/NativeGame/GameUI/Art/MainMenuFacility.png`、`LightPanelCorner.png`、`TerminalButtonBlank.png`、`KeycapBlank.png`。生成 prompt、尺寸、用途及导入设置在 [GF01_04_ASSETS.md](GF01_04_ASSETS.md)。四张正式图由 `GameUI/Resources/GF01Art.asset` 引用并接入原生界面代码，实际画面待人工查看；草图只作设计参考。既有平板七图仍在 `Assets/NativeGame/PhoneUI/Art/`。
 
 ## 最后一次人工检查
 
