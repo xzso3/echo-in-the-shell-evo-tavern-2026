@@ -31,7 +31,7 @@ namespace Echo.NativeGame.GameUI
                             !string.IsNullOrWhiteSpace(result.Content),
                         Message = ConnectionMessage(result.Status)
                     })),
-                CancelTest = transport.Cancel,
+                CancelTest = transport.CancelTestConnection,
                 Closed = closed
             };
         }
