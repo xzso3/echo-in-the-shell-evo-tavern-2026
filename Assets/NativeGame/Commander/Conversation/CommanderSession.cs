@@ -142,8 +142,7 @@ namespace Echo.NativeGame.Commander
             pending = null;
             if (!source.IsCurrent(request.Focus))
             {
-                LastOnlineStatus = "状态已变化";
-                Changed?.Invoke();
+                DropStaleReply();
                 return;
             }
             LastOnlineStatus = "待重试";
@@ -209,8 +208,7 @@ namespace Echo.NativeGame.Commander
             pending = null;
             if (!source.IsCurrent(request.Focus))
             {
-                LastOnlineStatus = "状态已变化";
-                Changed?.Invoke();
+                DropStaleReply();
                 return;
             }
             if (result.Status != CommanderTransportStatus.Success)
@@ -261,8 +259,7 @@ namespace Echo.NativeGame.Commander
             pending = null;
             if (!source.IsCurrent(request.Focus))
             {
-                LastOnlineStatus = "状态已变化";
-                Changed?.Invoke();
+                DropStaleReply();
                 return;
             }
             LastOnlineStatus = "上次在线失败 · 本地可用";
@@ -273,6 +270,12 @@ namespace Echo.NativeGame.Commander
                 "\n自由输入没有本地问答模型，不能按任意问题生成回答。请选择下方任务、记忆、身份或授权主题；支援与记录仍可独立使用。",
                 CommanderChatSource.LocalFact));
             Changed?.Invoke();
+        }
+
+        void DropStaleReply()
+        {
+            LastOnlineStatus = "状态已变化";
+            AddError("局内进度或焦点已变化，旧请求已丢弃；草稿已保留，请在当前状态下手动重试。");
         }
 
         void OnProposalChanged(Guid proposalId, CommanderProposalState state, string text)
