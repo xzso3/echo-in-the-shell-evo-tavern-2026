@@ -24,6 +24,7 @@ namespace Echo.NativeGame
         readonly NativeInputTargetRegistry inputTargets = new NativeInputTargetRegistry();
         ICommanderSession commanderSession;
         NativeHudView flowHudView;
+        NativeEquipment hudEquipment;
         GameIntroView introView;
         GamePauseView pauseView;
         NativeResultsView resultsView;
@@ -101,6 +102,7 @@ namespace Echo.NativeGame
 
             var art = Resources.Load<GameUiArtCatalog>("GF01Art");
             flowHudView = NativeHudView.Create(canvas.transform, font);
+            hudEquipment = FindObjectOfType<NativeEquipment>();
             introView = GameFlowUiFactory.CreateIntro(canvas.transform, font, art);
             pauseView = GameFlowUiFactory.CreatePause(canvas.transform, font, art);
             var endingView = NativeEndingView.Create(canvas.transform, font);
@@ -110,6 +112,10 @@ namespace Echo.NativeGame
             if (art)
             {
                 flowHudView.keycapSprite = art.keycapBlank;
+                flowHudView.healthIconSprite = art.healthIcon;
+                flowHudView.weaponIconSprite = art.weaponIcon;
+                flowHudView.equipmentIconSprite = art.equipmentIcon;
+                flowHudView.tabletIconSprite = art.tabletIcon;
                 flowHudView.ApplyArt();
                 endingView.panelCornerSprite = art.lightPanelCorner;
                 endingView.ApplyArt();
@@ -322,7 +328,9 @@ namespace Echo.NativeGame
                     ? "解除核心封锁" : nearbyScoped ? nearbyScoped.Prompt : nearby ? nearby.Prompt : string.Empty;
                 flowHudView.Bind(new NativeHudDisplay(health, maxHealth, autoFire,
                     level.quest.ObjectiveText, interactionPrompt, level.Elapsed, kills,
-                    level.narrative.Sync, level.narrative.Difference));
+                    level.narrative.Sync, level.narrative.Difference,
+                    NativeHudExtras.FromRun(level, hudEquipment,
+                        level.IsCombatAdvancing && !phonePanel.activeSelf)));
                 flowHudView.Show(level.IsCombatAdvancing && !phonePanel.activeSelf);
             }
         }
