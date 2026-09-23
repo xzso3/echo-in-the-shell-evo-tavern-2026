@@ -1,0 +1,7 @@
+{
+  "name": "Echo.LevelToolkit.Map.Editor",
+  "rootNamespace": "Echo.LevelToolkit.Map.Editor",
+  "references": ["Echo.LevelToolkit.Runtime", "Unity.2D.Tilemap.Editor"],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": true
+}
