@@ -72,9 +72,12 @@ namespace Echo.NativeGame.GameUI
             if (!background) Build();
             if (art && art.menuBackgroundStatic)
                 GameUiElements.ApplySprite(background, art.menuBackgroundStatic);
-            rain.Set(art ? art.menuRainFrames : null, art ? art.menuRainFrameSeconds : 0f);
-            water.Set(art ? art.menuWaterFrames : null, art ? art.menuWaterFrameSeconds : 0f);
-            lights.Set(art ? art.menuLightsFrames : null, art ? art.menuLightsFrameSeconds : 0f);
+            rain.Set(art ? art.menuRainFrames : null,
+                art && art.menuRainFrameSeconds > 0f ? art.menuRainFrameSeconds : 0.16f);
+            water.Set(art ? art.menuWaterFrames : null,
+                art && art.menuWaterFrameSeconds > 0f ? art.menuWaterFrameSeconds : 0.20f);
+            lights.Set(art ? art.menuLightsFrames : null,
+                art && art.menuLightsFrameSeconds > 0f ? art.menuLightsFrameSeconds : 0.30f);
         }
 
         void Update()

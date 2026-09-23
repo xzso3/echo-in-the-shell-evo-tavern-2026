@@ -18,8 +18,8 @@ namespace Echo.NativeGame.GameUI
         public Sprite[] menuWaterFrames;
         public Sprite[] menuLightsFrames;
         public float menuRainFrameSeconds = 0.16f;
-        public float menuWaterFrameSeconds = 0.24f;
-        public float menuLightsFrameSeconds = 0.36f;
+        public float menuWaterFrameSeconds = 0.20f;
+        public float menuLightsFrameSeconds = 0.30f;
 
         [Header("GF02 HUD")]
         public Sprite healthIcon;
