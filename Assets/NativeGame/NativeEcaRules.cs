@@ -1,4 +1,5 @@
 using System;
+using Echo.LevelToolkit.Combat;
 using UnityEngine;
 namespace Echo.NativeGame
 {
@@ -139,10 +140,26 @@ namespace Echo.NativeGame
             if (region.purpose == NativeRegion.Purpose.ServiceBypass)
             { if (narrative) narrative.RecordBypass(); return; }
             if (!quest.CanStartBoss()) return;
-            if (!BossConnected)
+            if (!BossConnected || !map || !map.arenaEntryGate)
             { dialogue.Show("暂时无法继续\n战斗区域尚未准备就绪，本局尚未通关。请使用已完成战斗区域配置的试玩版本。"); return; }
-            if (boss.IsDefeated || !quest.RecordBossStart()) return;
-            map.LockArena(); boss.ActivateEncounter();
+            if (boss.IsDefeated) return;
+            var activation = boss.TryActivateEncounter();
+            if (activation != CombatBoss.ActivationResult.Started &&
+                activation != CombatBoss.ActivationResult.AlreadyActive)
+            {
+                Debug.LogWarning("Native ECA: Boss activation rejected: " + activation, this);
+                dialogue.Show("暂时无法继续\n战斗机体未能启动，封锁门保持原状。");
+                return;
+            }
+            // TryActivateEncounter has no callbacks; the prechecked Quest commit is synchronous.
+            if (!quest.RecordBossStart())
+            {
+                if (activation == CombatBoss.ActivationResult.Started && !boss.CancelUncommittedActivation())
+                    Debug.LogError("Native ECA: Boss activation could not be rolled back.", this);
+                Debug.LogError("Native ECA: Boss start was not committed; arena remains unlocked.", this);
+                return;
+            }
+            map.LockArena();
             dialogue.Show("测试战斗 / 战斗机体\n注意预警，及时躲避。击破外壳后，靠近暴露的核心按 E。错过机会也不用担心，核心会再次开放。机体的正式身份尚未确定。");
         }
         public bool CanInteractBossCore(NativePlayer actor) => level.Running && quest.BossStarted && !quest.BossCleared && BossConnected && boss.CanInteractCore(actor);

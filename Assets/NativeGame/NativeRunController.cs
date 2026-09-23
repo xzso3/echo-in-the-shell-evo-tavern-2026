@@ -10,6 +10,7 @@ namespace Echo.NativeGame
         public enum RunPhase { Starting, Playing, Ending, Completed, Dead }
         public NativePlayer player;
         public NativeCombat combat;
+        public NativeCombatIntegration combatIntegration;
         public NativeQuest quest;
         public NativeMap map;
         public NativeDialogue dialogue;
@@ -24,10 +25,20 @@ namespace Echo.NativeGame
         void Awake()
         {
             Time.timeScale = 1;
-            if (!player || !combat || !quest || !map || !dialogue || !rules || !hud)
+            if (!player || !combat || !combatIntegration || !quest || !map || !dialogue || !rules || !hud)
             { Debug.LogError("NativeDemo: missing module reference on Level.", this); enabled = false; }
         }
-        void Start() { Phase = RunPhase.Playing; Started?.Invoke(); }
+        void Start()
+        {
+            Phase = RunPhase.Playing;
+            if (!combatIntegration.Initialize(this))
+            {
+                Phase = RunPhase.Starting;
+                Debug.LogError("NativeDemo: shared combat integration failed; run remains stopped.", this);
+                return;
+            }
+            Started?.Invoke();
+        }
         void Update() { if (Running) Elapsed += Time.deltaTime; }
         public bool Complete()
         {

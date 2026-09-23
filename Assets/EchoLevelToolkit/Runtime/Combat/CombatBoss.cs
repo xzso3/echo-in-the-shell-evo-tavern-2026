@@ -91,6 +91,18 @@ namespace Echo.LevelToolkit.Combat
             SetStage(AttackStage.Startup, "战斗机体 / 击破外壳");
             return ActivationResult.Started;
         }
+        // The host may have a second, synchronous state commit after activation.
+        // It can roll back only before the first update has left Startup.
+        public bool CancelUncommittedActivation()
+        {
+            if (!encounterActive || IsDefeated || Stage != AttackStage.Startup) return false;
+            encounterActive = false;
+            attackNumber = 0;
+            supportWindowBonus = 0;
+            ClearHazards();
+            SetStage(AttackStage.Dormant, "战斗机体 / 待机");
+            return true;
+        }
         public bool TryEnableWeakpointSupport()
         {
             if (!CanEnableWeakpointSupport) return false;

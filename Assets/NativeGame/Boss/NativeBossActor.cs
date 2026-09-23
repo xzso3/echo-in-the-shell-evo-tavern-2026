@@ -1,28 +1,32 @@
+using Echo.LevelToolkit.Combat;
 using UnityEngine;
 
 namespace Echo.NativeGame
 {
-    // Actor owns the stationary Boss's shell health and terminal life state.
+    // Saved Boss actor facade; CombatBoss is the sole shell and terminal state owner.
     [DisallowMultipleComponent]
     public sealed class NativeBossActor : MonoBehaviour
     {
         [Min(1)] public float maxArmor = 1400;
         [Range(.1f, 1)] public float armorDamageScale = .45f;
-        public float Armor { get; private set; }
-        public bool ArmorBroken => Armor <= 0;
-        public bool IsDefeated { get; private set; }
-        void Awake() { Armor = maxArmor; }
+
+        CombatBoss sharedActor;
+        public float Armor => sharedActor ? sharedActor.Armor : maxArmor;
+        public bool ArmorBroken => sharedActor && sharedActor.ArmorBroken;
+        public bool IsDefeated => sharedActor && sharedActor.IsDefeated;
+
+        internal void BindSharedActor(CombatBoss actor) { sharedActor = actor; }
+
         public void ReceiveDamage(float amount)
         {
-            if (IsDefeated || ArmorBroken || amount <= 0 || float.IsNaN(amount) || float.IsInfinity(amount)) return;
-            Armor = Mathf.Max(0, Armor - amount * armorDamageScale);
+            if (sharedActor) sharedActor.ReceiveDamage(amount);
         }
-        // Only the encounter's validated nearby E action calls this. Bullets never finish the Boss.
+
+        // Preserve the old internal entry, including its player/range validation.
         internal bool FinishCore()
         {
-            if (IsDefeated || !ArmorBroken) return false;
-            IsDefeated = true;
-            return true;
+            var controller = GetComponent<NativeBossController>();
+            return controller && controller.level && controller.InteractCore(controller.level.player);
         }
     }
 }

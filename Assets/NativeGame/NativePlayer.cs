@@ -1,43 +1,58 @@
-using System.Collections;
+using Echo.LevelToolkit.Combat;
 using UnityEngine;
+
 namespace Echo.NativeGame
 {
-    // Actor: Unity object identity, movement, health and hurt immunity. Weapon state belongs to Combat.
+    // Serialized Native facade; CombatPlayer owns movement, health and hurt timing.
     [RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
     public sealed class NativePlayer : MonoBehaviour
     {
         public NativeRunController run;
         public SpriteRenderer view;
+        // Retained for saved Player prefab compatibility; NativeCombat owns the live weapon.
+        public NativeProjectile projectilePrefab;
         public float speed = 4.5f, maxHealth = 100;
-        public float Health { get; private set; }
-        public bool Alive => Health > 0;
-        public Vector2 MoveInput { get; set; }
-        Rigidbody2D body;
-        float nextHurt;
-        void Awake() { body = GetComponent<Rigidbody2D>(); Health = maxHealth; }
-        void FixedUpdate() { body.velocity = run && run.Running ? MoveInput * speed : Vector2.zero; }
-        void Update()
+
+        CombatPlayer sharedActor;
+        Vector2 pendingMoveInput;
+        public float Health => sharedActor ? sharedActor.Health : maxHealth;
+        public bool Alive => sharedActor ? sharedActor.Alive : maxHealth > 0;
+        public Vector2 MoveInput
         {
-            if (!run || !run.Running) return;
-            if (MoveInput.x != 0) view.flipX = MoveInput.x < 0;
-            view.sortingOrder = 100 - Mathf.RoundToInt(transform.position.y * 10);
+            get => sharedActor ? sharedActor.MoveInput : pendingMoveInput;
+            set
+            {
+                pendingMoveInput = value;
+                if (sharedActor) sharedActor.MoveInput = value;
+            }
         }
+        internal CombatPlayer SharedActor => sharedActor;
+
+        internal CombatPlayer PrepareSharedActor()
+        {
+            if (sharedActor || !isActiveAndEnabled || !CombatPlayer.Valid(speed) ||
+                !CombatPlayer.Valid(maxHealth)) return null;
+            sharedActor = GetComponent<CombatPlayer>();
+            if (!sharedActor) return null;
+            sharedActor.view = view;
+            sharedActor.speed = speed;
+            sharedActor.maxHealth = maxHealth;
+            sharedActor.hurtCooldown = .65f;
+            sharedActor.MoveInput = pendingMoveInput;
+            return sharedActor;
+        }
+
+        void OnDisable() { if (sharedActor) sharedActor.enabled = false; }
+        void OnEnable() { if (sharedActor) sharedActor.enabled = true; }
+
         public bool TryHeal(float amount)
         {
-            if (!isActiveAndEnabled || !Alive || !run || !run.Running || run.player != this ||
-                amount <= 0 || float.IsNaN(amount) || float.IsInfinity(amount) || Health >= maxHealth) return false;
-            float healed = Mathf.Min(maxHealth, Health + amount);
-            if (healed <= Health) return false;
-            Health = healed;
-            return true;
+            return run && run.player == this && sharedActor && sharedActor.TryHeal(amount);
         }
+
         public void ReceiveDamage(float value)
         {
-            if (!Alive || !run || !run.Running || Time.time < nextHurt) return;
-            Health = Mathf.Max(0, Health - value); nextHurt = Time.time + .65f;
-            if (!Alive) { body.velocity = Vector2.zero; view.color = new Color(.5f, .3f, .4f); run.PlayerDied(); }
-            else StartCoroutine(Flash());
+            if (run && run.player == this && sharedActor) sharedActor.ReceiveDamage(value);
         }
-        IEnumerator Flash() { view.color = new Color(1, .3f, .4f); yield return new WaitForSeconds(.12f); if (Alive) view.color = Color.white; }
     }
 }
