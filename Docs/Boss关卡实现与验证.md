@@ -1,5 +1,7 @@
 # WARDEN-01 独立 Boss 关卡：实现与验证
 
+> 本文记录已实现的战斗测试关卡。根据 [ECHO IN THE SHELL 核心设计](ECHO_IN_THE_SHELL_GAME_DESIGN.md)第 16.5 节，WARDEN-01 不属于正式剧本角色；其测试胜败不能直接作为正式任务或结局事件。正式 Boss 与剧情衔接另行设计。
+
 更新日期：2026-09-22。
 
 首版已通过本机 Coplay Unity MCP 在 Unity 2021.3.27f1c2 中创建、编译和验证。独立入口为 `Assets/Scenes/BossArena.unity`。这是编辑器可玩版本，未打包独立程序；真人长期难度与性能调优仍需后续试玩。

@@ -1,0 +1,4 @@
+尚未派发：等待用户恢复Fast。
+P103 revision2返修R10-01，先从固定证据3a1bceaf0da9e2d565b0d448fb9c1a555fc8baa1读取INT-00-10/REVIEW.md与Probe。失败candidate c83db80e3696b6cd13ff2a7314fe3755170beb29；accepted00972ea4c4bfb6338fe336bdfbf131a4d52a2481。
+PackageValidator.cs约88行强制body.id，94—95行整个body直接传真实Schema/reader，真实SpatialContentReader的id独立参数使合法tile无id和有id均失败。禁止放宽MapSchema/伪造reader。修通用identity/body边界，明确源包格式，与契约定义协议核对，如需共享外层Schema须交P101；沿用捕获快照原始字节绑定，不能在摘要中剥id。补真实Core+Entity+Map20注册reader及完整引用/Map.Validate正例、负例路径/重复声明/身份正文不符，原128及self/exact保证保留。
+P102 attempt2正在Core中补生产rule_set及共享codec，交付并集成后需03安全合入、改用公共纯Core codec并移除重复解析，真实生产规则包通过，不把测试reader当生产。具体新base及API派发前填实。不得直接按此待办开始执行。
