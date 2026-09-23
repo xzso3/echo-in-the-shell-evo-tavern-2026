@@ -20,10 +20,22 @@ All twelve frame PNGs are **1672×941 RGBA**, the same canvas and origin as `Men
 
 The built-in image-gen tool made a distinct transparent four-frame sprite sheet for each group. Each quadrant was extracted and nearest-neighbor enlarged to the fixed 1672×941 canvas; low-alpha stray pixels (alpha ≤64) were cleared. No procedural content, noise, architectural redraw or new marks were added in this packaging step. These sheets were newly generated from the GF02 static background as a positional reference; they are not crops from the approved four-cell design concept.
 
+## HUD icons
+
+These four independent transparent PNGs are for the accepted GF02 HUD only. They contain no text, values, gameplay state or tablet interface. Each was generated separately with the built-in image-gen tool, then cropped to visible icon pixels and nearest-neighbor reduced to the agreed logical pixel canvas. Low-alpha stray pixels (alpha ≤64) were cleared. No icon was drawn procedurally.
+
+| Actual path | Use / `NativeHudView` slot | Pixels | Alpha | State |
+| --- | --- | ---: | --- | --- |
+| `Assets/NativeGame/GameUI/Art/GF02/HealthCross.png` | Small mint medical cross; `healthIconSprite` | 24×24 | RGBA, transparent margin | Final art, Unity import pending |
+| `Assets/NativeGame/GameUI/Art/GF02/WeaponAuto.png` | Flat automatic-weapon silhouette; `weaponIconSprite` | 32×24 | RGBA, transparent margin | Final art, Unity import pending |
+| `Assets/NativeGame/GameUI/Art/GF02/EquipmentChip.png` | Amber microchip; `equipmentIconSprite` | 24×24 | RGBA, transparent margin | Final art, Unity import pending |
+| `Assets/NativeGame/GameUI/Art/GF02/Tablet.png` | Flat portrait tactical tablet; `tabletIconSprite` | 24×32 | RGBA, transparent margin | Final art, Unity import pending |
+
 ## Integration notes
 
 - Render order: static background → local rain / water / light frames → static title and team logo → native menu buttons and live status text. UI can vary only `Sprite[]` frame indices; keep each overlay `RectTransform` fixed and identical to the background image rect.
 - Keep menu labels and live online/offline state in native UI. The approved concept panels are references only.
 - Use Point filtering and no mipmaps for the pixel assets. INT owns Unity import, `.meta` generation and serialized resource binding. No Unity Editor was opened by ART.
+- Use icon images at their listed logical size or exact integer multiples. Keep status text and numbers in native TMP fields. The tablet icon conveys the UI entry only; connectivity text must follow real runtime state.
 - The background was produced as a single image and is suitable as the static fallback while animation integration is underway. UI/HUD/INT should retain their own font and native text scaling.
 - Formal verification follows `Docs/GameFlow/GF02/ACCEPTANCE.md`; art has not been checked in Unity, at 16:10, or at low resolution.

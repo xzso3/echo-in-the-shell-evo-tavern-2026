@@ -49,3 +49,31 @@ Reference: generated `MenuBackgroundStatic.png`, for screen coordinates only. In
 Refinement to remove full-screen-looking halos and terminal graphics:
 
 > EDIT the existing TRUE-TRANSPARENT 2x2 four-frame light sprite sheet. Keep quadrant layout and fixed positions across all four frames. REMOVE all broad brown/green glow halos, black smudges and the rectangular terminal-screen image/text completely. In each quadrant leave ONLY sparse sharp pixel lamp accents: about 12 tiny amber window dots at existing right-side locations and 3–5 tiny mint terminal/signal dots around local x 45–48%, y 56–65%. Every dot must occupy just 1–3 pixels at sprite-sheet resolution, with no soft halo or surrounding fill. The only animation is slight brightness change of the same dots across frames 0,1,2,3 (dim, medium, bright, medium), no movement. All pixels except these tiny lights are alpha 0. No scene, text, architecture, labels, panel borders, bloom, colored clouds, or gradients. Pixel perfect hard edges.
+
+## HealthCross.png
+
+Reference: `Docs/GameFlow/GF02/References/HUDReview/hud-v2-approved.png`, for style only.
+
+> Create ONE standalone production pixel-art HUD icon: a simple EQUILATERAL MEDICAL CROSS for health. Visual reference is only for the game's approved cool cyan-green industrial pixel UI style; do not copy any screenshot content. Design on an exact virtual 24x24 pixel grid, cross itself filling approximately the central 16x16 cells with squared ends and 4-cell thick arms. Mint #70DDB4 with a small cold-white #D8F5E8 top-edge highlight, 1-pixel dark teal outline, no other shapes. Centered, truly transparent PNG background with alpha, square canvas, clean straight pixel edges, no antialias, no shadows or glow. Absolutely no text, numbers, blood, heart, circle, button, frame, floor, character, UI screenshot, watermark or extra icon. This is a tiny in-game HUD sprite intended to display at 24x24 logical pixels.
+
+Refinement to simplify the generated shading:
+
+> EDIT only this isolated medical-cross HUD sprite. Preserve centered cross silhouette, square canvas and true transparent surroundings. Convert the filled arms to ONE perfectly flat solid mint #70DDB4 with no gradient or lighting. Keep a simple 1 logical pixel dark teal outside outline and no highlight, or at most one straight cold-white row along the upper edge. Exact hard pixel-grid stepped corners; remove all airbrush, smooth antialiasing, bevel, glossy shading, shadow and glow. No added symbols or background. It must remain legible after reduction to 24x24 pixels.
+
+## WeaponAuto.png
+
+Reference: same approved HUD direction, for style only.
+
+> ONE isolated flat MONOCHROME pixel HUD icon of a side-view compact automatic rifle, weapon state indicator, not a weapon illustration. Build a readable silhouette on a virtual 32x24 pixel grid: horizontal barrel points right, short stock at left, small angled grip and box magazine below. Exactly one flat cold-white color #D8F5E8 for all visible pixels. Hard square pixel cells and stepped edges, no gradients, no highlights, no outlines, no glow, no shadow, no textures, no realism. Center this sprite with transparent safe padding on a true-alpha rectangular canvas. Match the restrained industrial pixel HUD style of the reference, but do not copy any scene, UI layout or text from it. No bullets, muzzle flash, crosshair, labels, extra icons, panel, keycap, watermark or background. This must remain legible at 32x24 logical pixels.
+
+## EquipmentChip.png
+
+Reference: same approved HUD direction, for style only.
+
+> ONE isolated 24x24-logical-pixel HUD sprite of a simple square EQUIPMENT MICROCHIP, in the approved industrial pixel UI style. A clean square central chip body with 3 short connector pins on each of the four sides and a tiny darker square in the middle; strong readable silhouette. Use exactly flat amber #C79050 for the outline/pins, cold pale mint #D8F5E8 for two tiny data pixels, dark teal interior; no smooth gradients, no glow, no shadows, no realistic circuit board, no beveled metal. Build it on a virtual 24x24 pixel grid with hard stepped pixels. True transparent PNG square canvas with alpha, centered icon and safe transparent margin. This is an icon only, not the equipment text or UI panel. No letters, numbers, prompt, scene, weapon, tablet, frame, watermark or extra icon. Must read clearly at 24x24 pixels.
+
+## Tablet.png
+
+Reference: same approved HUD direction, for style only.
+
+> ONE standalone minimalist FLAT PIXEL-ART HUD ICON of a tactical handheld TABLET, front-facing portrait rectangle, to sit next to a native Tab key prompt. Draw on a virtual 24x32 logical pixel grid. Squared pale cold-white #D8F5E8 outline (2 logical pixels thick), dark transparent interior, tiny centered mint #70DDB4 signal bars on the screen and one small square home indicator at the bottom. Simple 2D icon, no perspective, no 3D device rendering, no photorealism, no bright glow, no gradients, no shadow, no extra frame. True transparent PNG alpha with safe padding around the icon, crisp hard square pixel edges, centered portrait composition. Match the restrained industrial pixel HUD direction of the reference without copying its whole scene. NO letters, Chinese text, number, tab key drawing, menu, character, background, watermark or other icon. Legible at 24x32 logical pixels.
