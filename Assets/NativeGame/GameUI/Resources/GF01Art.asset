@@ -37,7 +37,7 @@ MonoBehaviour:
   menuRainFrameSeconds: 0.16
   menuWaterFrameSeconds: 0.2
   menuLightsFrameSeconds: 0.3
-  healthIcon: {fileID: 0}
-  weaponIcon: {fileID: 0}
-  equipmentIcon: {fileID: 0}
-  tabletIcon: {fileID: 0}
+  healthIcon: {fileID: 21300000, guid: 02aca0bbcf744d649da2da9f96f6f4f1, type: 3}
+  weaponIcon: {fileID: 21300000, guid: d7249611ea884069a032a9b56e65182e, type: 3}
+  equipmentIcon: {fileID: 21300000, guid: e962956d8992425fbcc8f357538bcdb9, type: 3}
+  tabletIcon: {fileID: 21300000, guid: dec95c55a24241f1adc05a7cb7406a6a, type: 3}
