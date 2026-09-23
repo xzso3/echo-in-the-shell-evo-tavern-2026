@@ -1,11 +1,12 @@
 # GF02 批次状态
 
-更新：2026-09-23。GF02 已集成，待最终人工校验。
+更新：2026-09-24。GF02 已集成，待最终人工校验；在线通讯格式反馈的修复仍待真实服务复测。
 
 - 批次归属：用户已确认本轮统一为 GF02。
 - 当前阶段：六个独立工作包的代码与资产已合入 INT 工作树；固定版本 Unity 已完成 UPM 解析、19 张 GF02 图片导入与 C# 编译，INT 正收口交接。
 - 输入：用户对 GF01 版本的人工测试现象及截图；GF02 开发冻结在已核实的 GF01 集成头 `c04f7d9` 之上。用户当时人工测试的具体运行提交未独立确认，不把 GF01 历史编译证据计入 GF02。
 - 冻结基线：`ef8c18cf64302ba8439c45cd96b8db9bb7044aeb`，含 GF02 文档、批准参考和 `BASELINE_HANDOFF.md`；父链含 GF01 集成 `c04f7d9040b4d5a7170dbd6cd3b0d56ff09a16b1`。主目录仍在 `3a7390f7258e73eec38a42098d33cb9a17dc3cab`，其既有修改与未跟踪资料保持原状。
+- 最终集成分支：`codex/gf02-integration`，独立工作树 `/Users/const/.codex/worktrees/4e44/echo-in-the-shell-evo-tavern-2026`；交付核对时干净 HEAD `d989a632ff01b801117d7d616750981f3c5e79a6`。本次编译的代码/资产头 `880c3574c6e3d3fb647f6d75c9da398acb5226fa`，随后生成的包锁提交 `da2ea0af02f2dc35c6bc1062505268b646a6a568`。
 - 已完成到当前阶段：10 项需求归档、两份批准设计归档、冻结基线、默认相机与主要代码路径的滚动合入、旧手机功能对照、全部正式图像与原生槽位绑定、固定 SDK 及实际依赖锁、Unity 2021.3.27f1c2 集中导入/编译（退出码 0，无 `error CS`）。
 - 尚未完成：按 [ACCEPTANCE.md](ACCEPTANCE.md) 由用户或指定人员进行唯一最终人工校验；当前不宣称整批通过或真实联网已验证。
 
@@ -51,3 +52,11 @@
 - 固定 Unity 2021.3.27f1c2 批处理退出码 0，日志结尾 `Exiting batchmode successfully now!`，无 `error CS`/编译失败。实际解析：OpenAI 8.8.9；audio 3.0.3、encoder.wav 3.0.2、rest 5.1.1、websockets 2.0.0、async 3.0.2、extensions 1.3.8、Newtonsoft 3.2.1。UPM 同时把 test-framework 锁值提升至 1.4.2（manifest 直接声明仍 1.1.33）并新增 collections/editorcoroutines/mono-cecil；未运行任何测试。
 - HUD 已核实原截图右侧橙条是 `NativeMap.exitGate` 关联的中继出口门，不属 HUD 装饰；保留该世界空间玩法对象。
 - 不安排自动测试、mock、harness、探针、截图巡检、独立评审或中间人工验收。INT 负责实际需要的包解析、导入与编译；最终人工校验仍全部未测。
+
+## 2026-09-24 在线通讯人工反馈与定点修复
+
+- 用户报告在线通讯真实请求已到 LLM 后台，但平板出现“在线回复格式或支援选项无效”。新建 `gpt-6-astra / medium` 诊断任务 `01a0cf9d-d971-7ce3-bc12-6c1d05ba4fbe`，独立工作树 `/Users/const/.codex/worktrees/911b/echo-in-the-shell-evo-tavern-2026`，输入 `a0fcb62321258bf0d29b656fd98a43f5ad942058`。Console 链路日志 `2234a29` 与操作说明 `7d4682b` 已合入集成分支；在 Editor/Development Build 显式开启，凭据脱敏，默认关闭。
+- 真实 `Editor.log` 显示两种不同拒绝：首次请求 `rid=3c70d30411b94ecf8b8eb0b1672c1458` 无 assistant 历史，回复是完整 `<think>…</think>` 前缀后接合法 JSON；后续 `rid=4901385a2615465499bb9db193a7371d` 带纯文本 assistant 历史，回复也是纯文本。中间存在成功的 JSON 回复。详见 `LLM_DIAGNOSTICS.md`。
+- 定点修复：已验证的 assistant 历史保持 `reply/proposal` JSON 协议格式（来源 `0a66e9b`→集成 `c5ea427`），UI 仍只显示 reply；仅剥离单个开头完整闭合的 think 前缀后继续原有严格 JSON、选项 ID 和本地授权校验（来源 `3a08743`→集成 `e628816`）。不接收任意自然语言，不强制未经供应商确认支持的 `response_format`，模型回复不能直接执行支援。
+- INT 解决了 `LLM_DIAGNOSTICS.md` 的纯文档合并冲突，保留既有编译记录和新日志分析，并以 `c9fdd71` 记录本次合入编译。固定 Unity 2021.3.27f1c2 在 `4e44` 正常导入/C# 编译退出码 0，日志 `/private/tmp/gf02-llm-format-fixes-integration.log` 有 `Tundra build success`、程序集重载与成功退出，无 `error CS`。未运行自动测试、Play 或截图巡检。原有未提交字体、PackageManager 设置及崩溃日志内容哈希未变。
+- **GF02-006/007 当前为已集成、待真实在线人工复测；不宣称所有供应商格式漂移已消除。**复现时在 Play 后开启 `Tools → Echo → GF02 → LLM Diagnostics (full text)`，Console 搜索 `GF02-LLM` 并按同一 `rid` 复制完整链路；完整正文可能含聊天内容，分享前核对。
