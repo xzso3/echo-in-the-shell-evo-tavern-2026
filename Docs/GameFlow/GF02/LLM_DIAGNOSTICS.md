@@ -53,3 +53,5 @@ Endpoint 隐去代理路径、userinfo/query/fragment；凭据值和常见凭据
 解析仅兼容一个位于开头且完整闭合的 think 前缀；不搜索正文中的 JSON，不修复任意文本、Markdown 或非法 proposal。前缀未闭合/嵌套、后接非对象均拒绝，余下 JSON 的重复属性、额外内容、长度、结构和支援 ID 校验保留。诊断增加 `parse.reasoning_prefix`。纯自然语言仍拒绝；代理未验证支持 JSON response_format，未强制配置。修复后真实服务仍需复现，不能声称消除了所有格式漂移。
 
 本批只做源码检查和 `git diff --check`；按主控指令，不开 Unity、不跑自动测试/harness，编译由 INT 合入后完成。之前的编译成功记录只覆盖诊断基线，不覆盖本批修复。
+
+INT 集成记录：在唯一 `codex/gf02-integration` 的 4e44 工作树，先将历史 JSON 修复合为 `c5ea4278819ddb0e07c6d28c6cd94cec03fbf3b3`，再将前置 think 兼容及本文档合为 `e6288164981a91bf275126e9dc380ed3aa9794ef`。第二笔的文档冲突仅因既有 INT 编译记录与本段真实日志说明同时写在末尾，集成时按顺序保留两边事实；两个源码文件保持来源提交原样。固定 Unity `2021.3.27f1c2` 在代码 HEAD `e628816` 上做一次正常导入/C# 编译，退出码 **0**；日志 `/private/tmp/gf02-llm-format-fixes-integration.log` 有 `Tundra build success (2.22 seconds), 5 items updated`、`AssetDatabase: script compilation time: 2.507074s`、`Mono: successfully reloaded assembly` 和成功退出，未检出 `error CS`、编译失败或包解析/导入错误。未运行 Play、真实在线、自动测试、mock 或截图巡检；历史 JSON 一致性和 think 兼容的实际在线效果仍待用户按 rid 复现。集成前后，用户未提交 FusionPixel 字体、PackageManager 设置及 `mono_crash.7330f4927.0.json` 的 SHA-256 均未变化，未暂存、清理或提交。
