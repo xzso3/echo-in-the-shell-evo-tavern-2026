@@ -1,0 +1,9 @@
+{
+  "case_id": "A05.variable_type",
+  "schema": "typed_value",
+  "data": {
+    "kind": "boolean",
+    "value": 1
+  },
+  "expected_code": "schema.one_of"
+}

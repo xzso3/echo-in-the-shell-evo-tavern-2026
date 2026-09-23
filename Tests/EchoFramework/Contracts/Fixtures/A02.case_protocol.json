@@ -1,0 +1,44 @@
+{
+  "case_id": "A02.case_protocol",
+  "schema": "case",
+  "data": {
+    "case_id": "fixture.case",
+    "requirement_ids": [
+      "R02"
+    ],
+    "package": {
+      "package_id": "contract.fixture",
+      "package_version": "0.1.0",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "entrypoint": "contract.fixture:level/main",
+    "seed": 1,
+    "timestep": 0.016666666666666666,
+    "max_ticks": 120,
+    "setup": {
+      "fixture_kind": "unit",
+      "fixture_id": "contract.only"
+    },
+    "steps": [
+      {
+        "op": "advance",
+        "ticks": 1
+      }
+    ],
+    "expect": {
+      "outcome": "succeeded",
+      "error_codes": [],
+      "events": [],
+      "event_order": [],
+      "remaining_resources": {
+        "listeners": 0,
+        "actions": 0,
+        "control_leases": 0,
+        "projectiles": 0,
+        "dialogues": 0
+      }
+    },
+    "verification_layer": "logic"
+  },
+  "expected_code": ""
+}

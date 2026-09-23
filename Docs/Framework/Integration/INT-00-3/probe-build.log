@@ -1,0 +1,11 @@
+  Determining projects to restore...
+  Restored /Users/const/.codex/worktrees/de32/echo-in-the-shell-evo-tavern-2026/Tests/EchoFramework/Host/Echo.ReviewProbe.csproj (in 56 ms).
+  1 of 2 projects are up-to-date for restore.
+  Echo.Framework.Core -> /Users/const/.codex/worktrees/de32/echo-in-the-shell-evo-tavern-2026/Tests/EchoFramework/Host/bin/Debug/netstandard2.1/Echo.Framework.Core.dll
+  Echo.ReviewProbe -> /Users/const/.codex/worktrees/de32/echo-in-the-shell-evo-tavern-2026/Tests/EchoFramework/Host/bin/Debug/net8.0/Echo.ReviewProbe.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.93

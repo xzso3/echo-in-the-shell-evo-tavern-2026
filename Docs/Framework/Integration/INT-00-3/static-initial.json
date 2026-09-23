@@ -1,0 +1,71 @@
+{
+  "tested_commit": "23b091a528cb525a378c51b6800fb0378687a8aa",
+  "framework_digest": "de5a109ce989e235093f10a73b2cccae8e71be5699e2df9a83d3b0d39a2b3f97",
+  "checks": [
+    {
+      "case_id": "A01.asmdef.Echo.Framework.Core",
+      "status": "passed",
+      "detail": "[]"
+    },
+    {
+      "case_id": "A01.asmdef.Echo.Gameplay",
+      "status": "passed",
+      "detail": "['Echo.Framework.Core']"
+    },
+    {
+      "case_id": "A01.asmdef.Echo.UnityHost",
+      "status": "passed",
+      "detail": "['Echo.Framework.Core', 'Echo.Gameplay']"
+    },
+    {
+      "case_id": "A01.source_dependencies.Core",
+      "status": "passed",
+      "detail": "[]"
+    },
+    {
+      "case_id": "A01.source_dependencies.Gameplay",
+      "status": "passed",
+      "detail": "[]"
+    },
+    {
+      "case_id": "A01.meta_pairs",
+      "status": "passed",
+      "detail": "[]"
+    },
+    {
+      "case_id": "A01.unique_guids",
+      "status": "passed",
+      "detail": "29 new GUIDs"
+    },
+    {
+      "case_id": "A01.write_boundary",
+      "status": "failed",
+      "detail": "['Docs/Framework/Integration/INT-00-2/Probe/bin/Debug/net8.0/Echo.Framework.Core.dll', 'Docs/Framework/Integration/INT-00-2/Probe/bin/Debug/net8.0/Echo.Framework.Core.pdb', 'Docs/Framework/Integration/INT-00-2/Probe/bin/Debug/net8.0/Newtonsoft.Json.dll', 'Docs/Framework/Integration/INT-00-2/Probe/bin/Debug/net8.0/Newtonsoft.Json.pdb', 'Docs/Framework/Integration/INT-00-2/Probe/bin/Debug/net8.0/Newtonsoft.Json.xml', 'Docs/Framework/Integration/INT-00-2/Probe/bin/Debug/net8.0/Probe', 'Docs/Framework/Integration/INT-00-2/Probe/bin/Debug/net8.0/Probe.deps.json', 'Docs/Framework/Integration/INT-00-2/Probe/bin/Debug/net8.0/Probe.dll', 'Docs/Framework/Integration/INT-00-2/Probe/bin/Debug/net8.0/Probe.pdb', 'Docs/Framework/Integration/INT-00-2/Probe/bin/Debug/net8.0/Probe.runtimeconfig.json', 'Docs/Framework/Integration/INT-00-2/Probe/obj/Probe/Debug/net8.0/.NETCoreApp,Version=v8.0.AssemblyAttributes.cs', 'Docs/Framework/Integration/INT-00-2/Probe/obj/Probe/Debug/net8.0/Probe.AssemblyInfo.cs', 'Docs/Framework/Integration/INT-00-2/Probe/obj/Probe/Debug/net8.0/Probe.AssemblyInfoInputs.cache', 'Docs/Framework/Integration/INT-00-2/Probe/obj/Probe/Debug/net8.0/Probe.GeneratedMSBuildEditorConfig.editorconfig', 'Docs/Framework/Integration/INT-00-2/Probe/obj/Probe/Debug/net8.0/Probe.assets.cache', 'Docs/Framework/Integration/INT-00-2/Probe/obj/Probe/Debug/net8.0/Probe.csproj.AssemblyReference.cache', 'Docs/Framework/Integration/INT-00-2/Probe/obj/Probe/Debug/net8.0/Probe.csproj.CoreCompileInputs.cache', 'Docs/Framework/Integration/INT-00-2/Probe/obj/Probe/Debug/net8.0/Probe.csproj.FileListAbsolute.txt', 'Docs/Framework/Integration/INT-00-2/Probe/obj/Probe/Debug/net8.0/Probe.csproj.Up2Date', 'Docs/Framework/Integration/INT-00-2/Probe/obj/Probe/Debug/net8.0/Probe.dll', 'Docs/Framework/Integration/INT-00-2/Probe/obj/Probe/Debug/net8.0/Probe.genruntimeconfig.cache', 'Docs/Framework/Integration/INT-00-2/Probe/obj/Probe/Debug/net8.0/Probe.pdb', 'Docs/Framework/Integration/INT-00-2/Probe/obj/Probe/Debug/net8.0/Probe.sourcelink.json', 'Docs/Framework/Integration/INT-00-2/Probe/obj/Probe/Debug/net8.0/apphost', 'Docs/Framework/Integration/INT-00-2/Probe/obj/Probe/Debug/net8.0/ref/Probe.dll', 'Docs/Framework/Integration/INT-00-2/Probe/obj/Probe/Debug/net8.0/refint/Probe.dll', 'Docs/Framework/Integration/INT-00-2/Probe/obj/Probe/Probe.csproj.nuget.dgspec.json', 'Docs/Framework/Integration/INT-00-2/Probe/obj/Probe/Probe.csproj.nuget.g.props', 'Docs/Framework/Integration/INT-00-2/Probe/obj/Probe/Probe.csproj.nuget.g.targets', 'Docs/Framework/Integration/INT-00-2/Probe/obj/Probe/project.assets.json', 'Docs/Framework/Integration/INT-00-2/Probe/obj/Probe/project.nuget.cache']"
+    },
+    {
+      "case_id": "A01.unchanged.Packages/manifest.json",
+      "status": "passed",
+      "detail": "96673e9457e83f4182984c4a14414b0bdef1ed0240e601c1f6642f147c433c20"
+    },
+    {
+      "case_id": "A01.unchanged.Packages/packages-lock.json",
+      "status": "passed",
+      "detail": "ea3eb4cdd9aaf6f5e0efe559aa558ec96631a576391d80ac5112f5d64b7c8b90"
+    },
+    {
+      "case_id": "A01.unchanged.ProjectSettings/ProjectVersion.txt",
+      "status": "passed",
+      "detail": "8b7ddfceb80a0f49b7ce9ba91d1b1f25bea2e79653fab7fd92d904112f3feae8"
+    },
+    {
+      "case_id": "A02.generated_schema_digest",
+      "status": "passed",
+      "detail": "31 generated schemas"
+    },
+    {
+      "case_id": "A03.production_catalog_empty",
+      "status": "passed",
+      "detail": "No production capability implemented by P1-01"
+    }
+  ]
+}

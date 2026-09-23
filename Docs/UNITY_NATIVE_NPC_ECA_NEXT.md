@@ -1,0 +1,27 @@
+# Unity 原生下一轮：NPC 分支任务与 ECA
+
+本页是 P2-01 的初始派发范围；本阶段的任务依赖、验收与持续调度以 [P2 任务](Framework/Phase2/PHASE2_TASKS.md)、[P2 验收](Framework/Phase2/PHASE2_ACCEPTANCE.md)和[状态台账](Framework/Phase2/PHASE2_STATUS.md)为准。
+
+状态：2026-09-23 已派发实现，尚未集成或验收。目标截止仍为 2026-09-24 11:00（UTC+8）。
+
+## 基线与边界
+
+- 源码基线：`codex/unity-native-integration`，`c8083c1853049d189d94f3c5ea25ee006abb3cfa`；入口 `Assets/Scenes/NativeDemo.unity`。
+- 沿 `FRAMEWORK_ARCHITECTURE.md` 顶部现行修订推进 Unity 内模块化与真实 ECA。保留已有 Entity、Map、Actor、Combat、Interaction、Quest、Dialogue、Level、Narrative 的职责和状态归属。
+- 本轮只扩充现有可玩场景中的一个 NPC 与可选分支任务。保持主线、四结局计分和支援授权行为；Windows 构建继续由用户手动处理。
+- 用户反馈当前 Windows 人工试玩总体正常，小问题暂缓；具体路线未逐项报告，尚不能标记新版完整主线或四结局通过。
+
+## 可玩目标
+
+玩家靠近 NPC 按 E，明确选择以下互斥方向之一：根据实际取得的私人记忆提交记录，或根据实际走过的检修通道提交路线报告。任务状态由 Quest 持有；ECA 从 Interaction 和 Dialogue 接收事件，读取 Level、Quest 与 Narrative 的条件，再调用所属模块完成选择、提交和反馈。已提前取得的记忆或已提前走过的路线也应获得明确处理。
+
+玩家能够看到当前支线目标，返回 NPC 后完成所选分支，得到各自不同的结果反馈。完成只结算一次，另一分支锁定。该支线不阻断三记忆、relay、Boss 和最终节点流程，也不改变既有四象限阈值。
+
+## 分工与验收
+
+- 实现：复用 P1-07 执行任务，独占 Unity Editor，从最新集成提交新建分支；保留原工作区分支和历史产物。
+- 集成：实现提交后由 INT-00 核对范围并集成到交付工作区；主控只调度、文档和验收。
+- 开发检查：Unity 编译、两个分支的聚焦 Play Mode 交互、受影响主线的一次必要冒烟，以及新增中文/FusionPixel 文本显示。执行者需报告实际做过的检查和未测项；不重复全量验证。
+- 用户验收：最新 Windows 构建中实际靠近 NPC、选择并完成任一分支，以及确认原主线仍可继续。另一分支在未亲自试玩前保持未测。
+
+本轮不恢复独立引擎、双宿主、强制纯 C#、通用容器、Schema/能力目录工程、第二内容包或原 P1 验收流程。

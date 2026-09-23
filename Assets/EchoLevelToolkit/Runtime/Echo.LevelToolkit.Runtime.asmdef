@@ -1,0 +1,7 @@
+{
+  "name": "Echo.LevelToolkit.Runtime",
+  "rootNamespace": "Echo.LevelToolkit",
+  "references": [],
+  "autoReferenced": true,
+  "noEngineReferences": false
+}

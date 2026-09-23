@@ -1,0 +1,71 @@
+{
+  "tested_commit": "79ba84db0a62de0d09d828f827af66fc7a9f106c",
+  "framework_digest": "de5a109ce989e235093f10a73b2cccae8e71be5699e2df9a83d3b0d39a2b3f97",
+  "checks": [
+    {
+      "case_id": "A01.asmdef.Echo.Framework.Core",
+      "status": "passed",
+      "detail": "[]"
+    },
+    {
+      "case_id": "A01.asmdef.Echo.Gameplay",
+      "status": "passed",
+      "detail": "['Echo.Framework.Core']"
+    },
+    {
+      "case_id": "A01.asmdef.Echo.UnityHost",
+      "status": "passed",
+      "detail": "['Echo.Framework.Core', 'Echo.Gameplay']"
+    },
+    {
+      "case_id": "A01.source_dependencies.Core",
+      "status": "passed",
+      "detail": "[]"
+    },
+    {
+      "case_id": "A01.source_dependencies.Gameplay",
+      "status": "passed",
+      "detail": "[]"
+    },
+    {
+      "case_id": "A01.meta_pairs",
+      "status": "passed",
+      "detail": "[]"
+    },
+    {
+      "case_id": "A01.unique_guids",
+      "status": "passed",
+      "detail": "29 new GUIDs"
+    },
+    {
+      "case_id": "A01.write_boundary",
+      "status": "passed",
+      "detail": "[]"
+    },
+    {
+      "case_id": "A01.unchanged.Packages/manifest.json",
+      "status": "passed",
+      "detail": "96673e9457e83f4182984c4a14414b0bdef1ed0240e601c1f6642f147c433c20"
+    },
+    {
+      "case_id": "A01.unchanged.Packages/packages-lock.json",
+      "status": "passed",
+      "detail": "ea3eb4cdd9aaf6f5e0efe559aa558ec96631a576391d80ac5112f5d64b7c8b90"
+    },
+    {
+      "case_id": "A01.unchanged.ProjectSettings/ProjectVersion.txt",
+      "status": "passed",
+      "detail": "8b7ddfceb80a0f49b7ce9ba91d1b1f25bea2e79653fab7fd92d904112f3feae8"
+    },
+    {
+      "case_id": "A02.generated_schema_digest",
+      "status": "passed",
+      "detail": "31 generated schemas"
+    },
+    {
+      "case_id": "A03.production_catalog_empty",
+      "status": "passed",
+      "detail": "No production capability implemented by P1-01"
+    }
+  ]
+}

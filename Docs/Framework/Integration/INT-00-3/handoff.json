@@ -1,0 +1,67 @@
+{
+  "task_id": "INT-00",
+  "attempt": 3,
+  "result": "ready_for_review",
+  "base_commit": "94ccceff3d00e3e929161e2024ca0a2728aa3067",
+  "submitted_commit": "739c37e3a66cfd91e716e79cd07db4349fd84682",
+  "submitted_tested_source_commit": "79ba84db0a62de0d09d828f827af66fc7a9f106c",
+  "tested_candidate_commit": "23b091a528cb525a378c51b6800fb0378687a8aa",
+  "approved_consumable_commit": "23b091a528cb525a378c51b6800fb0378687a8aa",
+  "candidate_branch": "codex/int-00-p1-01-revision1-candidate",
+  "integration_branch": "codex/p1-integration",
+  "worktree": "/Users/const/.codex/worktrees/de32/echo-in-the-shell-evo-tavern-2026",
+  "prior_failed_candidate": "87326b317f5e1e900ad94697c74d4a9ee41e567a",
+  "probe_source_sha256": "11e63dd4d6e85540f633d6d204490808c11607881f18a98009e836a56c8ead72",
+  "probe_assertions_changed": false,
+  "digests": {
+    "framework_digest": "de5a109ce989e235093f10a73b2cccae8e71be5699e2df9a83d3b0d39a2b3f97",
+    "content_digest": "91bdce9f9300a6082b7ae4c33d2dabf4279ab3842ddee6aef5e3aec6088d7b8b",
+    "schema_digest": "3c778f1ffbec9b62de3ebb0e1ab52edc938fed019ce713236d649eb3eef35888",
+    "catalog_digest": "d345c063ad76ae7b712a19a10f9ca8eb39122b631a89cfdf33e1de44ae751512"
+  },
+  "checks": [
+    {
+      "command": "ECHO_EVIDENCE_DIR=/tmp/int00-round3-evidence sh Tests/EchoFramework/Contracts/verify.sh",
+      "exit_code": 0,
+      "status": "passed",
+      "contract_cases": 80,
+      "static_cases": 13,
+      "schemas": 31
+    },
+    {
+      "command": "ECHO_EVIDENCE_DIR=/tmp/int00-round3-evidence ECHO_TESTED_COMMIT=23b091a528cb525a378c51b6800fb0378687a8aa /Applications/Unity/Hub/Editor/2021.3.27f1c2/Unity.app/Contents/MacOS/Unity -batchmode -nographics -projectPath /Users/const/.codex/worktrees/de32/echo-in-the-shell-evo-tavern-2026 -executeMethod Echo.Editor.Contracts.ContractSmokeEntry.Run -logFile /tmp/int00-round3-unity.log",
+      "exit_code": 0,
+      "status": "passed",
+      "contract_cases": 80
+    },
+    {
+      "command": "dotnet build Tests/EchoFramework/Host/Echo.ReviewProbe.csproj --disable-build-servers -p:EchoJsonAssembly=\"$PWD/Library/PackageCache/com.unity.nuget.newtonsoft-json@3.2.1/Runtime/Newtonsoft.Json.dll\" -p:RestoreSources=\"$PWD/Tests/EchoFramework/Contracts/Fixtures\" -p:NuGetAudit=false --nologo",
+      "exit_code": 0,
+      "status": "passed"
+    },
+    {
+      "command": "dotnet Tests/EchoFramework/Host/bin/Debug/net8.0/Echo.ReviewProbe.dll",
+      "exit_code": 0,
+      "status": "passed",
+      "cases": 11
+    },
+    {
+      "command": "compare tested_commit and four digests between hosts and Revision1 handoff; compare original probe bytes",
+      "exit_code": 0,
+      "status": "passed"
+    }
+  ],
+  "initial_attempt": {
+    "exit_code": 1,
+    "status": "failed",
+    "detail": "80 contract cases passed; write_boundary rejected this task prior round own untracked Probe/bin and Probe/obj artifacts after branch switch. Preserved at /tmp/int00-round2-probe-build-preserved; rerun without changes to source/checks passed."
+  },
+  "gates": {
+    "G1": "not_run",
+    "G2": "not_run",
+    "G3": "not_run"
+  },
+  "unity_slot": "released; own batch editor exited 0",
+  "evidence_policy": "Evidence-only descendant commit stays on candidate branch; integration advances to exact tested candidate SHA. Prior failed branch preserved.",
+  "raw_unity_log_sha256": "43a5be7127c7aab536812367f6b48047ed1a8f1338a67edc07d26adda7628569"
+}

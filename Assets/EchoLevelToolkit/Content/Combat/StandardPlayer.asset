@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e0f10c2191d41f0bbb1598534498e09, type: 3}
+  m_Name: StandardPlayer
+  m_EditorClassIdentifier:
+  kind: 0
+  sourceRevision: 7dde3aec8cf7060b825be4464e7ad18ebfdcb91a
+  sourceFingerprint: 34f1c95ccae76bcdac3e3f6125f9c4950ac32c3bf7af7f627cc13a0c4d25bd2a
+  speed: 4.5
+  health: 100
+  colliderRadius: 0.32
+  hurtCooldown: 0.65
+  contactDamage: 0
+  detectionRange: 0
+  range: 7
+  shotInterval: 0.38
+  damage: 24
+  projectileSpeed: 18
+  projectileLifetime: 1.6
+  projectileRadius: 0.09
+  preferredRange: 0
+  fanWarmup: 0
+  fanCooldown: 0
+  fanShotSpeed: 0
+  fanShotDamage: 0
+  fanSpreadDegrees: 0
+  armorDamageScale: 0
+  trackingSeconds: 0
+  lockSeconds: 0
+  bossShotInterval: 0
+  burstCount: 0
+  bossShotSpeed: 0
+  bossShotDamage: 0
+  bombWarning: 0
+  bombInterval: 0
+  bombRadius: 0
+  bombDamage: 0
+  coreWindowSeconds: 0
+  retryWindowDelay: 0
+  coreInteractionRadius: 0
+  muzzleOffset: {x: 0, y: 0}

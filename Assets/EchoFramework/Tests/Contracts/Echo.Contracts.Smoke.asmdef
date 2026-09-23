@@ -1,0 +1,16 @@
+{
+  "name": "Echo.Contracts.Smoke",
+  "references": [
+    "Echo.Framework.Core",
+    "Echo.Gameplay"
+  ],
+  "autoReferenced": true,
+  "noEngineReferences": true,
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "Newtonsoft.Json.dll"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "case_id": "A03.unknown_field",
+  "schema": "package",
+  "data": {
+    "package_id": "contract.fixture",
+    "package_version": "0.1.0",
+    "schema_version": "0.1.0",
+    "required_capabilities": [],
+    "dependencies": [],
+    "exports": [
+      "contract.fixture:level/main"
+    ],
+    "entrypoints": [
+      "contract.fixture:level/main"
+    ],
+    "resource_manifest": "resources.json",
+    "typo": true
+  },
+  "expected_code": "schema.unknown_field"
+}

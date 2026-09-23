@@ -1,0 +1,15 @@
+{
+  "case_id": "A02.valid_fixture_action",
+  "schema": "fixture_action",
+  "data": {
+    "id": "fixture.wait",
+    "version": "0.1.0",
+    "scope": "execution",
+    "context": "ordinary",
+    "parameters": {
+      "duration": 0,
+      "clock": "simulation"
+    }
+  },
+  "expected_code": ""
+}

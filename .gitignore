@@ -38,3 +38,7 @@ Thumbs.db
 # Unity crash reports
 sysinfo.txt
 crashlytics-build.properties
+
+# Echo external contract host build products
+/Tests/EchoFramework/Host/bin/
+/Tests/EchoFramework/Host/obj/

@@ -1,0 +1,283 @@
+{
+  "task_id": "INT-00",
+  "attempt": 1,
+  "base_commit": "fb3376eb75cb329dcda83dde00018439a0f000a2",
+  "parent_commit": "a17f8c207af9c1f5119288b8ed64113e1ba8ac58",
+  "worktree": "/Users/const/.codex/worktrees/de32/echo-in-the-shell-evo-tavern-2026",
+  "branch": "codex/p1-integration",
+  "environment": "macOS-15.7.2-arm64-arm-64bit",
+  "initial_status_porcelain": "",
+  "checks_status": "passed",
+  "baseline_files": [
+    {
+      "path": "Docs/ECHO_IN_THE_SHELL_GAME_DESIGN.md",
+      "sha256": "e853ec594394788ce89982cf4e3dcd2a40750c61d4ca25c1f783db54bc6c1d88"
+    },
+    {
+      "path": "Docs/FRAMEWORK_ARCHITECTURE.md",
+      "sha256": "1ad2f129867d3894c4f7a1ef1fa6c2e6df55e9860e3ff603f2610f0628a4f5f5"
+    },
+    {
+      "path": "Docs/Framework/PHASE1_ACCEPTANCE.md",
+      "sha256": "66e0307d7e9f00f131131aad5f5ca084137a086714636110cc95685137c634e6"
+    },
+    {
+      "path": "Docs/Framework/PHASE1_CAPABILITIES.md",
+      "sha256": "28fed87c630ef0b99c8e18b9c494375b6d280085c735e8c8a7dec566ad41c567"
+    },
+    {
+      "path": "Docs/Framework/PHASE1_IMPLEMENTATION_SPEC.md",
+      "sha256": "51f01bdf4997168190c3f2f668093c8c465d157778916560f197e1450cc89567"
+    },
+    {
+      "path": "Docs/Framework/PHASE1_ORCHESTRATOR_PROMPT.md",
+      "sha256": "da997caf5982004ee7118b268dcaecdc3d471fdbcd6f58a068f4a7514e1c8635"
+    },
+    {
+      "path": "Docs/Framework/PHASE1_TASKS.md",
+      "sha256": "b5a79e1795c7e2b787a4827ba724c4be00a3c53825da6f76cce42dc0e716f18e"
+    },
+    {
+      "path": "Docs/README.md",
+      "sha256": "d513ead456fc556adf5f1c1a6c763366b65dfb63bc0d65f044080116dc6929c4"
+    }
+  ],
+  "relative_links": [
+    {
+      "source": "Docs/FRAMEWORK_ARCHITECTURE.md",
+      "target": "Framework/PHASE1_IMPLEMENTATION_SPEC.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/FRAMEWORK_ARCHITECTURE.md",
+      "target": "ECHO_IN_THE_SHELL_GAME_DESIGN.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/FRAMEWORK_ARCHITECTURE.md",
+      "target": "Framework/PHASE1_IMPLEMENTATION_SPEC.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/FRAMEWORK_ARCHITECTURE.md",
+      "target": "Framework/PHASE1_CAPABILITIES.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/FRAMEWORK_ARCHITECTURE.md",
+      "target": "Framework/PHASE1_ACCEPTANCE.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/FRAMEWORK_ARCHITECTURE.md",
+      "target": "Framework/PHASE1_TASKS.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/Framework/PHASE1_ACCEPTANCE.md",
+      "target": "PHASE1_IMPLEMENTATION_SPEC.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/Framework/PHASE1_ACCEPTANCE.md",
+      "target": "PHASE1_CAPABILITIES.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/Framework/PHASE1_ACCEPTANCE.md",
+      "target": "PHASE1_TASKS.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/Framework/PHASE1_CAPABILITIES.md",
+      "target": "PHASE1_IMPLEMENTATION_SPEC.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/Framework/PHASE1_CAPABILITIES.md",
+      "target": "PHASE1_ACCEPTANCE.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/Framework/PHASE1_IMPLEMENTATION_SPEC.md",
+      "target": "../ECHO_IN_THE_SHELL_GAME_DESIGN.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/Framework/PHASE1_IMPLEMENTATION_SPEC.md",
+      "target": "../FRAMEWORK_ARCHITECTURE.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/Framework/PHASE1_IMPLEMENTATION_SPEC.md",
+      "target": "PHASE1_CAPABILITIES.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/Framework/PHASE1_IMPLEMENTATION_SPEC.md",
+      "target": "PHASE1_ACCEPTANCE.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/Framework/PHASE1_IMPLEMENTATION_SPEC.md",
+      "target": "PHASE1_TASKS.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/Framework/PHASE1_IMPLEMENTATION_SPEC.md",
+      "target": "../../Assets/PlagueSurvivor/Scripts/PlagueGame.cs",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/Framework/PHASE1_IMPLEMENTATION_SPEC.md",
+      "target": "../../Assets/PlagueSurvivor/Scripts/CyberCityWorld.cs",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/Framework/PHASE1_IMPLEMENTATION_SPEC.md",
+      "target": "../../Assets/PlagueSurvivor/Scripts/DialogueScript.cs",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/Framework/PHASE1_IMPLEMENTATION_SPEC.md",
+      "target": "PHASE1_ACCEPTANCE.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/Framework/PHASE1_TASKS.md",
+      "target": "PHASE1_IMPLEMENTATION_SPEC.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/Framework/PHASE1_TASKS.md",
+      "target": "PHASE1_CAPABILITIES.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/Framework/PHASE1_TASKS.md",
+      "target": "PHASE1_ACCEPTANCE.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/Framework/PHASE1_TASKS.md",
+      "target": "../ECHO_IN_THE_SHELL_GAME_DESIGN.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/Framework/PHASE1_TASKS.md",
+      "target": "../FRAMEWORK_ARCHITECTURE.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/README.md",
+      "target": "ECHO_IN_THE_SHELL_GAME_DESIGN.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/README.md",
+      "target": "FRAMEWORK_ARCHITECTURE.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/README.md",
+      "target": "Framework/PHASE1_IMPLEMENTATION_SPEC.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/README.md",
+      "target": "Framework/PHASE1_CAPABILITIES.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/README.md",
+      "target": "Framework/PHASE1_ACCEPTANCE.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/README.md",
+      "target": "Framework/PHASE1_TASKS.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/README.md",
+      "target": "Framework/PHASE1_ORCHESTRATOR_PROMPT.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/README.md",
+      "target": "项目进度说明.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/README.md",
+      "target": "Boss关卡实现与验证.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/README.md",
+      "target": "Boss战开发计划.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/README.md",
+      "target": "Boss战美术资源需求.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/README.md",
+      "target": "背包装备与掉落系统.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/README.md",
+      "target": "对话系统.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/README.md",
+      "target": "基础装备系统.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/README.md",
+      "target": "../Assets/CyberCity/README.md",
+      "status": "passed"
+    },
+    {
+      "source": "Docs/README.md",
+      "target": "Boss关卡实现与验证.md",
+      "status": "passed"
+    }
+  ],
+  "external_links": [
+    {
+      "source": "Docs/ECHO_IN_THE_SHELL_GAME_DESIGN.md",
+      "target": "https://github.com/xzso3/echo-in-the-shell-evo-tavern-2026",
+      "status": "not_run"
+    },
+    {
+      "source": "Docs/Framework/PHASE1_ORCHESTRATOR_PROMPT.md",
+      "target": "https://learn.chatgpt.com/docs/environments/git-worktrees",
+      "status": "not_run"
+    }
+  ],
+  "absent_paths": [
+    "Assets/EchoFramework",
+    "ContentPackages",
+    "Tools/EchoContent",
+    "Tests/EchoFramework",
+    "Docs/Framework/Orchestration"
+  ],
+  "worktrees": "worktree /Users/const/Projects/Unity/echo-in-the-shell-evo-tavern-2026\nHEAD fb3376eb75cb329dcda83dde00018439a0f000a2\nbranch refs/heads/codex/p1-bootstrap\n\nworktree /Users/const/.codex/worktrees/de32/echo-in-the-shell-evo-tavern-2026\nHEAD fb3376eb75cb329dcda83dde00018439a0f000a2\nbranch refs/heads/codex/p1-integration",
+  "applicable_agents": [
+    {
+      "path": "/Users/const/.codex/AGENTS.md",
+      "bytes": 1
+    }
+  ],
+  "gates": {
+    "G1": "not_run",
+    "G2": "not_run",
+    "G3": "not_run"
+  }
+}

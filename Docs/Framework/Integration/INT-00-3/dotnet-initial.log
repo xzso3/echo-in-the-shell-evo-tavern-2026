@@ -1,0 +1,106 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Echo.Framework.Core -> /Users/const/.codex/worktrees/de32/echo-in-the-shell-evo-tavern-2026/Tests/EchoFramework/Host/bin/Debug/netstandard2.1/Echo.Framework.Core.dll
+  Echo.Gameplay -> /Users/const/.codex/worktrees/de32/echo-in-the-shell-evo-tavern-2026/Tests/EchoFramework/Host/bin/Debug/netstandard2.1/Echo.Gameplay.dll
+  Echo.Content.Contracts -> /Users/const/.codex/worktrees/de32/echo-in-the-shell-evo-tavern-2026/Tests/EchoFramework/Host/bin/Debug/netstandard2.1/Echo.Content.Contracts.dll
+  Echo.Contracts.Host -> /Users/const/.codex/worktrees/de32/echo-in-the-shell-evo-tavern-2026/Tests/EchoFramework/Host/bin/Debug/net8.0/Echo.Contracts.Host.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:03.95
+A02.case_protocol: passed
+A02.empty_resources: passed
+A02.move_intent: passed
+A02.valid_fixture_action: passed
+A02.valid_manifest: passed
+A03.forbidden_case_step: passed
+A03.missing_field: passed
+A03.resource_path_escape: passed
+A03.unknown_field: passed
+A03.unsupported_version: passed
+A03.wrong_type: passed
+A04.resource_id_type: passed
+A04.resource_type: passed
+A05.bad_clock: passed
+A05.negative_duration: passed
+A05.reference_shape: passed
+A05.variable_type: passed
+A01.no_engine_dependency: passed
+A01.json_version: passed
+A03.unsupported_schema_$ref: passed
+A03.unsupported_schema_allOf: passed
+A03.unsupported_schema_anyOf: passed
+A03.unsupported_schema_not: passed
+A03.unsupported_schema_if: passed
+A03.unsupported_schema_format: passed
+A03.unsupported_schema_patternProperties: passed
+A03.unsupported_schema_unevaluatedProperties: passed
+A03.json_duplicate: passed
+A03.json_comment: passed
+A03.json_trailing_comma: passed
+A03.json_nonfinite: passed
+A03.json_single_quote: passed
+A03.json_extra_value: passed
+A03.json_overflow: passed
+A01.json_numeric_forms: passed
+A03.unsupported_nested_schema: passed
+A01.unicode_schema_length: passed
+A02.descriptor_generation: passed
+A03.fixture_not_production: passed
+A03.unknown_capability: passed
+A05.scope: passed
+A05.context: passed
+A05.attack_only_contract_context: passed
+A05.hook_sustained: passed
+A05.identity_generation: passed
+A05.invalid_ids: passed
+A02.immutable_event: passed
+A05.actor_flow_contract_double: passed
+A04.marker_instance_context: passed
+A02.metadata_reference: passed
+A04.duplicate_package: passed
+A04.missing_dependency: passed
+A04.dependency_version: passed
+A04.dependency_cycle: passed
+A04.private_reference: passed
+A04.wrong_reference_type: passed
+A04.undeclared_dependency: passed
+R1.full_string.content_id: passed
+R1.full_string.resource_id: passed
+R1.full_string.package_id: passed
+R1.full_string.resource_path: passed
+R1.full_string.version: passed
+R1.full_string.digest: passed
+R1.content_id_constructor: passed
+R2.limit_range.minLength: passed
+R2.limit_range.maxLength: passed
+R2.limit_range.minItems: passed
+R2.limit_range.maxItems: passed
+R2.finite_schema.minimum: passed
+R2.finite_schema.maximum: passed
+R2.inverted_bounds: passed
+R2.nonfinite_nested_annotation: passed
+R2.exact_integer_comparison: passed
+R2.mixed_number_comparison: passed
+R2.nonfinite_content: passed
+R3.int32.generation: passed
+R3.int32.case_seed: passed
+R3.int32.report_seed: passed
+R3.int32.module_order: passed
+R3.wire_int64_safe_range: passed
+Report: /tmp/int00-round3-evidence/dotnet-report.json
+A01.asmdef.Echo.Framework.Core: passed
+A01.asmdef.Echo.Gameplay: passed
+A01.asmdef.Echo.UnityHost: passed
+A01.source_dependencies.Core: passed
+A01.source_dependencies.Gameplay: passed
+A01.meta_pairs: passed
+A01.unique_guids: passed
+A01.write_boundary: failed
+A01.unchanged.Packages/manifest.json: passed
+A01.unchanged.Packages/packages-lock.json: passed
+A01.unchanged.ProjectSettings/ProjectVersion.txt: passed
+A02.generated_schema_digest: passed
+A03.production_catalog_empty: passed

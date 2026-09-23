@@ -1,0 +1,17 @@
+{
+  "name": "Echo.Editor",
+  "references": [
+    "Echo.Framework.Core",
+    "Echo.Gameplay",
+    "Echo.Contracts.Smoke"
+  ],
+  "autoReferenced": true,
+  "noEngineReferences": false,
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "Newtonsoft.Json.dll"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ]
+}

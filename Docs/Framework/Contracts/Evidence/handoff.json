@@ -1,0 +1,56 @@
+{
+  "task_id": "P1-01",
+  "attempt": 1,
+  "result": "ready_for_review",
+  "base_commit": "94ccceff3d00e3e929161e2024ca0a2728aa3067",
+  "tested_source_commit": "a0290050b84591248148df63c79da8dbf2dc6acf",
+  "worktree": "/Users/const/.codex/worktrees/1e89/echo-in-the-shell-evo-tavern-2026",
+  "branch": "codex/p1-01-contracts",
+  "source_digest": "520455a480edf30b557fba7a08c8b48f28c61e1137576307a1d558d7a51f3237",
+  "fixture_digest": "91bdce9f9300a6082b7ae4c33d2dabf4279ab3842ddee6aef5e3aec6088d7b8b",
+  "schema_digest": "2df46d5949ad376903098d944bd97d3c3b8cf01c030d3942e0eddf494a7107c0",
+  "catalog_digest": "d345c063ad76ae7b712a19a10f9ca8eb39122b631a89cfdf33e1de44ae751512",
+  "json_dll_sha256": "7292d3eb508652d14726749dd27094f2d481aeccf2db6427b62f68a71460897e",
+  "checks": [
+    {
+      "command": "sh Tests/EchoFramework/Contracts/verify.sh",
+      "exit_code": 0,
+      "status": "passed",
+      "detail": "dotnet SDK 8.0.413 / runtime 8.0.19; build 0 warnings/0 errors; 57 contract checks; 13 independent static checks"
+    },
+    {
+      "command": "ECHO_TESTED_COMMIT=a0290050b84591248148df63c79da8dbf2dc6acf /Applications/Unity/Hub/Editor/2021.3.27f1c2/Unity.app/Contents/MacOS/Unity -batchmode -nographics -projectPath /Users/const/.codex/worktrees/1e89/echo-in-the-shell-evo-tavern-2026 -executeMethod Echo.Editor.Contracts.ContractSmokeEntry.Run -logFile /Users/const/.codex/worktrees/1e89/echo-in-the-shell-evo-tavern-2026/Docs/Framework/Contracts/Evidence/unity.log",
+      "exit_code": 0,
+      "status": "passed",
+      "detail": "2021.3.27f1c2 (3b3d9646cb47); 57 shared contract checks; empty UnityHost asmdef warning expected"
+    },
+    {
+      "command": "compare dotnet-report.json and unity-report.json tested_commit/framework_digest/content_digest/schema_digest/catalog_digest",
+      "exit_code": 0,
+      "status": "passed",
+      "detail": "All five values equal"
+    },
+    {
+      "command": "git diff --exit-code && git diff --check",
+      "exit_code": 0,
+      "status": "passed",
+      "detail": "No source change after tested source commit; reports untracked until evidence commit"
+    },
+    {
+      "command": "dotnet sln EchoFramework.sln list",
+      "exit_code": 0,
+      "status": "passed",
+      "detail": "Four projects listed"
+    }
+  ],
+  "not_run": [
+    "Production A-package load and actual gameplay capability execution",
+    "Runtime event authority enforcement and real scope lifecycle/ECA (P1-02/03)",
+    "Unity resource identity import and actual resource manifest (P1-07)",
+    "Real Actor/Combat/Interaction/Quest/Dialogue integration (P1-05/06)",
+    "Play Mode, standalone player build, visual/resolution checks and prototype gameplay regression (P1-07/09/11)",
+    "A06-A26 full acceptance and G1/G2/G3"
+  ],
+  "unity_slot": "released; own batch editor exited normally; existing saved-project editor not controlled",
+  "evidence_commit_policy": "Final commit adds only Docs/Framework/Contracts/Evidence; tested sources, fixtures, generated contracts and toolchain remain at tested_source_commit."
+}

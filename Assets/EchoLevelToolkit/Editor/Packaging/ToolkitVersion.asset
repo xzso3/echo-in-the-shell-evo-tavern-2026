@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66d147e823ef4137b468bd72e2772e70, type: 3}
+  m_Name: ToolkitVersion
+  m_EditorClassIdentifier:
+  toolkitVersion: 0.1.0-dev.1
+  contentFormatVersion: 1
+  unityVersion: 2021.3.27f1c2
+  urpVersion: 12.1.12
+  templateVersion: 0.1.0-dev.1
+  packages:
+  - packageId: com.unity.2d.tilemap
+    exactVersion: 1.0.0
+  - packageId: com.unity.2d.tilemap.extras
+    exactVersion: 2.2.5
+  - packageId: com.unity.render-pipelines.universal
+    exactVersion: 12.1.12
+  - packageId: com.unity.textmeshpro
+    exactVersion: 3.0.6
+  - packageId: com.unity.ugui
+    exactVersion: 1.0.0
