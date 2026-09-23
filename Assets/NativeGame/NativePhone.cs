@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Echo.NativeGame.Commander;
+using Echo.NativeGame.GameFlow.Ending;
 using Echo.NativeGame.PhoneUI;
 namespace Echo.NativeGame
 {
@@ -35,18 +36,27 @@ namespace Echo.NativeGame
         {
             for (int i = 0; i < tabs.Length; i++) { int index = i; tabs[i].onClick.AddListener(() => SelectPage(index)); }
             for (int i = 0; i < actions.Length; i++) { int index = i; actions[i].onClick.AddListener(() => Act(index)); }
-            restart.onClick.AddListener(level.Restart);
+            restart.gameObject.SetActive(false);
             if (sendButton) sendButton.onClick.AddListener(SendMessage);
         }
         void Start()
         {
-            if (!tabletView) return;
+            if (!tabletView)
+            {
+                if (level && level.hud) level.hud.InitializeFlowUi();
+                return;
+            }
             tabletView.Build(body ? body.font : null);
             var runtime = level.GetComponent<CommanderRuntimeHost>();
             if (!runtime || runtime.Session == null)
-            { Debug.LogError("Commander tablet: run session is not connected.", this); return; }
+            {
+                Debug.LogError("Commander tablet: run session is not connected.", this);
+                if (level.hud) level.hud.InitializeFlowUi();
+                return;
+            }
             tabletAdapter = new CommanderTabletRunAdapter(this, tabletView, runtime);
             tabletView.ApplySprites();
+            if (level.hud) level.hud.InitializeFlowUi();
         }
         public static string PageLabel(Page value) => value == Page.Comms ? "通讯" : value == Page.Support ? "支援" : "网络";
         public void SelectPage(int index)
@@ -56,6 +66,15 @@ namespace Echo.NativeGame
         public void CloseDecision() { finalDecision = false; tabletAdapter?.CloseDecision(); }
         public void ShowContinuation()
         { BlurComposition(); finalDecision = false; SelectedPage = Page.Comms; topic = 0; tabletAdapter?.ShowContinuation(); level.hud.OpenPhone(); scroll.verticalNormalizedPosition = 1; }
+        public void HandleTabletCloseRequested()
+        {
+            if (level && level.hud && level.hud.TerminalUi &&
+                level.hud.TerminalUi.TryHandleTabletBack()) return;
+            if (level && level.ResultFlow.Stage == RunResultStage.BirthContinuation)
+                level.ResultFlow.ViewResults();
+            else if (level && level.hud)
+                level.hud.ClosePhone();
+        }
         public void CancelComposition()
         {
             if (proxy && proxy.Busy)
@@ -89,7 +108,7 @@ namespace Echo.NativeGame
             scroll.viewport.sizeDelta = new Vector2(scroll.viewport.sizeDelta.x, contractView ? 298 : composingPage ? 145 : 190);
             heading.text = "心智连接 / " + (finalDecision ? "最终节点" : PageLabel(SelectedPage)) + " / 滚动阅读";
             foreach (var button in actions) { button.gameObject.SetActive(false); button.interactable = true; }
-            restart.gameObject.SetActive(level.Phase == NativeRunController.RunPhase.Completed || level.Phase == NativeRunController.RunPhase.Dead);
+            restart.gameObject.SetActive(false);
             string text;
             if (finalDecision)
             {

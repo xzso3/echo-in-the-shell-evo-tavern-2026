@@ -1,3 +1,4 @@
+using Echo.NativeGame.GameFlow;
 using UnityEngine;
 
 namespace Echo.NativeGame.Commander
@@ -12,52 +13,31 @@ namespace Echo.NativeGame.Commander
         void ReleaseForRunEnd();
     }
 
-    // Keeps the run and its actors alive so contracts can still execute while the phone is open.
+    // Compatibility surface for existing phone and combat callers. GF01's flow pause
+    // component is the only owner of Time.timeScale and all pause reasons.
     [DisallowMultipleComponent]
     [RequireComponent(typeof(NativeRunController))]
     public sealed class NativePhonePauseController : MonoBehaviour, IPhonePauseController
     {
-        NativeRunController run;
-        float timeScaleBeforePhone;
-        bool hasTimeScaleSnapshot;
-
-        public bool IsPhoneOpen { get; private set; }
-        public bool IsRunActive => run && run.Running;
-        public bool IsCombatAdvancing => IsRunActive && !IsPhoneOpen;
-
-        void Awake() { run = GetComponent<NativeRunController>(); }
-
-        public void OpenPhone()
+        FlowPauseController pause;
+        FlowPauseController Pause
         {
-            if (IsPhoneOpen) return;
-            IsPhoneOpen = true;
-            if (!IsRunActive) return; // The result/continuation phone has no battle to pause.
-            timeScaleBeforePhone = Time.timeScale;
-            hasTimeScaleSnapshot = true;
-            ClearMovementInput();
-            Time.timeScale = 0f;
+            get
+            {
+                if (!pause) pause = GetComponent<FlowPauseController>();
+                if (!pause) pause = gameObject.AddComponent<FlowPauseController>();
+                return pause;
+            }
         }
 
-        public void ClosePhone()
-        {
-            if (!IsPhoneOpen && !hasTimeScaleSnapshot) return;
-            IsPhoneOpen = false;
-            if (!hasTimeScaleSnapshot) return;
-            hasTimeScaleSnapshot = false;
-            // Keep a pause that was already in effect before the phone opened.
-            if (Time.timeScale == 0f) Time.timeScale = timeScaleBeforePhone;
-        }
+        public bool IsPhoneOpen => Pause.IsPhoneOpen;
+        public bool IsRunActive => Pause.IsRunActive;
+        public bool IsCombatAdvancing => Pause.IsCombatAdvancing;
 
-        public void ReleaseForRunEnd() { ClosePhone(); }
-
-        void OnDisable() { ReleaseForRunEnd(); }
-
-        void ClearMovementInput()
-        {
-            if (!run) return;
-            if (run.player) run.player.MoveInput = Vector2.zero;
-            if (run.hud && run.hud.ActiveToolkitPlayer)
-                run.hud.ActiveToolkitPlayer.MoveInput = Vector2.zero;
-        }
+        void Awake() { _ = Pause; }
+        public void OpenPhone() { Pause.OpenPhone(); }
+        public void ClosePhone() { Pause.ClosePhone(); }
+        public void ReleaseForRunEnd() { Pause.ReleaseAllForRunEnd(); }
+        void OnDisable() { if (pause) pause.ReleaseAllForRunEnd(); }
     }
 }

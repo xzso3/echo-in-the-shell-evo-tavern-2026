@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Echo.LevelToolkit.Foundation;
+using Echo.NativeGame.GameFlow.Results;
 using UnityEngine;
 namespace Echo.NativeGame
 {
@@ -49,10 +50,12 @@ namespace Echo.NativeGame
         public int bypassDifference = 25, preserveDifference = 35, rewriteDifference = 35;
         readonly List<Memory> memories = new List<Memory>();
         readonly List<string> records = new List<string>();
+        readonly List<NativeBehaviorRecord> behaviorRecords = new List<NativeBehaviorRecord>();
         readonly HashSet<string> recorded = new HashSet<string>();
         readonly HashSet<NativeLevelSourceKey> levelFacts = new HashSet<NativeLevelSourceKey>();
         readonly HashSet<NativeMemoryKind> shared = new HashSet<NativeMemoryKind>();
         public IReadOnlyList<Memory> Memories => memories.AsReadOnly();
+        public IReadOnlyList<NativeBehaviorRecord> BehaviorRecords => behaviorRecords.AsReadOnly();
         public int MemoryCount => memories.Count;
         public int LevelFactCount => levelFacts.Count;
         public int Sync { get; private set; }
@@ -118,11 +121,18 @@ namespace Echo.NativeGame
             if (EndingCommitted || !key.IsValid || string.IsNullOrWhiteSpace(text)
                 || !levelFacts.Add(key)) return false;
             records.Add("外来关卡 / " + text);
+            behaviorRecords.Add(new NativeBehaviorRecord("level_fact", "外来关卡 / " + text));
             return true;
         }
         public bool HasLevelFact(RuntimeScope scope, ContentIdentity semanticId) =>
             levelFacts.Contains(new NativeLevelSourceKey(scope, semanticId));
-        bool Record(string key, string text) { if (!recorded.Add(key)) return false; records.Add(text); return true; }
+        bool Record(string key, string text)
+        {
+            if (!recorded.Add(key)) return false;
+            records.Add(text);
+            behaviorRecords.Add(new NativeBehaviorRecord(key, text));
+            return true;
+        }
         public string MemorySummary()
         {
             var text = new StringBuilder("记忆 / " + MemoryCount + " / 3\n");
