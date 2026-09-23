@@ -1,6 +1,6 @@
 # GF02 主控与并行执行安排
 
-本文件用于后续启动；本轮仅编写文档。采用用户指定的 [接续会话并主控推进](codex://threads/01a0ca99-e997-7733-9a45-d4ee7b146ff8) 模式，并延续 GF01 主控规范：**主控管文档、派发、协调和交付核对，独立 Sol task thread 执行，INT 串行集成。禁止 subagent / spawn_agent / 嵌套代理。**
+本文件为 GF02 已启动批次的执行边界；实际进度见 [STATUS.md](STATUS.md)。采用用户指定的 [接续会话并主控推进](codex://threads/01a0ca99-e997-7733-9a45-d4ee7b146ff8) 模式，并延续 GF01 主控规范：**主控管文档、派发、协调和交付核对，独立 Sol task thread 执行，INT 串行集成。禁止 subagent / spawn_agent / 嵌套代理。**
 
 ## 1. 角色与模型
 
