@@ -1,5 +1,9 @@
 # 关卡工具包主控台账
 
+## 2026-09-23 手动结束与工作树回收
+
+用户已宣布本轮 LevelToolkit 全部 task 手动结束；这不表示 S3、S4 已通过。主控已核对提交与工作树状态，关闭并归档 15 个无 Unity 占用的 LevelToolkit 执行任务；KT-04 原分离 HEAD 提交已保留为 `codex/kt-04-validation` 分支。仍暂留 3 棵完成任务的工作树：`8003` 被 Unity Editor 使用且有未提交 `.vscode/settings.json`，`84a9` 与 `f014` 分别被 Unity Licensing Client 持有工作目录。主控未终止任何 Unity 进程、未删除未提交文件；这 3 个任务在安全关闭工作树后再归档。主目录、进行中的 AI 指挥官工作树和暂缓 P2 工作树不在本次回收范围。
+
 更新：2026-09-23（UTC+8）。用户已明确恢复开发，并把独立 Sol 执行任务并行上限从 5 提到 **15**，INT-LT 占一个；Unity 同时仍只归一个任务。P2 继续暂缓。需求文档定义产品范围，[DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) 为工程基线；本轮只要求 S1～S4，完整 A/B 和第二作者验收后置。用户已将 S3 的交付介质从 `.unitypackage` 改为手工文件夹 ZIP，并明确禁止 SHA 等过度验证；只做归档内容、无覆盖与一次 Unity 启动的必要检查。具体覆盖见 [DECISIONS.md](DECISIONS.md) 与待交的 `ZIP_HANDOFF.md`；本轮输入基线和用户改动见 [BASELINE.md](BASELINE.md)。
 
 ## 全局锁与派发规则
