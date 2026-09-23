@@ -1,11 +1,39 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
+using Echo.LevelToolkit.Foundation;
 using UnityEngine;
 namespace Echo.NativeGame
 {
     public enum NativeEnding { Archive, Escape, Assimilation, Birth }
     public enum NativeFinalChoice { Destroy, Upload }
     public enum NativeBirthStage { None, AwaitFirstPunch, AutonomousPause, Blackout, PhoneContinuation }
+    // A semantic fact or objective belongs to one authored work in one placed instance.
+    // The instance scope includes RunId, so replaying the same work in a new run is distinct.
+    public readonly struct NativeLevelSourceKey : IEquatable<NativeLevelSourceKey>
+    {
+        public RuntimeScope Scope { get; }
+        public ContentIdentity SourceId { get; }
+        public bool IsValid => Scope.RunId.IsValid && Scope.InstanceId.IsValid
+            && Scope.Content.IsComplete && SourceId.IsComplete
+            && string.Equals(Scope.Content.AuthorId, SourceId.AuthorId, StringComparison.Ordinal)
+            && string.Equals(Scope.Content.WorkId, SourceId.WorkId, StringComparison.Ordinal);
+
+        public NativeLevelSourceKey(RuntimeScope scope, ContentIdentity sourceId)
+        {
+            Scope = scope;
+            SourceId = sourceId;
+        }
+
+        public bool Equals(NativeLevelSourceKey other) => Scope.Equals(other.Scope)
+            && SourceId.Equals(other.SourceId);
+        public override bool Equals(object obj) => obj is NativeLevelSourceKey other && Equals(other);
+        public override int GetHashCode()
+        {
+            unchecked { return Scope.GetHashCode() * 397 ^ SourceId.GetHashCode(); }
+        }
+    }
+
     // The single owner of memories, meaningful behavior, authorization cost, ending eligibility and birth state.
     public sealed class NativeNarrative : MonoBehaviour
     {
@@ -22,9 +50,11 @@ namespace Echo.NativeGame
         readonly List<Memory> memories = new List<Memory>();
         readonly List<string> records = new List<string>();
         readonly HashSet<string> recorded = new HashSet<string>();
+        readonly HashSet<NativeLevelSourceKey> levelFacts = new HashSet<NativeLevelSourceKey>();
         readonly HashSet<NativeMemoryKind> shared = new HashSet<NativeMemoryKind>();
         public IReadOnlyList<Memory> Memories => memories.AsReadOnly();
         public int MemoryCount => memories.Count;
+        public int LevelFactCount => levelFacts.Count;
         public int Sync { get; private set; }
         public int Difference { get; private set; }
         public bool HighSync => Sync >= highSyncThreshold;
@@ -80,6 +110,18 @@ namespace Echo.NativeGame
         }
         public void RecordRelay() { Record("relay", "携带三段记忆，重新连接了终端。"); }
         public void RecordBossDefeated() { Record("boss", "在核心暴露时完成互动，解除了封锁。"); }
+        // External facts use their own namespace. They never set the original boss or
+        // bypass flags, scores, memories, relay, or ending state.
+        public bool RecordLevelFact(RuntimeScope scope, ContentIdentity semanticId, string text)
+        {
+            var key = new NativeLevelSourceKey(scope, semanticId);
+            if (EndingCommitted || !key.IsValid || string.IsNullOrWhiteSpace(text)
+                || !levelFacts.Add(key)) return false;
+            records.Add("外来关卡 / " + text);
+            return true;
+        }
+        public bool HasLevelFact(RuntimeScope scope, ContentIdentity semanticId) =>
+            levelFacts.Contains(new NativeLevelSourceKey(scope, semanticId));
         bool Record(string key, string text) { if (!recorded.Add(key)) return false; records.Add(text); return true; }
         public string MemorySummary()
         {

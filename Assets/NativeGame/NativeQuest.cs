@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using Echo.LevelToolkit.Binding;
+using Echo.LevelToolkit.Foundation;
 using UnityEngine;
 namespace Echo.NativeGame
 {
@@ -5,6 +8,15 @@ namespace Echo.NativeGame
     public enum NativeSideProgress { NotChosen, InProgress, ReadyToSubmit, Completed }
     public sealed class NativeQuest : MonoBehaviour
     {
+        private sealed class RequiredLevelObjective
+        {
+            public LevelEndpointKind Kind;
+            public string Label;
+            public bool Completed;
+        }
+
+        private readonly Dictionary<NativeLevelSourceKey, RequiredLevelObjective> requiredLevelObjectives =
+            new Dictionary<NativeLevelSourceKey, RequiredLevelObjective>();
         public NativeNarrative narrative;
         public bool Active { get; private set; }
         public bool RelayRestored { get; private set; }
@@ -23,6 +35,9 @@ namespace Echo.NativeGame
                 if (!RelayRestored) return "02 / 重新连接\n三段记忆已收齐，返回青色终端。";
                 if (!BossStarted) return "03 / 穿过封锁\n沿东侧通路前进，准备迎战。";
                 if (!BossCleared) return "04 / 解除封锁\n击破外壳。核心暴露时，靠近并按 E。";
+                foreach (var objective in requiredLevelObjectives.Values)
+                    if (!objective.Completed)
+                        return "05 / 外来关卡目标\n" + objective.Label;
                 return completedObjective;
             }
         }
@@ -55,6 +70,62 @@ namespace Echo.NativeGame
             if (!Active || Completed || SideProgress != NativeSideProgress.ReadyToSubmit) return false;
             SideSettlementCount = 1; return true;
         }
+        public int RequiredLevelObjectiveCount => requiredLevelObjectives.Count;
+        public int CompletedLevelObjectiveCount
+        {
+            get
+            {
+                int count = 0;
+                foreach (var objective in requiredLevelObjectives.Values)
+                    if (objective.Completed) count++;
+                return count;
+            }
+        }
+        public bool AllRequiredLevelObjectivesCompleted =>
+            CompletedLevelObjectiveCount == RequiredLevelObjectiveCount;
+
+        // Called by the selected Integrated binding during startup. The key includes
+        // the authored endpoint plus this run and placed level instance.
+        public bool TryRegisterRequiredLevelObjective(LevelBindingSession session,
+            ContentIdentity endpointId, string label)
+        {
+            if (session == null || session.Mode != LevelRunMode.Integrated
+                || !session.Context.Run.IsRunning
+                || !session.Catalog.LevelIdentity.Equals(session.Context.Scope.Content)
+                || !session.Catalog.TryGet(endpointId, out var endpoint)
+                || !endpoint.RequiredBinding || !endpoint.Allows(LevelRunMode.Integrated)) return false;
+            LevelEndpointKind kind = endpoint.Kind;
+            RuntimeScope scope = session.Context.Scope;
+            var key = new NativeLevelSourceKey(scope, endpointId);
+            if (Completed || !key.IsValid || string.IsNullOrWhiteSpace(label)
+                || (kind != LevelEndpointKind.EncounterCompleted
+                    && kind != LevelEndpointKind.InteractionConfirmed)
+                || requiredLevelObjectives.ContainsKey(key)) return false;
+            requiredLevelObjectives.Add(key, new RequiredLevelObjective { Kind = kind, Label = label });
+            return true;
+        }
+
+        // Only the formal binding may pass a delivered, verified LevelLocalEvent.
+        // Duplicate delivery cannot settle the same objective twice.
+        public bool RecordVerifiedLevelObjective(LevelBindingSession session, LevelLocalEvent fact)
+        {
+            if (session == null || !session.IsActive || session.Mode != LevelRunMode.Integrated
+                || fact.Scope != session.Context.Scope
+                || !session.Catalog.TryGet(fact.EndpointId, out var endpoint)
+                || endpoint.Kind != fact.Kind) return false;
+            var key = new NativeLevelSourceKey(fact.Scope, fact.EndpointId);
+            if (!Active || Completed || fact.Sequence <= 0 || !key.IsValid
+                || !requiredLevelObjectives.TryGetValue(key, out var objective)
+                || objective.Kind != fact.Kind || objective.Completed) return false;
+            objective.Completed = true;
+            return true;
+        }
+
+        public bool HasCompletedLevelObjective(RuntimeScope scope, ContentIdentity endpointId)
+        {
+            return requiredLevelObjectives.TryGetValue(new NativeLevelSourceKey(scope, endpointId),
+                out var objective) && objective.Completed;
+        }
         public void Activate() { Active = true; }
         public bool CanRecover(NativeMemoryKind kind) => Active && !Completed && narrative && !narrative.HasMemory(kind);
         public bool CanRecordTerminal() => Active && narrative && narrative.MemoryCount == 3 && !RelayRestored;
@@ -62,7 +133,8 @@ namespace Echo.NativeGame
         public bool CanStartBoss() => Active && RelayRestored && !BossStarted;
         public bool RecordBossStart() { if (!CanStartBoss()) return false; BossStarted = true; return true; }
         public bool RecordBossDefeat() { if (!Active || !BossStarted || BossCleared) return false; BossCleared = true; return true; }
-        public bool CanLeaveSector() => Active && RelayRestored && BossCleared && narrative && narrative.MemoryCount == 3;
+        public bool CanLeaveSector() => Active && RelayRestored && BossCleared && narrative
+            && narrative.MemoryCount == 3 && AllRequiredLevelObjectivesCompleted;
         public bool RecordFinalObjective() { if (!CanLeaveSector() || Completed) return false; Completed = true; return true; }
     }
 }
