@@ -74,6 +74,9 @@ namespace Echo.LevelToolkit.Level.Editor
             {
                 if (!encounter) { errors.Add("KT05_ENCOUNTER_MISSING: Null encounter reference."); continue; }
                 string label = encounter.name;
+                if (encounter.Mode != EncounterMode.FreeCombat && encounter.Mode != EncounterMode.ClearEnemies
+                    && encounter.Mode != EncounterMode.Boss)
+                    errors.Add("KT05_MODE: " + label + ": unknown encounter mode.");
                 if (!encounter.EncounterId.IsComplete || !encounterIds.Add(encounter.EncounterId))
                     errors.Add("KT05_ID: " + label + ": identity is incomplete or duplicated.");
                 if (!encounter.RegionEnteredEndpoint.IsComplete)

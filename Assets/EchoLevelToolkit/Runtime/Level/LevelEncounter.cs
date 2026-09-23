@@ -50,6 +50,8 @@ namespace Echo.LevelToolkit.Level
             if (world || !combatWorld || !doorSet || binding == null || !encounterId.IsComplete
                 || binding.Context.Scope != combatWorld.Context.Scope || binding.Context.Scope != doorSet.Scope)
                 return false;
+            if (mode != EncounterMode.FreeCombat && mode != EncounterMode.ClearEnemies
+                && mode != EncounterMode.Boss) return false;
             var area = GetComponent<PolygonCollider2D>();
             if (!area || !area.isTrigger || !regionEnteredEndpoint.IsComplete)
                 return false;

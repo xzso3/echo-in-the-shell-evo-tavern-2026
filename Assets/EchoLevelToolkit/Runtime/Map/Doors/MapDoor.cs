@@ -34,11 +34,12 @@ namespace Echo.LevelToolkit.Map.Doors
                 if (!blocker) return default;
                 Vector2 half = blocker.size * .5f;
                 Vector2 offset = blocker.offset;
-                Vector3 first = transform.TransformPoint(offset + new Vector2(-half.x, -half.y));
+                Transform shape = blocker.transform;
+                Vector3 first = shape.TransformPoint(offset + new Vector2(-half.x, -half.y));
                 var bounds = new Bounds(first, Vector3.zero);
-                bounds.Encapsulate(transform.TransformPoint(offset + new Vector2(-half.x, half.y)));
-                bounds.Encapsulate(transform.TransformPoint(offset + new Vector2(half.x, -half.y)));
-                bounds.Encapsulate(transform.TransformPoint(offset + new Vector2(half.x, half.y)));
+                bounds.Encapsulate(shape.TransformPoint(offset + new Vector2(-half.x, half.y)));
+                bounds.Encapsulate(shape.TransformPoint(offset + new Vector2(half.x, -half.y)));
+                bounds.Encapsulate(shape.TransformPoint(offset + new Vector2(half.x, half.y)));
                 return bounds;
             }
         }
