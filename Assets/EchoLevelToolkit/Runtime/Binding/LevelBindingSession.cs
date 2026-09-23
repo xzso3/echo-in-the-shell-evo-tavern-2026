@@ -118,6 +118,8 @@ namespace Echo.LevelToolkit.Binding
         private readonly Dictionary<ContentIdentity, ILevelActionTarget> targets =
             new Dictionary<ContentIdentity, ILevelActionTarget>();
         private readonly HashSet<ContentIdentity> completedEvents = new HashSet<ContentIdentity>();
+        private readonly Dictionary<ContentIdentity, PendingCompletion> pendingCompletions =
+            new Dictionary<ContentIdentity, PendingCompletion>();
         private SessionState state;
         private long nextSequence;
 
@@ -218,10 +220,25 @@ namespace Echo.LevelToolkit.Binding
             if (!catalog.TryGet(endpointId, out var endpoint) || !endpoint.IsEvent || endpoint.Kind != kind)
                 return LevelEventResult.EndpointMissing;
             if (!endpoint.Allows(mode)) return LevelEventResult.ModeDenied;
-            // A blocked exit must be reachable again after its condition becomes true.
-            bool once = kind == LevelEndpointKind.EncounterCompleted;
-            if (once && !completedEvents.Add(endpointId)) return LevelEventResult.AlreadyPublished;
+            // Encounter completion is committed only after every subscriber succeeds.
+            // A retry reuses the first event and invokes only handlers that failed.
+            if (kind == LevelEndpointKind.EncounterCompleted)
+            {
+                if (completedEvents.Contains(endpointId)) return LevelEventResult.AlreadyPublished;
+                if (!pendingCompletions.TryGetValue(endpointId, out var pending))
+                {
+                    var completion = new LevelLocalEvent(scope, endpointId, kind, ++nextSequence, actor);
+                    subscribers.TryGetValue(endpointId, out var completionHandlers);
+                    pending = new PendingCompletion(completion,
+                        completionHandlers == null
+                            ? new List<Action<LevelLocalEvent>>()
+                            : new List<Action<LevelLocalEvent>>(completionHandlers));
+                    pendingCompletions.Add(endpointId, pending);
+                }
+                return DispatchCompletion(endpointId, pending);
+            }
 
+            // A blocked exit must be reachable again after its condition becomes true.
             var levelEvent = new LevelLocalEvent(scope, endpointId, kind, ++nextSequence, actor);
             if (!subscribers.TryGetValue(endpointId, out var handlers)) return LevelEventResult.Published;
             bool failed = false;
@@ -235,6 +252,29 @@ namespace Echo.LevelToolkit.Binding
                 }
             }
             return failed ? LevelEventResult.HandlerFailed : LevelEventResult.Published;
+        }
+
+        private LevelEventResult DispatchCompletion(ContentIdentity endpointId, PendingCompletion pending)
+        {
+            if (pending.Dispatching) return LevelEventResult.HandlerFailed;
+            pending.Dispatching = true;
+            var failed = new List<Action<LevelLocalEvent>>();
+            foreach (Action<LevelLocalEvent> handler in pending.Remaining)
+            {
+                try { handler(pending.Event); }
+                catch (Exception exception)
+                {
+                    failed.Add(handler);
+                    Debug.LogException(exception);
+                }
+            }
+            pending.Dispatching = false;
+            if (state == SessionState.Disposed) return LevelEventResult.RunInactive;
+            pending.Remaining = failed;
+            if (failed.Count != 0) return LevelEventResult.HandlerFailed;
+            pendingCompletions.Remove(endpointId);
+            completedEvents.Add(endpointId);
+            return LevelEventResult.Published;
         }
 
         public LevelActionResult Execute(LevelActionCommand command)
@@ -265,6 +305,7 @@ namespace Echo.LevelToolkit.Binding
             subscribers.Clear();
             targets.Clear();
             completedEvents.Clear();
+            pendingCompletions.Clear();
         }
 
         private BindingStartResult Fail(string diagnostic)
@@ -300,6 +341,20 @@ namespace Echo.LevelToolkit.Binding
                 Action action = release;
                 release = null;
                 action?.Invoke();
+            }
+        }
+
+        private sealed class PendingCompletion
+        {
+            public LevelLocalEvent Event { get; }
+            public List<Action<LevelLocalEvent>> Remaining { get; set; }
+            public bool Dispatching { get; set; }
+
+            public PendingCompletion(LevelLocalEvent levelEvent,
+                List<Action<LevelLocalEvent>> handlers)
+            {
+                Event = levelEvent;
+                Remaining = handlers;
             }
         }
     }

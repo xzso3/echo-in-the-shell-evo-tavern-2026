@@ -46,6 +46,16 @@ Host sequence:
 4. On level unload, call `Dispose` and unbind emitters. Old Run and other instance
    events/actions are rejected even if they share the same authored content ID.
 
+`EncounterCompleted` is once-only after successful delivery. If a subscriber throws,
+`Publish` returns `HandlerFailed` and logs the exception. Calling `Publish` again for
+that endpoint retries only failed subscribers with the original event sequence and
+actor; subscribers that succeeded are not called again. The source should retry the
+same verified completion fact while its run and instance remain active. Subscribers
+must make their own writes idempotent by `(RunId, LevelInstanceId, Sequence)`, because
+a handler can apply a side effect before throwing. Unloading discards pending delivery;
+the host must not treat `HandlerFailed` as completed. `ExitReached` remains repeatable
+so an initially blocked exit can be reached again later.
+
 `SandboxBindingDefinition` lists required `EncounterCompleted` endpoints, an
 `ExitReached` test endpoint, optional region-to-`ActivateEncounter` triggers,
 placeholder interaction endpoints, and an optional `UnlockExit` action. Its
