@@ -38,7 +38,8 @@ namespace Echo.NativeGame
         {
             _ = PhonePause;
             if (!player || !combat || !combatIntegration || !quest || !map || !dialogue || !rules || !hud)
-            { Debug.LogError("NativeDemo: missing module reference on Level.", this); enabled = false; }
+            { Debug.LogError("NativeDemo: missing module reference on Level.", this); enabled = false; return; }
+            if (!GetComponent<CommanderRuntimeHost>()) gameObject.AddComponent<CommanderRuntimeHost>();
         }
         void Start()
         {
