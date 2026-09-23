@@ -1,12 +1,12 @@
 # GF02 在线通讯诊断
 
 输入：`a0fcb62321258bf0d29b656fd98a43f5ad942058`。诊断分支：`codex/gf02-llm-diagnostics`。
-工作树：`/Users/const/.codex/worktrees/911b/echo-in-the-shell-evo-tavern-2026`。
+开发来源工作树：`/Users/const/.codex/worktrees/911b/echo-in-the-shell-evo-tavern-2026`。当前复现与交付入口为集成工作树 `/Users/const/.codex/worktrees/4e44/echo-in-the-shell-evo-tavern-2026`，分支 `codex/gf02-integration`。
 保留该基线的平板布局/入口文字；未复制其他工作树的未提交字体或设置。
 
 ## 复现与复制
 
-1. 用 Unity 2021.3.27f1c2 打开上述工作树，启动 `Assets/Scenes/CommanderHome.unity`。
+1. 用 Unity 2021.3.27f1c2 打开上述 **4e44 集成工作树**，启动 `Assets/Scenes/CommanderHome.unity`。
 2. 进入 Play 后勾选菜单 **Tools → Echo → GF02 → LLM Diagnostics (full text)**。默认关闭；域重载会清除开关，请在 Play 后开启。开关只在进程内，不写 PlayerPrefs/资产。
 3. 在 AI 设置输入自己的配置，进入平板“在线通讯”，发送一条短消息。
 4. Console 开启普通 Log、关闭 Collapse，搜索 `GF02-LLM`。选取本次 `session.send` 的 `rid=...`，用它过滤，再选择全部匹配日志复制到此任务。多块正文按 `seq`、`part=x/y` 顺序读取。不要只复制最后一条错误。
@@ -36,3 +36,5 @@ Endpoint 隐去代理路径、userinfo/query/fragment；凭据值和常见凭据
 不新增或运行自动测试、harness、mock 或截图巡检；真实联网、Play 与 Player 构建尚未验证。Unity 导入编译结果见任务交付记录。
 
 编译记录：源码提交 `2234a29`。本工作树用固定 Editor 执行 `-batchmode -nographics -quit` 导入编译，退出码 0；日志 `/private/tmp/gf02-llm-diagnostics-import.log` 包含 `Tundra build success`、修改后的脚本再次导入编译成功、`Mono: successfully reloaded assembly` 和 `Exiting batchmode successfully now!`，无 `error CS`。其他工作树 Editor 未关闭，字体/设置未改动。
+
+集成记录：`2234a290b4525c8acb7f007abb9fda8688574b52`、`7d4682b8acf62a4fc46c461f95bcd76b959b9771` 已按序 fast-forward 到唯一 `codex/gf02-integration`。INT 在 4e44 用固定 Unity `2021.3.27f1c2` 做一次正常导入/C# 编译，退出码 **0**；日志 `/private/tmp/gf02-llm-diagnostics-integration.log` 有 `Tundra build success (2.77 seconds), 9 items updated`、`AssetDatabase: script compilation time: 4.338745s`、`Mono: successfully reloaded assembly` 及成功退出，未检出 `error CS`、编译失败或包解析/导入错误。未运行 Play、真实联网、自动测试、mock 或截图巡检；本轮仅证明诊断代码在集成树可编译。集成树原有未提交 FusionPixel 字体、PackageManager 设置和 `mono_crash.7330f4927.0.json` 的内容哈希在合入前后相同，未清理或提交。
