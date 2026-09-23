@@ -368,7 +368,9 @@ namespace Echo.NativeGame.PhoneUI
 
         void Refresh()
         {
-            if (!built || refreshing) return;
+            // The session can reset during scene exit while this tablet is hidden.
+            // OpenPhone calls RefreshExternal after enabling it again.
+            if (!built || refreshing || !gameObject.activeInHierarchy) return;
             refreshing = true;
             try
             {
@@ -481,8 +483,10 @@ namespace Echo.NativeGame.PhoneUI
 
         void RenderReading(RectTransform content, string body, IReadOnlyList<CommanderTabletAction> actions)
         {
-            float position = content.parent.GetComponentInParent<UnityEngine.UI.ScrollRect>()
-                .verticalNormalizedPosition;
+            if (!content) return;
+            var scroll = content.parent
+                ? content.parent.GetComponentInParent<UnityEngine.UI.ScrollRect>() : null;
+            float position = scroll ? scroll.verticalNormalizedPosition : 1f;
             Clear(content);
             var text = Text(StretchRow("Body", content, 0), body, 18, Pale);
             text.gameObject.AddComponent<UnityEngine.UI.LayoutElement>().preferredHeight =
@@ -498,8 +502,7 @@ namespace Echo.NativeGame.PhoneUI
                     button.onClick.AddListener(() => { captured.Invoke?.Invoke(); RefreshExternal(); });
                 }
             Canvas.ForceUpdateCanvases();
-            content.parent.GetComponentInParent<UnityEngine.UI.ScrollRect>()
-                .verticalNormalizedPosition = position;
+            if (scroll) scroll.verticalNormalizedPosition = position;
         }
 
         void OnProposalChanged(Guid id, CommanderProposalState state, string reason)

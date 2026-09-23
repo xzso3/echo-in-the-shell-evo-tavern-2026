@@ -20,10 +20,11 @@ namespace Echo.NativeGame.Commander
         public TMP_FontAsset chineseFont;
         public string gameSceneName = "NativeDemoTilemap";
         GameMenuView view;
+        FlowNavigation navigation;
 
         void Start()
         {
-            var navigation = GetComponent<FlowNavigation>();
+            navigation = GetComponent<FlowNavigation>();
             if (!navigation) navigation = gameObject.AddComponent<FlowNavigation>();
             navigation.PreferredGameSceneName = gameSceneName;
             var art = Resources.Load<GameUiArtCatalog>("GF01Art");
@@ -38,7 +39,7 @@ namespace Echo.NativeGame.Commander
             });
             navigation.NavigatingChanged += busy => view.SetLoading(busy);
             navigation.ErrorChanged += view.SetError;
-            navigation.AiConfigurationChanged += view.RefreshConfiguration;
+            navigation.AiConfigurationChanged += OnAiConfigurationChanged;
             view.SettingsView.ConnectionTestCompleted += result =>
                 view.SetTestStatus(result.Message, result.Success);
         }
@@ -46,6 +47,18 @@ namespace Echo.NativeGame.Commander
         void Update()
         {
             if (view && Input.GetKeyDown(KeyCode.Escape)) view.HandleBack();
+        }
+
+        void OnAiConfigurationChanged()
+        {
+            if (!view) return;
+            view.RefreshConfiguration();
+            view.SetTestStatus("连接未测试", false);
+        }
+
+        void OnDestroy()
+        {
+            if (navigation) navigation.AiConfigurationChanged -= OnAiConfigurationChanged;
         }
     }
 }
