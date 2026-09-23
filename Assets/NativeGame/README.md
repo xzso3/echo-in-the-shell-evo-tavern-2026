@@ -1,5 +1,13 @@
 # Unity Native — 简体中文试玩版与本地 NPC 支线
 
+## 新版 Chunk / Tilemap 关卡（2026-09-23）
+
+打开 `Assets/Scenes/NativeDemoTilemap.unity`，或 **Echo → Native → Open Tilemap Playable**，直接 Play。Build Settings 中 `CommanderHome.unity` 为首个启用场景，`NativeDemoTilemap.unity` 紧随其后，旧 `NativeDemo.unity` 保留。
+
+新版采用 EchoLevelToolkit `ChunkMapSample` 的四层 Tilemap / 独立 Chunk Prefab / 整数端口装配方式，为 Native 主线重新制作三个 18×18 主街区块和两个 10×10 北侧区块。复用 CyberCity 的湿沥青、铺砖、金属板、警戒线、排水格栅与设备素材；静态地形使用 TilemapCollider2D，四扇动态门继续由 NativeMap 控制。三记忆、中继、Boss 核心、最终选择、NPC、装备和支援均沿用原 Native 组件与引用。它是 Native 场景内的地图接入，不是外来 LevelPlacement / 多实例宿主 S4 验收。
+
+路线与按键沿用下文；制作资源、地图坐标和必要验证见 [新版关卡说明](../../Docs/NativeDemoTilemap.md)。场景和 Prefab 已保存，不要再次执行 Create 或旧迁移菜单。
+
 当前 NativeDemo 及其依赖游戏界面已统一使用 FusionPixel 与简体中文，WASD/Space/E/Tab/Enter 等键位保留英文。场景和 Boss Prefab 已保存，无需重跑迁移菜单；旧历史场景不在当前试玩构建中。字模和源 OTF 随包，许可位于 StreamingAssets；详细证据见 [字体与中文集成说明](Fonts/INTEGRATION.zh-CN.md)。新版 Windows 完整人工流程仍待用户试玩。
 
 入口：`Assets/Scenes/NativeDemo.unity`，或菜单 **Echo → Native → Open Playable**。现有场景直接 Play，不重新执行创建/迁移菜单。使用 Unity 2021.3.27f1c2、URP12.1.12、TMP/uGUI、Input Manager。用户手动 Windows 构建；未改共享构建设置、历史场景，未增加独立引擎/服务容器/世界模拟/在线服务或测试框架。

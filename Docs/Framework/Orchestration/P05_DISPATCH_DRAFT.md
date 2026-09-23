@@ -1,0 +1,16 @@
+准备稿：尚未派发，必须先填实已验收地图基线。
+
+P1-05 / attempt1：Actor、行为与基础战斗。
+目标：实现玩家移动/自动开火、敌人感知与ECA状态行为、ECA攻击阶段、直线弹丸、冷却/来源快照/伤害钩子与死亡清理，真实逻辑可供Host和同一工具世界消费。
+允许修改Assets/EchoFramework/Gameplay/Actor/、Combat/及各descriptor和meta，Tests/EchoFramework/Actor/、Combat/，Assets/EchoFramework/Tests/Combat/及meta。分支codex/p1-05-actor-combat。唯一实现共同IActorQuery/IActorControl及IActorCommands、ICombatCommands；06仅消费，不让两任务重复持有Actor状态。
+验收A10、A13—A17、A26：多个伤害钩子顺序、非法持续钩子/异常无部分扣血、一次伤害事实；真实角色半径贴边/跨缝、快弹丸全位移薄墙碰撞；感知遮挡后不可读取隐藏实时目标位置；显示有无不影响攻击、暂停一致、发射前取消禁止弹丸；同定义多实例状态/ECA互不污染；攻击者前摇死亡取消、发射后弹丸关卡拥有继续运行、一次死亡事实、关卡退出清理。按子例列报告，Unity层not_run等待后续，不减弱逻辑必需项。
+Actor正常Move调用Entity真实运动；玩家初始自动开火、WASD方向输入和Space切换去重。敌人按配置周期决策事实，ECA控制待机/追击/攻击，不绕过Core另建执行器。Actor/behavior/attack/projectile真实reader及typed refs，攻击flow递归execute_attack拒绝；成功start消耗冷却取消不返还；fire时固定来源伤害/位置，弹丸scope归Level。控制租约按channel/owner及busy处理，死亡/作用域结束释放，供06对话控制消费，重入/异常清理也覆盖。动画阶段/朝向/挂点由逻辑配置与时间驱动，显示仅读取。
+先交代给主控稳定Actor服务绑定及死亡/控制语义，06使用冻结接口替身独立测试；真实联调由INT执行，不依赖另一个任务私改签名。
+
+项目/主机：保存项目 /Users/const/Projects/Unity/echo-in-the-shell-evo-tavern-2026，local；应用创建的独立worktree。用户指定Fast tier，使用用户已开启的priority默认设置，不覆盖模型或推理参数。起始分支codex/p1-integration；精确base_commit以本次派发首段为准，先核对HEAD一致并确认前置，不一致立即报告不得开发。独立codex/分支，不改集成引用。
+必读自己worktree中的Docs/ECHO_IN_THE_SHELL_GAME_DESIGN.md、Docs/FRAMEWORK_ARCHITECTURE.md、Docs/Framework/PHASE1_IMPLEMENTATION_SPEC.md、PHASE1_CAPABILITIES.md、PHASE1_ACCEPTANCE.md、PHASE1_TASKS.md、PHASE1_ORCHESTRATOR_PROMPT.md及适用AGENTS.md；Docs/Framework/Contracts/{README.md,OWNERSHIP.md,VERSIONS_LICENSES.md,CASE_BINDING.md}、Core和Map测试README。重点实现规范5/6、能力清单2/4/5/6/7/8，逐一对照下述验收族。以base版本接口/注册Schema为准，计划Markdown不是实现证据。
+工程输入：纯逻辑netstandard2.1/C#9，外部.NET8.0.413；现有Newtonsoft13.0.2不升级。公共Gameplay/Contracts/World.cs、Host.cs和Core/Contracts只读；case独立0.2.0，其余协议0.1.0。Map真实EntityModule/MapModule/ISpatialQuery已经验收后才创建本任务，精确提交见首段。使用Map README的SpawnBody、真实circle Sweep与认证同Level实体身份；不得创建独立地图副本或传送式移动。新Assets文件配meta，不改既有GUID。
+共享文件：公共契约、asmdef、Host/*.csproj、sln、全局配置和唯一Gameplay/Composition/Phase1Composition.cs只由INT保管。需要改共享接口时返回场景/输入输出/生命周期/验收例，主控交契约任务，不在本分支改签名。每模块独立descriptor，实际handler和reader才可注册Production。内容Schema/typed refs提取/模块构造顺序/服务绑定要写明确README，P103据此加载工具、INT据此统一组装。需要自有测试csproj可放自己测试目录，优先引用共享Host工程，不动共享工程。
+交付包含实现、实际生产能力与Schema、正负用例、模块启动/更新/结束和Host只读状态接口；资源清理计数可观察，不能硬编码0。固定source commit运行测试，后继仅证据时提供源码/输入/Schema/目录hash证明。实际命令退出结果、not_run和错误诊断如实保留，不把替身或纯逻辑结果冒充Unity。正式A/B与资源清单尚未可用，不编造包ID或假资源，不扩展后续装备/Buff/在线功能。
+本轮无Unity槽，可执行纯逻辑测试；确需Unity先报告，只有主控分配后在自己的worktree操作，不控制保存项目用户Editor。里程碑：精确起点确认；跨模块接口/API和自有reader交接；实现和实际验收；固定交付。不要每一步停下来等批准，继续所有授权可执行项。
+先核对实际工作区、基线和接口，再在允许范围内完成实现及相应验证。你已获授权在自己的工作分支提交本任务修改。不要改其他工作区、集成分支或远端；不要创建任务或subagent。缺少输入或需要跨边界修改时说明具体缺口。不要因为先遇到可自行解决的错误就结束。完成输出task_id/attempt,result ready_for_review|needs_input|failed,base_commit/delivery_commit,worktree/branch,changed_files,contract_or_capability_changes,checks实际命令环境退出passed/failed/not_run/blocked,evidence_paths绝对路径,known_limitations,downstream_impact。
