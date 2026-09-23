@@ -57,6 +57,7 @@ namespace Echo.NativeGame.Commander
         public Guid SessionId { get; private set; } = Guid.NewGuid();
         public long RequestGeneration { get; private set; }
         public bool Busy => pending != null;
+        public bool TransportBusy => transport.Busy;
         public string Draft
         {
             get => draft;
@@ -99,6 +100,17 @@ namespace Echo.NativeGame.Commander
                 return false;
             }
 
+            bool onlineConfigured = !CommanderLaunchState.OfflineForCurrentRun &&
+                CommanderSettings.Instance.HasKey &&
+                !string.IsNullOrEmpty(CommanderSettings.Instance.EndpointUrl) &&
+                !string.IsNullOrWhiteSpace(CommanderSettings.Instance.ModelId);
+            if (onlineConfigured && transport.Busy)
+            {
+                LastOnlineStatus = "待重试";
+                AddError("在线通道正在通讯，请等待设置页连接测试或当前请求结束后手动重试。草稿已保留。");
+                return false;
+            }
+
             var request = new Pending
             {
                 SessionId = SessionId, Generation = ++RequestGeneration,
@@ -108,10 +120,7 @@ namespace Echo.NativeGame.Commander
             messages.Add(new CommanderChatItem(question, CommanderChatSource.Player));
             Changed?.Invoke();
             if (pending != request) return false;
-            if (CommanderLaunchState.OfflineForCurrentRun ||
-                !CommanderSettings.Instance.HasKey ||
-                string.IsNullOrEmpty(CommanderSettings.Instance.EndpointUrl) ||
-                string.IsNullOrWhiteSpace(CommanderSettings.Instance.ModelId))
+            if (!onlineConfigured)
             {
                 CompleteFallback(request, "在线通讯未配置或本局选择离线试玩。");
                 return true;
@@ -119,8 +128,26 @@ namespace Echo.NativeGame.Commander
             var wireMessages = BuildMessages(snapshot, question);
             bool started = transport.SendAsync(wireMessages, result => OnCompleted(request, result));
             if (!started && pending == request)
-                CompleteFallback(request, "在线通讯未能启动；请检查连接或稍后手动重试。");
+            {
+                if (transport.Busy) CompleteBusy(request);
+                else CompleteFallback(request, "在线通讯未能启动；请检查连接或稍后手动重试。");
+            }
             return true;
+        }
+
+        void CompleteBusy(Pending request)
+        {
+            if (pending != request || request.SessionId != SessionId ||
+                request.Generation != RequestGeneration) return;
+            pending = null;
+            if (!source.IsCurrent(request.Focus))
+            {
+                LastOnlineStatus = "状态已变化";
+                Changed?.Invoke();
+                return;
+            }
+            LastOnlineStatus = "待重试";
+            AddError("在线通道正在通讯，请等待设置页连接测试或当前请求结束后手动重试。草稿已保留。");
         }
 
         public void ShowLocalTopic(string text)
