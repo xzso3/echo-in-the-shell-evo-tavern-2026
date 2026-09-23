@@ -42,23 +42,23 @@ namespace Echo.NativeGame
             sharedWeapon.damage = damage;
         }
 
-        public void ToggleFire() { if (sharedWeapon) sharedWeapon.ToggleFire(); }
+        public void ToggleFire() { if (sharedWeapon && level && level.IsCombatAdvancing) sharedWeapon.ToggleFire(); }
 
         public void HitEnemy(NativeEnemy target, float amount)
         {
-            if (World && level && level.Running && target && target.run == level)
+            if (World && level && level.IsCombatAdvancing && target && target.run == level)
                 target.ReceiveDamage(amount);
         }
 
         public void HitBoss(NativeBossController target, float amount)
         {
-            if (World && level && level.Running && target && target.level == level)
+            if (World && level && level.IsCombatAdvancing && target && target.level == level)
                 target.ReceiveDamage(amount);
         }
 
         public void HitPlayer(float amount)
         {
-            if (World && level && level.Running && actor && actor.Alive)
+            if (World && level && level.IsCombatAdvancing && actor && actor.Alive)
                 actor.ReceiveDamage(amount);
         }
     }

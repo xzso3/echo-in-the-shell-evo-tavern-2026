@@ -21,7 +21,7 @@ namespace Echo.NativeGame
             !NativeObstacle.Blocked(player.transform.position, transform.position);
         public void Use(NativePlayer player)
         {
-            if (!CanReach(player)) return;
+            if (!run || !run.IsCombatAdvancing || !CanReach(player)) return;
             Confirmed?.Invoke(this);
         }
         public void Consume()

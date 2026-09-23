@@ -25,7 +25,7 @@ namespace Echo.LevelToolkit.Combat
             Health = maxHealth;
             return true;
         }
-        void FixedUpdate() { body.velocity = World && World.IsRunning ? MoveInput * speed : Vector2.zero; }
+        void FixedUpdate() { body.velocity = World && World.CanAdvance ? MoveInput * speed : Vector2.zero; }
         void Update()
         {
             if (!World || !World.IsRunning || !view) return;
@@ -42,7 +42,7 @@ namespace Echo.LevelToolkit.Combat
         }
         public bool ReceiveDamage(float value)
         {
-            if (!isActiveAndEnabled || !World || !World.IsRunning || !Alive || !Valid(value) || Time.time < nextHurt) return false;
+            if (!isActiveAndEnabled || !World || !World.CanAdvance || !Alive || !Valid(value) || Time.time < nextHurt) return false;
             Health = Mathf.Max(0, Health - value);
             nextHurt = Time.time + hurtCooldown;
             if (!Alive)

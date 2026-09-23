@@ -35,7 +35,7 @@ namespace Echo.LevelToolkit.Combat
         void OnDestroy() { if (World) World.Unregister(this); }
         void FixedUpdate()
         {
-            if (!World || !World.IsRunning || !Alive) { body.velocity = Vector2.zero; return; }
+            if (!World || !World.CanAdvance || !Alive) { body.velocity = Vector2.zero; return; }
             Vector2 delta = World.Player.transform.position - transform.position;
             float distance = delta.magnitude;
             if (distance > detectionRange) { body.velocity = Vector2.zero; return; }
@@ -58,11 +58,12 @@ namespace Echo.LevelToolkit.Combat
         void OnCollisionStay2D(Collision2D collision)
         {
             var player = collision.collider.GetComponentInParent<CombatPlayer>();
-            if (player && World && player == World.Player && Alive && contactDamage > 0) player.ReceiveDamage(contactDamage);
+            if (player && World && World.CanAdvance && player == World.Player && Alive && contactDamage > 0)
+                player.ReceiveDamage(contactDamage);
         }
         public bool ReceiveDamage(float amount)
         {
-            if (!World || !World.IsRunning || !Alive || !CombatPlayer.Valid(amount)) return false;
+            if (!World || !World.CanAdvance || !Alive || !CombatPlayer.Valid(amount)) return false;
             health = Mathf.Max(0, health - amount);
             if (health <= 0)
             {

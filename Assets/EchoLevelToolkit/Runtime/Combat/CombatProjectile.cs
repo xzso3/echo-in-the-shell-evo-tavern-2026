@@ -14,7 +14,7 @@ namespace Echo.LevelToolkit.Combat
 
         public bool Launch(CombatWorld combatWorld, Component source, Vector2 value, float amount, bool isHostile)
         {
-            if (launched || !combatWorld || !combatWorld.IsRunning || !source || !source.gameObject.activeInHierarchy ||
+            if (launched || !combatWorld || !combatWorld.CanAdvance || !source || !source.gameObject.activeInHierarchy ||
                 value.sqrMagnitude < .0001f || !CombatPlayer.Valid(amount) || !CombatPlayer.Valid(speed) ||
                 !CombatPlayer.Valid(lifetime) || !CombatPlayer.Valid(radius)) return false;
             world = combatWorld; owner = source; direction = value.normalized; damage = amount; hostile = isHostile;
@@ -24,8 +24,10 @@ namespace Echo.LevelToolkit.Combat
         }
         void FixedUpdate()
         {
-            if (!launched || !world || !world.IsRunning || !OwnerAlive() || Time.time >= expiresAt)
+            if (!launched || !world || !world.IsRunning || !OwnerAlive())
             { Destroy(gameObject); return; }
+            if (!world.CanAdvance) return;
+            if (Time.time >= expiresAt) { Destroy(gameObject); return; }
             float distance = speed * Time.fixedDeltaTime;
             var hits = Physics2D.CircleCastAll(transform.position, radius, direction, distance);
             Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));

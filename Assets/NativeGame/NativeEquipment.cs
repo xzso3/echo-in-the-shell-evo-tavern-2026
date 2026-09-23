@@ -25,8 +25,8 @@ namespace Echo.NativeGame
 
         void Update()
         {
-            if (OverclockActive && (!run || !run.Running || Time.time >= overclockEndsAt)) StopOverclock();
-            if (!run || !run.Running || TextInputFocused() || run.dialogue && run.dialogue.IsOpen ||
+            if (OverclockActive && (!run || !run.Running || run.IsCombatAdvancing && Time.time >= overclockEndsAt)) StopOverclock();
+            if (!run || !run.IsCombatAdvancing || TextInputFocused() || run.dialogue && run.dialogue.IsOpen ||
                 run.hud && run.hud.phonePanel && run.hud.phonePanel.activeSelf) return;
             if (Input.GetKeyDown(KeyCode.F)) ToggleEquip();
             if (Input.GetKeyDown(KeyCode.Q)) TryStartOverclock();
@@ -34,7 +34,7 @@ namespace Echo.NativeGame
 
         public bool TryPickUp()
         {
-            if (HasCoil || !run || !run.Running || !run.combat) return false;
+            if (HasCoil || !run || !run.IsCombatAdvancing || !run.combat) return false;
             HasCoil = true;
             Changed?.Invoke();
             return true;
@@ -42,7 +42,7 @@ namespace Echo.NativeGame
 
         public bool ToggleEquip()
         {
-            if (!HasCoil || !run || !run.Running || !run.combat) return false;
+            if (!HasCoil || !run || !run.IsCombatAdvancing || !run.combat) return false;
             if (Equipped)
             {
                 StopOverclock();
@@ -61,7 +61,7 @@ namespace Echo.NativeGame
 
         public bool TryStartOverclock()
         {
-            if (!Equipped || OverclockActive || !run || !run.Running || !run.combat) return false;
+            if (!Equipped || OverclockActive || !run || !run.IsCombatAdvancing || !run.combat) return false;
             intervalBeforeOverclock = run.combat.shotInterval;
             run.combat.shotInterval = Mathf.Max(.01f, intervalBeforeOverclock * Mathf.Clamp(overclockShotIntervalFactor, .1f, 1f));
             overclockEndsAt = Time.time + Mathf.Max(.1f, overclockDuration);

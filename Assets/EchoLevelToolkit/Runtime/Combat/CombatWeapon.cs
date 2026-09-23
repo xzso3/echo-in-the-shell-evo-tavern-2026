@@ -22,10 +22,10 @@ namespace Echo.LevelToolkit.Combat
             return true;
         }
         internal void RecordKill() { Kills++; }
-        public void ToggleFire() { if (World && World.IsRunning) AutoFire = !AutoFire; }
+        public void ToggleFire() { if (World && World.CanAdvance) AutoFire = !AutoFire; }
         void Update()
         {
-            if (!World || !World.IsRunning || !AutoFire || Time.time < nextShot) return;
+            if (!World || !World.CanAdvance || !AutoFire || Time.time < nextShot) return;
             bool found = false; Vector2 aimPoint = default; float nearest = range * range;
             foreach (var enemy in World.Enemies)
             {

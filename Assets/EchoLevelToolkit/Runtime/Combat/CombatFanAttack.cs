@@ -38,6 +38,7 @@ namespace Echo.LevelToolkit.Combat
         {
             if (!actor || !actor.World || !actor.World.IsRunning || !actor.Alive || !projectilePrefab)
             { CancelCharge(); return; }
+            if (!actor.World.CanAdvance) return;
             if (charging)
             {
                 UpdateWarning();

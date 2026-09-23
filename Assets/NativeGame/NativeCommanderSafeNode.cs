@@ -7,20 +7,22 @@ namespace Echo.NativeGame
     {
         public NativeRunController level;
         public float radius = 2.2f;
-        public float enemyExclusionRadius = 5f;
 
         public bool CanCompose(out string reason)
         {
             if (!level || !level.Running || !level.player)
             { reason = "当前关卡状态不能发送自由通讯。"; return false; }
-            if (Vector2.Distance(level.player.transform.position, transform.position) > radius)
-            { reason = "请到出生点北侧的安全通讯节点输入。"; return false; }
-            foreach (var enemy in NativeEnemy.Active)
+            Vector2 playerPosition = level.player.transform.position;
+            if (level.hud && level.hud.IntegratedInput)
             {
-                if (enemy && enemy.Alive && Vector2.Distance(enemy.transform.position, level.player.transform.position) < enemyExclusionRadius)
-                { reason = "敌人已接近；草稿已保留，请先脱离战斗。"; return false; }
+                if (!level.hud.ActiveInputReady)
+                { reason = "当前焦点关卡尚未就绪。"; return false; }
+                if (level.hud.ActiveToolkitPlayer)
+                    playerPosition = level.hud.ActiveToolkitPlayer.transform.position;
             }
-            reason = "安全节点内可输入；通讯不会暂停战斗。";
+            if (Vector2.Distance(playerPosition, transform.position) > radius)
+            { reason = "请到安全通讯节点输入。"; return false; }
+            reason = "安全节点内可输入。";
             return true;
         }
 

@@ -14,6 +14,8 @@ namespace Echo.LevelToolkit.Combat
         public CombatPlayer Player { get; private set; }
         public event Action<CombatEnemy> EnemyDied;
         public bool IsRunning => Context != null && Context.IsRunning && Player && Player.Alive;
+        // A live world still accepts support while scaled combat is stopped.
+        public bool CanAdvance => IsRunning && Time.timeScale > 0f;
         public IReadOnlyList<CombatEnemy> Enemies => enemies;
         public IReadOnlyList<CombatBoss> Bosses => bosses;
 

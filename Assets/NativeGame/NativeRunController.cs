@@ -1,4 +1,5 @@
 using System;
+using Echo.NativeGame.Commander;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -21,10 +22,21 @@ namespace Echo.NativeGame
         public RunPhase Phase { get; private set; }
         public float Elapsed { get; private set; }
         public bool Running => Phase == RunPhase.Playing && player && player.Alive;
+        public bool IsCombatAdvancing => PhonePause.IsCombatAdvancing;
+        public IPhonePauseController PhonePause
+        {
+            get
+            {
+                if (!phonePause) phonePause = GetComponent<NativePhonePauseController>();
+                if (!phonePause) phonePause = gameObject.AddComponent<NativePhonePauseController>();
+                return phonePause;
+            }
+        }
+        NativePhonePauseController phonePause;
         public event Action Started;
         void Awake()
         {
-            Time.timeScale = 1;
+            _ = PhonePause;
             if (!player || !combat || !combatIntegration || !quest || !map || !dialogue || !rules || !hud)
             { Debug.LogError("NativeDemo: missing module reference on Level.", this); enabled = false; }
         }
@@ -39,10 +51,11 @@ namespace Echo.NativeGame
             }
             Started?.Invoke();
         }
-        void Update() { if (Running) Elapsed += Time.deltaTime; }
+        void Update() { if (IsCombatAdvancing) Elapsed += Time.deltaTime; }
         public bool Complete()
         {
             if (!Running || !quest.Completed || !narrative || !narrative.EndingCommitted) return false;
+            PhonePause.ReleaseForRunEnd();
             player.MoveInput = Vector2.zero; dialogue.Close(); hud.ClosePhone();
             if (narrative.Ending == NativeEnding.Birth)
             { Phase = RunPhase.Ending; endingSequence.Begin(); }
@@ -57,9 +70,14 @@ namespace Echo.NativeGame
         public void PlayerDied()
         {
             if (Phase != RunPhase.Playing) return;
+            PhonePause.ReleaseForRunEnd();
             Phase = RunPhase.Dead; dialogue.Close();
-            hud.ShowResult("躯壳失联", "你的信号中断了。\n\n保持移动，也可以尝试绕行。\n停火或打开手机，都不会暂停敌人的行动。");
+            hud.ShowResult("躯壳失联", "你的信号中断了。\n\n保持移动，也可以尝试绕行。");
         }
-        public void Restart() { Time.timeScale = 1; SceneManager.LoadScene(SceneManager.GetActiveScene().name); }
+        public void Restart()
+        {
+            PhonePause.ReleaseForRunEnd();
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
     }
 }

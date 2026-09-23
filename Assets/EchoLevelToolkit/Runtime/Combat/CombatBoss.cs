@@ -113,6 +113,7 @@ namespace Echo.LevelToolkit.Combat
         {
             if (!encounterActive || IsDefeated) return;
             if (!World || !World.IsRunning) { ClearHazards(); return; }
+            if (!World.CanAdvance) return;
             stageAge += Time.deltaTime;
             if (damageView) damageView.enabled = ArmorFraction < .5f;
             if (coreView) coreView.color = Stage == AttackStage.CoreWindow
@@ -252,14 +253,14 @@ namespace Echo.LevelToolkit.Combat
         }
         public bool ReceiveDamage(float amount)
         {
-            if (!CanBeTargeted || !CombatPlayer.Valid(amount)) return false;
+            if (!CanBeTargeted || !World.CanAdvance || !CombatPlayer.Valid(amount)) return false;
             Armor = Mathf.Max(0, Armor - amount * armorDamageScale);
             if (ArmorBroken) OpenCore();
             return true;
         }
         public bool CanInteractCore(CombatPlayer player)
         {
-            return CanRun && ArmorBroken && Stage == AttackStage.CoreWindow && stageAge < EffectiveCoreWindowSeconds &&
+            return CanRun && World.CanAdvance && ArmorBroken && Stage == AttackStage.CoreWindow && stageAge < EffectiveCoreWindowSeconds &&
                 player && player == World.Player && player.Alive &&
                 Vector2.Distance(player.transform.position, AimPoint) <= coreInteractionRadius &&
                 !CombatSight.Blocked(player.transform.position, AimPoint);

@@ -77,7 +77,7 @@ namespace Echo.NativeGame
 
         public void ReceiveDamage(float amount)
         {
-            if (!sharedActor || !run || !run.Running) return;
+            if (!sharedActor || !run || !run.IsCombatAdvancing) return;
             sharedActor.ReceiveDamage(amount);
             health = sharedActor.health;
         }

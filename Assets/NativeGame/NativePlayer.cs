@@ -52,7 +52,8 @@ namespace Echo.NativeGame
 
         public void ReceiveDamage(float value)
         {
-            if (run && run.player == this && sharedActor) sharedActor.ReceiveDamage(value);
+            if (run && run.IsCombatAdvancing && run.player == this && sharedActor)
+                sharedActor.ReceiveDamage(value);
         }
     }
 }
