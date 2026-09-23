@@ -52,6 +52,7 @@ namespace Echo.NativeGame.Commander
         Pending pending;
         string draft = string.Empty;
         bool disposed;
+        public string LastOnlineStatus { get; private set; } = "未验证";
 
         public Guid SessionId { get; private set; } = Guid.NewGuid();
         public long RequestGeneration { get; private set; }
@@ -107,14 +108,26 @@ namespace Echo.NativeGame.Commander
             messages.Add(new CommanderChatItem(question, CommanderChatSource.Player));
             Changed?.Invoke();
             if (pending != request) return false;
+            if (CommanderLaunchState.OfflineForCurrentRun ||
+                !CommanderSettings.Instance.HasKey ||
+                string.IsNullOrEmpty(CommanderSettings.Instance.EndpointUrl) ||
+                string.IsNullOrWhiteSpace(CommanderSettings.Instance.ModelId))
+            {
+                CompleteFallback(request, "在线通讯未配置或本局选择离线试玩。");
+                return true;
+            }
             var wireMessages = BuildMessages(snapshot, question);
             bool started = transport.SendAsync(wireMessages, result => OnCompleted(request, result));
             if (!started && pending == request)
-            {
-                pending = null;
-                AddError("在线通讯暂不可用，请检查配置或等待当前连接结束。草稿已保留。");
-            }
-            return started;
+                CompleteFallback(request, "在线通讯未能启动；请检查连接或稍后手动重试。");
+            return true;
+        }
+
+        public void ShowLocalTopic(string text)
+        {
+            if (disposed || string.IsNullOrWhiteSpace(text)) return;
+            messages.Add(new CommanderChatItem(text.Trim(), CommanderChatSource.LocalTopic));
+            Changed?.Invoke();
         }
 
         public void Cancel()
@@ -123,12 +136,17 @@ namespace Echo.NativeGame.Commander
             ++RequestGeneration;
             pending = null;
             transport.Cancel();
-            AddError("已取消本次在线通讯。草稿已保留。");
+            LastOnlineStatus = "已取消";
+            AddError("已取消本次在线通讯。草稿已保留；预设主题仍可使用。");
         }
 
-        // The owner calls this immediately after any endpoint, model, timeout or Key edit.
-        // The settings interface has no change event, so a UI edit cannot be inferred here.
-        public void ConfigurationChanged() => Cancel();
+        // CommanderRuntimeHost forwards settings edits; old callbacks cannot reach fallback.
+        public void ConfigurationChanged()
+        {
+            Cancel();
+            LastOnlineStatus = "未验证";
+            Changed?.Invoke();
+        }
 
         public void Reset()
         {
@@ -145,6 +163,7 @@ namespace Echo.NativeGame.Commander
             recentFeedback.Clear();
             proposalTurns.Clear();
             recordedFeedback.Clear();
+            LastOnlineStatus = "未验证";
             Changed?.Invoke();
         }
 
@@ -163,17 +182,24 @@ namespace Echo.NativeGame.Commander
             pending = null;
             if (!source.IsCurrent(request.Focus))
             {
+                LastOnlineStatus = "状态已变化";
                 Changed?.Invoke();
                 return;
             }
             if (result.Status != CommanderTransportStatus.Success)
             {
-                AddError(TransportFailure(result.Status));
+                if (result.Status == CommanderTransportStatus.Cancelled)
+                {
+                    LastOnlineStatus = "已取消";
+                    AddError("在线通讯已取消。草稿已保留；预设主题仍可使用。");
+                    return;
+                }
+                CompleteFallback(request, TransportFailure(result.Status));
                 return;
             }
             if (!CommanderResponseParser.TryParse(result.Content, request.Snapshot, out var parsed))
             {
-                AddError("在线回复格式或支援选项无效。草稿已保留，请手动重试。");
+                CompleteFallback(request, "在线回复格式或支援选项无效；请手动重试。");
                 return;
             }
             Guid? proposalId = null;
@@ -184,8 +210,8 @@ namespace Echo.NativeGame.Commander
                     parsed.Kind.Value);
                 if (!support.TryRegister(proposal, out var reason))
                 {
-                    AddError("支援选项已失效。" + (string.IsNullOrWhiteSpace(reason) ?
-                        "草稿已保留，请重新询问。" : reason));
+                    CompleteFallback(request, "支援选项已失效。" + (string.IsNullOrWhiteSpace(reason) ?
+                        "请重新询问。" : reason));
                     return;
                 }
                 proposalId = proposal.ProposalId;
@@ -195,8 +221,30 @@ namespace Echo.NativeGame.Commander
             if (turns.Count > 6) turns.RemoveAt(0);
             if (proposalId.HasValue) proposalTurns.Add(proposalId.Value, turn);
             messages.Add(new CommanderChatItem(parsed.Reply, CommanderChatSource.OnlineAssistant, proposalId));
+            LastOnlineStatus = "上次请求成功";
             if (string.Equals(draft.Trim(), request.Question, StringComparison.Ordinal))
                 draft = string.Empty;
+            Changed?.Invoke();
+        }
+
+        void CompleteFallback(Pending request, string reason)
+        {
+            if (pending != null && pending != request) return;
+            if (request.SessionId != SessionId || request.Generation != RequestGeneration) return;
+            pending = null;
+            if (!source.IsCurrent(request.Focus))
+            {
+                LastOnlineStatus = "状态已变化";
+                Changed?.Invoke();
+                return;
+            }
+            LastOnlineStatus = "上次在线失败 · 本地可用";
+            messages.Add(new CommanderChatItem(reason + " 草稿已保留，可手动重试。",
+                CommanderChatSource.Error));
+            messages.Add(new CommanderChatItem(
+                "本地预设 / 当前任务：" + request.Snapshot.CurrentObjective +
+                "\n自由输入没有本地问答模型，不能按任意问题生成回答。请选择下方任务、记忆、身份或授权主题；支援与记录仍可独立使用。",
+                CommanderChatSource.LocalFact));
             Changed?.Invoke();
         }
 
@@ -272,11 +320,12 @@ namespace Echo.NativeGame.Commander
         {
             switch (status)
             {
-                case CommanderTransportStatus.Timeout: return "在线通讯超时。草稿已保留，请手动重试。";
-                case CommanderTransportStatus.InvalidConfiguration: return "在线配置无效。草稿已保留，请检查地址、模型和Key。";
-                case CommanderTransportStatus.InvalidResponse: return "服务回复无效。草稿已保留，请手动重试。";
-                case CommanderTransportStatus.Cancelled: return "在线通讯已取消。草稿已保留。";
-                default: return "在线通讯暂不可用。草稿已保留，请手动重试。";
+                case CommanderTransportStatus.Timeout: return "在线通讯超时。";
+                case CommanderTransportStatus.InvalidConfiguration: return "在线配置无效，请检查地址、模型和 Key。";
+                case CommanderTransportStatus.InvalidResponse: return "服务回复无效。";
+                case CommanderTransportStatus.NetworkError: return "在线网络暂不可达。";
+                case CommanderTransportStatus.HttpError: return "在线服务返回错误。";
+                default: return "在线通讯暂不可用。";
             }
         }
     }
