@@ -18,7 +18,7 @@
 | W0-A 战斗／宿主 | 已完成只读 | `01a0cc56-cc48-73d2-bfa0-f94175cf217e` / local | `e8fd`／detached／`7e274fa` | Sol/xhigh/priority 已核 | 保存 Player/Combat/Chase/Orbit/Boss 参数与依赖、真实死亡/激活失败风险已回报；无文件改动 | 未使用 | KT-00 战斗决定 |
 | W0-B 地图／物理 | 静态完成，物理未测 | `01a0cc57-09a0-7831-b75a-d32d0d7286db` / local | `f014`／detached／`7e274fa` | Sol/xhigh/priority 已核 | 玩家半径、Tilemap/UPM/障碍层级已回报；独立 Editor LicenseClient IPC 失败 exit 199，无 Play/XML，探针移出 Assets，证据 `/private/tmp/echo-g0-w0b-probe` | 已释放 | S2 实体通行 |
 | W0-C 叙事／打包／Skill | 已完成只读 | `01a0cc57-4453-7320-b8a9-9e0479b0d337` / local | `a0b2`／detached／`7e274fa` | Sol/xhigh/priority 已核 | 稳定 ID、事件动作、模式隔离和包/Skill 风险已回报；无文件改动 | 未使用 | KT-00 接口决定 |
-| INT-LT | S2 已通过，S3/S4 执行中 | `01a0cc5c-97c1-7070-9f78-e5036a812954` / local | `8003`／`codex/level-toolkit-integration`；隔离 HEAD `66e5a49`，主目录 `60ae785` | Sol/xhigh/priority 已核 | NativeDemo 受影响短 Play 已通过；KT-01～10、NB-01～04/KT-07 源码已导入。S2 实体接缝/1格转角/真实清敌/Boss/终点、两次重开新 RunId 均有日志；尚未保存正式集成场景 | 唯一使用者 | S3→S4、包与主目录交付 |
+| INT-LT | S2 已通过；S3 转用户手工；S4 待包 | `01a0cc5c-97c1-7070-9f78-e5036a812954` / local | `8003`／`codex/level-toolkit-integration`；隔离 HEAD `66e5a49`，主目录 `629b60b` | Sol/xhigh/priority 已核 | NativeDemo 受影响短 Play 已通过；KT-01～10、NB-01～04/KT-07 源码已导入。S2 实体接缝/1格转角/真实清敌/Boss/终点、两次重开新 RunId 均有日志。S3 自动 batch 因 AssetImportWorker IPC 超时未生成包，用户决定手工执行；INT-LT 不再重试。正式场景待真实接收包 | 唯一使用者 | 等用户 S3 结果→S4、包与主目录交付 |
 
 ## 功能任务
 
@@ -48,8 +48,8 @@
 | --- | --- | --- |
 | S1 编译启动 | 受影响子项通过，最终未放行 | KT-01/02/03/06 合并后 Unity 编译及两个 Combat Preview 场景打开无 Missing Script；NativeDemo 受影响短链已过；完整示例可加载且无 Missing Script，KT-05/04 报 0 问题。NB-04 与最终包导入后仍须一次会合检查 |
 | S2 核心短流程 | 已通过，键盘 E 未直接注入 | 修复后隔离 Play `/private/tmp/int-lt-s2-fulllevel-66e5a49.log`：Rigidbody 到 x2.91/x7.91 混合接缝、Boss 区一格 L 弯到 x16.38/y5.49，两次真实 EnemyDied 开门，Boss 封门/破壳/核心交互解锁，x46.56 实体进 Finish；两次重开均 Running、新 RunId 与初态恢复，日志 `INT_LT_S2_SHORT_FLOW_OK`。核心使用宿主调用的真实 `InteractCore` 校验入口，未直接注入物理键盘 E |
-| S3 一次包往返 | 未执行 | 等工具包与完整示例包 |
-| S4 一次正式接入 | 未执行 | 等 NB-01～03 与 KT-07 |
+| S3 一次包往返 | 用户手工执行中，未通过 | 自动 batch 的 AssetImportWorker IPC 连接超时，未到导出方法；无成功 `.unitypackage`。隔离工作树 `66e5a49` 干净，已向用户交菜单导出、干净工程接收、Skill 安装的具体步骤；等真实包、preflight、编译/启动和 Skill 证据 |
+| S4 一次正式接入 | 未执行，等 S3 接收作品 | NB-04 新场景装配 helper 源 `20bfa36` 已交；收到用户 S3 接收结果后由 INT-LT 精确导入、保存新增场景并实跑正式事实链 |
 
 ## 配置与并发证据
 
@@ -57,6 +57,6 @@
 
 ## 当前依赖与恢复入口
 
-- INT-LT 后续顺序：一次真实包往返 S3（导出工具包/单项/完整作品并在干净工程接收）→ 保存新增正式场景、执行 S4 → 形成可交付包与主目录安全点。源分支各自保留，不能带旧祖先或覆盖用户脏文件。
+- 用户后续顺序：在隔离工作树 GUI Editor 手工导出工具包/完整作品/单项 Chunk；在干净 Unity 2021.3.27f1c2 工程经 KT-08 preflight 接收完整作品、编译/启动并安装 Skill，回传路径与错误/成功证据。INT-LT 此时不操作该 Editor。INT-LT 收到 S3 结果后保存新增正式场景、执行 S4，再形成可交付包与主目录安全点。源分支各自保留，不能带旧祖先或覆盖用户脏文件。
 - 最大剩余产品缺口：NB-01～04 正式多实例输入/叙事尚未在新增场景实跑；真实 `.unitypackage` 未产生，五 Skill 未在干净工程发现；S3/S4 尚未完成。S2 的物理键盘 E 未直接测。不得把当前安全点称为工具包快速版交付。
 - 不新建定时任务，不清理用户或旧工作树；S1～S4 只在可交付会合点做必要检查，实际通过范围与未测范围分开。后续再获进度时更新本表，继续保持单 Unity 时段和精确文件租约。
