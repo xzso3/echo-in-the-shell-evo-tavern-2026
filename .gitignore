@@ -42,3 +42,7 @@ crashlytics-build.properties
 # Echo external contract host build products
 /Tests/EchoFramework/Host/bin/
 /Tests/EchoFramework/Host/obj/
+
+# Local Codex worktree recovery and audit artifacts
+/.codex-retired-worktrees/
+/.codex-worktree-audits/
